@@ -64,7 +64,6 @@ public class Graph implements Cloneable {
         return this.edges;
     }
 
-
     public int getMaxNodeId() {
         return maxNodeId;
     }

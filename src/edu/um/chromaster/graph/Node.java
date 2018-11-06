@@ -3,6 +3,7 @@ package edu.um.chromaster.graph;
 public class Node {
 
     private final int id;
+    private final Meta meta = new Meta();
     private int value;
 
     public Node(int id, int value) {
@@ -14,12 +15,21 @@ public class Node {
         return id;
     }
 
+    public Meta getMeta() {
+        return this.meta;
+    }
+
     public int getValue() {
         return this.value;
     }
 
     public void setValue(int value) {
         this.value = value;
+    }
+
+    public static class Meta {
+        public double displacementX, displacementY;
+        public double positionX, positionY;
     }
 
     public static class Edge {

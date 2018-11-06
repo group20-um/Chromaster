@@ -69,7 +69,7 @@ public class Main {
 
         } else if(type == 1) {
 
-            final int nodes = 5000;
+            final int nodes = 100;
             IntStream.range(0, nodes).forEach(i -> graph.addNode(i, -1));
             Random random = new Random();
 
@@ -86,7 +86,7 @@ public class Main {
             graph.getEdges().forEach((k, v) -> v.forEach(edge -> builder.append(String.format("%s %s%n", k, edge.getTo().getId()))));
 
 
-            try {
+            /*try {
                 File file = new File("data/" + System.currentTimeMillis() + ".txt");
                 if(file.createNewFile()) {
                     FileOutputStream fileOutputStream = new FileOutputStream(file.getAbsolutePath());
@@ -95,15 +95,15 @@ public class Main {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-            }
+            }*/
 
         }
         long now = System.currentTimeMillis();
         //System.out.println(ChromaticNumber.compute(ChromaticNumber.Type.UPPER, graph, false));
         //System.out.println(ChromaticNumber.compute(ChromaticNumber.Type.LOWER, graph, true));
-        ChromaticNumber.compute(ChromaticNumber.Type.EXACT, graph, false);
+        //ChromaticNumber.compute(ChromaticNumber.Type.EXACT, graph, false);
+        GraphDrawer.fruchtermanReingold(graph, 1280, 720);
         System.out.printf("Time to execute: %dms%n", (System.currentTimeMillis() - now));
-        generateGephiFile(ChromaticNumber.graph);
 
 
     }

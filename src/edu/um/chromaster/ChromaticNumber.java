@@ -178,14 +178,6 @@ public class ChromaticNumber {
             }
             upper--;
 
-            //:FAULTY_CODE - In this part of the code is the error, the error is caused because the decreasing "upper--"
-            //should have been executed after the check whether or we have reached the lower bound already. So the error
-            // was stopping the execution too soon, and not validating if or if not the lower bound is actually the exact
-            // number.
-            //
-            /*if(upper == lower) {
-                break;
-            }*/
         }
 
         ChromaticNumber.graph = result;
