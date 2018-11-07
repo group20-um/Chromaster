@@ -1,5 +1,7 @@
 package edu.um.chromaster.graph;
 
+import javafx.scene.paint.Color;
+
 public class Node {
 
     private final int id;
@@ -28,6 +30,8 @@ public class Node {
     }
 
     public static class Meta {
+        public Color colour = Color.rgb(255, 0, 0);
+        public boolean visible = false;
         public double displacementX, displacementY;
         public double positionX, positionY;
     }

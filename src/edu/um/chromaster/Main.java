@@ -102,7 +102,6 @@ public class Main {
         //System.out.println(ChromaticNumber.compute(ChromaticNumber.Type.UPPER, graph, false));
         //System.out.println(ChromaticNumber.compute(ChromaticNumber.Type.LOWER, graph, true));
         //ChromaticNumber.compute(ChromaticNumber.Type.EXACT, graph, false);
-        GraphDrawer.fruchtermanReingold(graph, 1280, 720);
         System.out.printf("Time to execute: %dms%n", (System.currentTimeMillis() - now));
 
 

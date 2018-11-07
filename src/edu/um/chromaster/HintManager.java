@@ -19,13 +19,13 @@ public class HintManager {
         return graph.getNode(graph.getEdges().entrySet().stream().max(Comparator.comparingInt(o -> (int) o.getValue().stream().filter(e -> e.getTo().getValue() != -1).count())).get().getKey());
     }
 
-    public static List<List<Node>> cliqueDetector(Graph graph) {
+    public static List<Node> cliqueDetector9000(Graph graph) {
         List<List<Node>> cliques = new LinkedList<>();
-        bronKerbosch(graph, cliques, new ArrayList<>(), new ArrayList<>(graph.getNodes().values()), new ArrayList<>());
-        return cliques;
+        cliqueDetector9000(graph, cliques, new ArrayList<>(), new ArrayList<>(graph.getNodes().values()), new ArrayList<>());
+        return cliques.stream().max(Comparator.comparingInt(List::size)).get();
     }
 
-    private static List<List<Node>> bronKerbosch(Graph graph, List<List<Node>> cliques, List<Node> _R, List<Node> _P, List<Node> _X) {
+    private static List<List<Node>> cliqueDetector9000(Graph graph, List<List<Node>> cliques, List<Node> _R, List<Node> _P, List<Node> _X) {
         if (_P.isEmpty() && _X.isEmpty()) {
             cliques.add(_R);
         }
@@ -44,7 +44,7 @@ public class HintManager {
             java.util.List<Node> dP = _P.stream().filter(neighbours::contains).collect(Collectors.toList());
             java.util.List<Node> dX = _X.stream().filter(neighbours::contains).collect(Collectors.toList());
 
-            bronKerbosch(graph, cliques, dR, dP, dX);
+            cliqueDetector9000(graph, cliques, dR, dP, dX);
 
             //---
             nodeIterator.remove();
