@@ -27,59 +27,7 @@ public class GraphDrawer {
         });
     }
 
-    public static void fruchtermanReingoldNext(Graph graph, double width, double height) {
-
-        final double area = width * height;
-        final double k = Math.sqrt(area / graph.getNodes().size());
-        final int iterations = 0;
-        double t_x = (width / 10D);
-        double t_y = (height / 10D);
-
-
-        for(int i = 0; i < iterations; i++) {
-
-            //--- Repulsive Forces
-            graph.getNodes().values().forEach(v -> {
-                Node.Meta vMeta = v.getMeta();
-                vMeta.displacementX = vMeta.displacementY = 0;
-                graph.getNodes().values().forEach(u -> {
-                    Node.Meta uMeta = u.getMeta();
-                    if(u != v) {
-                        double distance = Math.sqrt(Math.pow(vMeta.positionX - uMeta.positionX, 2) + Math.pow(vMeta.positionY - uMeta.positionY, 2));
-                        vMeta.displacementX += repulsiveForce(k, Math.abs(distance));
-                        vMeta.displacementY += repulsiveForce(k, Math.abs(distance));
-                    }
-                });
-            });
-
-            //--- Calculate Attractive Forces
-            graph.getEdges().values().forEach(edgeList -> {
-                edgeList.forEach(edge -> {
-                    Node.Meta vMeta = edge.getFrom().getMeta();
-                    Node.Meta uMeta = edge.getTo().getMeta();
-                    double distance = Math.sqrt(Math.pow(vMeta.positionX - uMeta.positionX, 2) + Math.pow(vMeta.positionY - uMeta.positionY, 2));
-                    vMeta.displacementX -= attractiveForce(k, Math.abs(distance));
-                    vMeta.displacementY -= attractiveForce(k, Math.abs(distance));
-                    uMeta.displacementX += attractiveForce(k, Math.abs(distance));
-                    uMeta.displacementY += attractiveForce(k, Math.abs(distance));
-                });
-            });
-
-            double finalT_x = t_x;
-            double finalT_y = t_y;
-            double finalWidth = width;
-            double finalHeight = height;
-            graph.getNodes().values().forEach(node -> {
-                Node.Meta meta = node.getMeta();
-                meta.positionX += (meta.displacementX / Math.abs(meta.displacementX)) * Math.min(meta.displacementX, finalT_x);
-                meta.positionY += (meta.displacementY / Math.abs(meta.displacementY)) * Math.min(meta.displacementY, finalT_y);
-
-                //meta.positionX = Math.min(finalWidth / 2, Math.max(-finalWidth /2, meta.positionX));
-                //meta.positionY = Math.min(finalHeight / 2, Math.max(-finalHeight /2, meta.positionY));
-            });
-
-        }
-
+    public static void scale(Graph graph, double width, double height) {
         graph.getNodes().forEach((id, node) -> {
             Node.Meta m = node.getMeta();
             if(m.positionX * 1.2 > -width / 2 && m.positionX * 1.2 < width/2) {
@@ -94,7 +42,6 @@ public class GraphDrawer {
             m.positionX += width/2;
             m.positionY += height/2;
         });
-
     }
 
     public static void banana(Graph graph, double width, double height) {

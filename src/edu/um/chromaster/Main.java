@@ -99,9 +99,9 @@ public class Main {
 
         }
         long now = System.currentTimeMillis();
-        //System.out.println(ChromaticNumber.compute(ChromaticNumber.Type.UPPER, graph, false));
-        //System.out.println(ChromaticNumber.compute(ChromaticNumber.Type.LOWER, graph, true));
-        //ChromaticNumber.compute(ChromaticNumber.Type.EXACT, graph, false);
+        //System.out.println(ChromaticNumber.compute(ChromaticNumber.RenderType.UPPER, graph, false));
+        //System.out.println(ChromaticNumber.compute(ChromaticNumber.RenderType.LOWER, graph, true));
+        //ChromaticNumber.compute(ChromaticNumber.RenderType.EXACT, graph, false);
         System.out.printf("Time to execute: %dms%n", (System.currentTimeMillis() - now));
 
 
