@@ -37,26 +37,14 @@ public class Game extends Application {
             }
         }
 
-        GraphElement graphElement  = new GraphElement(graph, GraphElement.RenderType.SCALE, GraphElement.BackgroundType.COLOUR);
+        GraphElement graphElement  = new GraphElement(graph, GraphElement.RenderType.CIRCLE, GraphElement.BackgroundType.COLOUR);
 
         graph.getNodes().forEach((id, node) -> {
             node.getMeta().x((random.nextDouble() * graphElement.getWidth()) - graphElement.getWidth() / 2);
             node.getMeta().y((random.nextDouble() * graphElement.getHeight()) - graphElement.getHeight() / 2);
         });
 
-        graphElement.render();
-
-        List<List<Node>> cliques = new ArrayList<>();
-        cliques.add(HintManager.cliqueDetector9000(graph));
-        graphElement.computeHighlighting((node) -> {
-            for(List<Node> l : cliques) {
-                if(l.contains(node)) {
-                    return true;
-                }
-            }
-            return false;
-        }, (meta) -> meta.colour = Color.YELLOW);
-
+        graphElement.displayHints(GraphElement.HintType.HIGHES_DEGREE);
         graphElement.render();
 
         stackPane.getChildren().add(graphElement);

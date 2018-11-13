@@ -1,12 +1,15 @@
 package edu.um.chromaster.gui;
 
 import edu.um.chromaster.GraphDrawer;
+import edu.um.chromaster.HintManager;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -27,10 +30,6 @@ public class GraphElement extends Canvas {
         this.setHeight(1024);
     }
 
-    public void computeHighlighting(Predicate<Node> filter, Callback<Node.Meta> modify) {
-        this.graph.getNodes().values().forEach(e -> e.getMeta().colour = Color.BLACK);
-        this.graph.getNodes().values().stream().filter(filter).forEach(e -> modify.modify(e.getMeta()));
-    }
 
     public void render() {
 
@@ -109,6 +108,44 @@ public class GraphElement extends Canvas {
             } break;
             default: throw new IllegalArgumentException();
         }
+    }
+
+    public void displayHints(HintType... hintTypes) {
+        this.graph.getNodes().values().forEach(e -> e.getMeta().colour = Color.BLACK);
+        for(HintType hintType : hintTypes) {
+            switch (hintType) {
+                case CLIQUE: {
+                    List<List<Node>> cliques = new ArrayList<>();
+                    cliques.add(HintManager.cliqueDetector9000(graph));
+                    this.computeHighlighting((node) -> {
+                        for(List<Node> l : cliques) {
+                            if(l.contains(node)) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    }, (meta) -> meta.colour = Color.YELLOW);
+                } break;
+                case HIGHES_DEGREE: {
+                    Node node = HintManager.highestDegree(graph);
+                    node.getMeta().colour = Color.PINK;
+                } break;
+                case MAX_NEIGHBOURS:
+                    Node node = HintManager.maxNeighboursColoured(graph);
+                    this.computeHighlighting(e -> e == node, (meta) -> meta.colour = Color.BISQUE);
+                    break;
+            }
+        }
+    }
+
+    private void computeHighlighting(Predicate<Node> filter, Callback<Node.Meta> modify) {
+        this.graph.getNodes().values().stream().filter(filter).forEach(e -> modify.modify(e.getMeta()));
+    }
+
+    public static enum HintType {
+        CLIQUE,
+        HIGHES_DEGREE,
+        MAX_NEIGHBOURS
     }
 
     public static enum BackgroundType {
