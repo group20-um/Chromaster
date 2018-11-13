@@ -33,7 +33,23 @@ public class Node {
         public Color colour = Color.rgb(255, 0, 0);
         public boolean visible = false;
         public double displacementX, displacementY;
-        public double positionX, positionY;
+        private double positionX, positionY;
+
+        public double x() {
+            return this.positionX;
+        }
+
+        public double y() {
+            return this.positionY;
+        }
+
+        public void x(double x) {
+            this.positionX = x;
+        }
+
+        public void y(double y) {
+            this.positionY = y;
+        }
     }
 
     public static class Edge {

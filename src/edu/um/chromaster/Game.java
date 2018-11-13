@@ -27,7 +27,7 @@ public class Game extends Application {
         Graph graph = new Graph();
         final int nodes = 20;
         IntStream.range(0, nodes).forEach(i -> graph.addNode(i, -1));
-        Random random = new Random();
+        Random random = new Random(1L);
 
         for(int from = 0; from < nodes; from++) {
             for(int to = 0; to < nodes; to++) {
@@ -37,16 +37,15 @@ public class Game extends Application {
             }
         }
 
-        GraphElement graphElement  = new GraphElement(graph, GraphElement.RenderType.SHELL, GraphElement.BackgroundType.COLOUR);
+        GraphElement graphElement  = new GraphElement(graph, GraphElement.RenderType.SCALE, GraphElement.BackgroundType.COLOUR);
 
         graph.getNodes().forEach((id, node) -> {
-            node.getMeta().positionX = (random.nextDouble() * graphElement.getWidth()) - graphElement.getWidth() / 2;
-            node.getMeta().positionY = (random.nextDouble() * graphElement.getHeight() ) - graphElement.getHeight() / 2;
+            node.getMeta().x((random.nextDouble() * graphElement.getWidth()) - graphElement.getWidth() / 2);
+            node.getMeta().y((random.nextDouble() * graphElement.getHeight()) - graphElement.getHeight() / 2);
         });
 
         graphElement.render();
 
-        System.out.println("A");
         List<List<Node>> cliques = new ArrayList<>();
         cliques.add(HintManager.cliqueDetector9000(graph));
         graphElement.computeHighlighting((node) -> {
@@ -58,7 +57,6 @@ public class Game extends Application {
             return false;
         }, (meta) -> meta.colour = Color.YELLOW);
 
-        System.out.println("B");
         graphElement.render();
 
         stackPane.getChildren().add(graphElement);

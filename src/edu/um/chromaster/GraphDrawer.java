@@ -14,34 +14,44 @@ public class GraphDrawer {
     public static void circle(Graph graph,double width, double height){
         double angle = 2*Math.PI/graph.getNodes().size();
         graph.getNodes().forEach((id, node) -> {
-            node.getMeta().positionX = width/2 + ((width-200)/2)*Math.cos(id*angle);
-            node.getMeta().positionY = height/2 + ((height-100)/2)*Math.sin(id*angle);
+            node.getMeta().x(width/2 + ((width-200)/2)*Math.cos(id*angle));
+            node.getMeta().y(height/2 + ((height-100)/2)*Math.sin(id*angle));
         });
     }
 
     public static void shell(Graph graph,double width, double height){
         double angle = 2*Math.PI/graph.getNodes().size();
         graph.getNodes().forEach((id, node) -> {
-            node.getMeta().positionX = width/2 + (((width-200)/2) - ((width-200)/2) * id/graph.getNodes().size())*Math.cos(id*angle);
-            node.getMeta().positionY = height/2 + (((height-100)/2) - ((height-200)/2) * id/graph.getNodes().size())*Math.sin(id*angle);
+            node.getMeta().x(width/2 + (((width-200)/2) - ((width-200)/2) * id/graph.getNodes().size())*Math.cos(id*angle));
+            node.getMeta().y(height/2 + (((height-100)/2) - ((height-200)/2) * id/graph.getNodes().size())*Math.sin(id*angle));
         });
     }
 
     public static void scale(Graph graph, double width, double height) {
-        graph.getNodes().forEach((id, node) -> {
-            Node.Meta m = node.getMeta();
-            if(m.positionX * 1.2 > -width / 2 && m.positionX * 1.2 < width/2) {
-                if(m.positionY * 1.2 > -height / 2 && m.positionY * 1.2 < height/2) {
-                    m.positionX *= 1.2;
-                    m.positionY *= 1.2;
+        boolean change = true;
+        while (change) {
+            for (Node node : graph.getNodes().values()) {
+                Node.Meta m = node.getMeta();
+                m.x(m.x() * 0.8D);
+                m.y(m.y() * 0.8D);
+
+                if (!(m.x() > -width / 2 && m.x() < width / 2 && m.y() > -height / 2 && m.y() < height / 2)) {
+                    change = true;
+                } else {
+                    change = false;
                 }
-            } else {
-                m.positionX *= 0.8;
-                m.positionY *= 0.8;
             }
-            m.positionX += width/2;
-            m.positionY += height/2;
-        });
+        }
+
+        /*{
+            if (m.x() * 1.2D > -width / 2D && m.x() * 1.2D < width / 2D) {
+                if (m.y() * 1.2 > -height / 2 && m.y() * 1.2 < height / 2) {
+                    m.x(m.x() * 1.2D);
+                    m.y(m.y() * 1.2D);
+                }
+            }
+        }*/
+
     }
 
     public static void banana(Graph graph, double width, double height) {
@@ -60,8 +70,8 @@ public class GraphDrawer {
                 for (Node b : graph.getNodes().values()) {
                     if(a != b) {
                         Node.Meta bMeta = b.getMeta();
-                        double xDistance = aMeta.positionX - bMeta.positionX;
-                        double yDistance = aMeta.positionY - bMeta.positionY;
+                        double xDistance = aMeta.x() - bMeta.x();
+                        double yDistance = aMeta.y() - bMeta.y();
                         double distance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
 
                         if(distance > 0) {
@@ -78,8 +88,8 @@ public class GraphDrawer {
                     Node.Meta aMeta = edge.getFrom().getMeta();
                     Node.Meta bMeta = edge.getTo().getMeta();
 
-                    double xDistance = aMeta.positionX - bMeta.positionX;
-                    double yDistance = aMeta.positionY - bMeta.positionY;
+                    double xDistance = aMeta.x() - bMeta.x();
+                    double yDistance = aMeta.y() - bMeta.y();
                     double distance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
 
                     if(distance > 0) {
@@ -94,10 +104,10 @@ public class GraphDrawer {
 
             graph.getNodes().forEach((id, node) -> {
                 Node.Meta meta = node.getMeta();
-                double distance = Math.sqrt(Math.pow(meta.positionX, 2) + Math.pow(meta.positionY, 2));
+                double distance = Math.sqrt(Math.pow(meta.x(), 2) + Math.pow(meta.y(), 2));
                 double gravityForce = 0.01F * k * gravity * distance;
-                meta.displacementX = gravityForce * meta.positionX / distance;
-                meta.displacementY = gravityForce * meta.positionY / distance;
+                meta.displacementX = gravityForce * meta.x() / distance;
+                meta.displacementY = gravityForce * meta.y() / distance;
             });
 
             graph.getNodes().forEach((id, node) -> {
@@ -108,14 +118,14 @@ public class GraphDrawer {
 
             graph.getNodes().forEach((id, node) -> {
                 Node.Meta meta = node.getMeta();
-                double xDistance = meta.positionX;
-                double yDistance = meta.positionY;
-                double distance = Math.sqrt(Math.pow(meta.positionX, 2) + Math.pow(meta.positionY, 2));
+                double xDistance = meta.x();
+                double yDistance = meta.y();
+                double distance = Math.sqrt(Math.pow(meta.x(), 2) + Math.pow(meta.y(), 2));
 
                 if(distance > 0) {
                     double limitedDistance = Math.min(maxDisplacement * (speed / speed_divisior), distance);
-                    meta.positionX += xDistance / distance * limitedDistance;
-                    meta.positionY += yDistance / distance * limitedDistance;
+                    meta.x(meta.x() + xDistance / distance * limitedDistance);
+                    meta.y(meta.y() + yDistance / distance * limitedDistance);
                 }
             });
         }

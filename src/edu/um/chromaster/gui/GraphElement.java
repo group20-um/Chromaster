@@ -1,15 +1,12 @@
 package edu.um.chromaster.gui;
 
 import edu.um.chromaster.GraphDrawer;
-import edu.um.chromaster.HintManager;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -41,6 +38,7 @@ public class GraphElement extends Canvas {
             case CIRCLE: GraphDrawer.circle(graph, this.getWidth(), this.getHeight()); break;
             case SHELL: GraphDrawer.shell(graph, this.getWidth(), this.getHeight());  break;
             case SCALE: GraphDrawer.scale(graph, this.getWidth(), this.getHeight()); break;
+            case BANANA: GraphDrawer.banana(graph, this.getWidth(), this.getHeight()); break;
             default: throw new IllegalArgumentException();
         }
 
@@ -78,10 +76,10 @@ public class GraphElement extends Canvas {
                 if(edge.getTo().getMeta().visible && edge.getFrom().getMeta().visible) {
                     this.getGraphicsContext2D().setStroke(Color.WHITE);
                     this.getGraphicsContext2D().strokeLine(
-                            edge.getFrom().getMeta().positionX,
-                            edge.getFrom().getMeta().positionY,
-                            edge.getTo().getMeta().positionX,
-                            edge.getTo().getMeta().positionY
+                            edge.getFrom().getMeta().x(),
+                            edge.getFrom().getMeta().y(),
+                            edge.getTo().getMeta().x(),
+                            edge.getTo().getMeta().y()
                     );
                 }
             });
@@ -90,9 +88,9 @@ public class GraphElement extends Canvas {
         graph.getNodes().forEach((id, node) -> {
             if(node.getMeta().visible) {
                 this.getGraphicsContext2D().setFill(node.getMeta().colour);
-                this.getGraphicsContext2D().fillOval(node.getMeta().positionX - 5, node.getMeta().positionY - 5, 10, 10);
+                this.getGraphicsContext2D().fillOval(node.getMeta().x() - 5, node.getMeta().y() - 5, 10, 10);
                 this.getGraphicsContext2D().setFill(Color.WHITE);
-                this.getGraphicsContext2D().fillOval(node.getMeta().positionX - 3, node.getMeta().positionY - 3, 6, 6);
+                this.getGraphicsContext2D().fillOval(node.getMeta().x() - 3, node.getMeta().y() - 3, 6, 6);
             }
         });
 
@@ -121,7 +119,8 @@ public class GraphElement extends Canvas {
     public static enum RenderType {
         CIRCLE,
         SHELL,
-        SCALE
+        SCALE,
+        BANANA
     }
 
     public static interface Callback<T> {
