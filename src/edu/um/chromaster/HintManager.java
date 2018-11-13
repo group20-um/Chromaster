@@ -3,7 +3,9 @@ package edu.um.chromaster;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class HintManager {
@@ -23,6 +25,11 @@ public class HintManager {
         List<List<Node>> cliques = new LinkedList<>();
         cliqueDetector9000(graph, cliques, new ArrayList<>(), new ArrayList<>(graph.getNodes().values()), new ArrayList<>());
         return cliques.stream().max(Comparator.comparingInt(List::size)).get();
+    }
+
+    public static List<Integer> neighbourColors(Graph graph,Node node){
+        List<Integer> tmp = new ArrayList<Integer>();
+        graph.getEdges().get(node.getId()).stream().forEach(edge -> tmp.add(edge.getTo().getValue()));
     }
 
     private static List<List<Node>> cliqueDetector9000(Graph graph, List<List<Node>> cliques, List<Node> _R, List<Node> _P, List<Node> _X) {
