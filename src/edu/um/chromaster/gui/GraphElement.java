@@ -71,9 +71,7 @@ public class GraphElement extends Canvas {
     }
 
     private void draw(Graph graph) {
-        //this.drawBackground();
-
-        System.out.println(graph.getNodes().size());
+        this.drawBackground();
 
         graph.getEdges().values().forEach(edgeList -> {
             edgeList.forEach(edge -> {
@@ -110,7 +108,7 @@ public class GraphElement extends Canvas {
             case COLOUR: {
                 this.getGraphicsContext2D().setFill(Color.DARKBLUE);
                 this.getGraphicsContext2D().fillRect(0, 0, this.getWidth(), this.getHeight());
-            }
+            } break;
             default: throw new IllegalArgumentException();
         }
     }
