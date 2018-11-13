@@ -39,6 +39,8 @@ public class GraphElement extends Canvas {
             case SHELL: GraphDrawer.shell(graph, this.getWidth(), this.getHeight());  break;
             case SCALE: GraphDrawer.scale(graph, this.getWidth(), this.getHeight()); break;
             case BANANA: GraphDrawer.banana(graph, this.getWidth(), this.getHeight()); break;
+            case LIMACON: GraphDrawer.limacon(graph, this.getWidth(), this.getHeight()); break;
+            case SPIRAL: GraphDrawer.archemedianSprial(graph, this.getWidth(), this.getHeight()); break;
             default: throw new IllegalArgumentException();
         }
 
@@ -120,7 +122,10 @@ public class GraphElement extends Canvas {
         CIRCLE,
         SHELL,
         SCALE,
-        BANANA
+        BANANA,
+        SPIRAL,
+        ROSE,
+        LIMACON
     }
 
     public static interface Callback<T> {

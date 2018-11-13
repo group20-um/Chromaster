@@ -37,7 +37,7 @@ public class Game extends Application {
             }
         }
 
-        GraphElement graphElement  = new GraphElement(graph, GraphElement.RenderType.SCALE, GraphElement.BackgroundType.COLOUR);
+        GraphElement graphElement  = new GraphElement(graph, GraphElement.RenderType.SPIRAL, GraphElement.BackgroundType.COLOUR);
 
         graph.getNodes().forEach((id, node) -> {
             node.getMeta().x((random.nextDouble() * graphElement.getWidth()) - graphElement.getWidth() / 2);
