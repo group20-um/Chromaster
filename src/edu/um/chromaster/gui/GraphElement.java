@@ -5,8 +5,10 @@ import edu.um.chromaster.HintManager;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 public class GraphElement extends Canvas {
+
+    private final double NODE_RADIUS = 15;
 
     private final Graph graph;
     private RenderType renderType;
@@ -40,6 +44,7 @@ public class GraphElement extends Canvas {
             case BANANA: GraphDrawer.banana(graph, this.getWidth(), this.getHeight()); break;
             case LIMACON: GraphDrawer.limacon(graph, this.getWidth(), this.getHeight()); break;
             case SPIRAL: GraphDrawer.archemedianSprial(graph, this.getWidth(), this.getHeight()); break;
+            case ROSE: GraphDrawer.rose(graph, this.getWidth(), this.getHeight()); break;
             default: throw new IllegalArgumentException();
         }
 
@@ -63,13 +68,13 @@ public class GraphElement extends Canvas {
                         if (t) break;
                     }
                 }
-                draw(graph);
+                draw();
             }
         }, 100L, 100L, TimeUnit.MILLISECONDS);
 
     }
 
-    private void draw(Graph graph) {
+    public void draw() {
         this.drawBackground();
 
         graph.getEdges().values().forEach(edgeList -> {
@@ -88,10 +93,18 @@ public class GraphElement extends Canvas {
 
         graph.getNodes().forEach((id, node) -> {
             if(node.getMeta().visible) {
-                this.getGraphicsContext2D().setFill(node.getMeta().colour);
-                this.getGraphicsContext2D().fillOval(node.getMeta().x() - 5, node.getMeta().y() - 5, 10, 10);
-                this.getGraphicsContext2D().setFill(Color.WHITE);
-                this.getGraphicsContext2D().fillOval(node.getMeta().x() - 3, node.getMeta().y() - 3, 6, 6);
+                GraphicsContext g = this.getGraphicsContext2D();
+
+                // TODO not the ideal position to update, should be moved to the Meta struct to avoid inconsistent data
+                // if the draw method is not called after updating the coordinates of a node
+                node.getMeta().area(new Circle(node.getMeta().x(), node.getMeta().y(), NODE_RADIUS));
+
+                g.setFill(node.getMeta().colour);
+                g.fillOval(node.getMeta().x() - NODE_RADIUS, node.getMeta().y() - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
+                g.setFill(Color.WHITE);
+                g.fillOval(node.getMeta().x() - (int)(NODE_RADIUS * 0.6), node.getMeta().y() - (int)(NODE_RADIUS * 0.6), (int)(NODE_RADIUS * 0.6)*2, (int)(NODE_RADIUS * 0.6)*2);
+                g.setStroke(Color.BLACK);
+                g.strokeText(node.getMeta().text(), node.getMeta().x(), node.getMeta().y(), NODE_RADIUS * 2);
             }
         });
 
@@ -113,7 +126,7 @@ public class GraphElement extends Canvas {
     }
 
     public void displayHints(HintType... hintTypes) {
-        this.graph.getNodes().values().forEach(e -> e.getMeta().colour = Color.BLACK);
+        this.graph.getNodes().values().forEach(e -> e.getMeta().colour = Node.Meta.defaultColour);
         for(HintType hintType : hintTypes) {
             switch (hintType) {
                 case CLIQUE: {
@@ -134,7 +147,7 @@ public class GraphElement extends Canvas {
                 } break;
                 case MAX_NEIGHBOURS:
                     Node node = HintManager.maxNeighboursColoured(graph);
-                    this.computeHighlighting(e -> e == node, (meta) -> meta.colour = Color.BISQUE);
+                    this.computeHighlighting(e -> e == node, (meta) -> meta.colour = Color.GREEN);
                     break;
             }
         }
@@ -161,11 +174,11 @@ public class GraphElement extends Canvas {
         SCALE,
         BANANA,
         SPIRAL,
-      //  ROSE,
+        ROSE,
         LIMACON
     }
 
-    public static interface Callback<T> {
+    public interface Callback<T> {
         void modify(T param);
     }
 }

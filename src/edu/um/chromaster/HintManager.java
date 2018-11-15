@@ -10,15 +10,15 @@ import java.util.stream.Collectors;
 
 public class HintManager {
 
-    private HintManager() {
-    }
+    private HintManager() {}
 
     public static Node highestDegree(Graph graph) {
         return graph.getNode(graph.getEdges().entrySet().stream().max(Comparator.comparingInt(o -> o.getValue().size())).get().getKey());
     }
 
     public static Node maxNeighboursColoured(Graph graph) {
-        return graph.getNode(graph.getEdges().entrySet().stream().max(Comparator.comparingInt(o -> (int) o.getValue().stream().filter(e -> e.getTo().getValue() != -1).count())).get().getKey());
+        return graph.getNode(graph.getEdges().entrySet().stream()
+                .max(Comparator.comparingInt(o -> (int) o.getValue().stream().filter(e -> e.getTo().getValue() != -1).count())).get().getKey());
     }
 
     public static List<Node> cliqueDetector9000(Graph graph) {
@@ -30,6 +30,7 @@ public class HintManager {
     public static List<Integer> neighbourColors(Graph graph,Node node){
         List<Integer> tmp = new ArrayList<Integer>();
         graph.getEdges().get(node.getId()).stream().forEach(edge -> tmp.add(edge.getTo().getValue()));
+        return tmp;
     }
 
     private static List<List<Node>> cliqueDetector9000(Graph graph, List<List<Node>> cliques, List<Node> _R, List<Node> _P, List<Node> _X) {
