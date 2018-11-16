@@ -4,6 +4,7 @@ import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 import edu.um.chromaster.gui.GraphElement;
 import javafx.application.Application;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -37,7 +38,7 @@ public class Game extends Application {
             }
         }
 
-        GraphElement graphElement  = new GraphElement(graph, GraphElement.RenderType.SPIRAL, GraphElement.BackgroundType.COLOUR);
+        GraphElement graphElement = new GraphElement(graph, GraphElement.RenderType.SPIRAL, GraphElement.BackgroundType.COLOUR);
 
         graph.getNodes().forEach((id, node) -> {
             node.getMeta().x((random.nextDouble() * graphElement.getWidth()) - graphElement.getWidth() / 2);
@@ -63,4 +64,5 @@ public class Game extends Application {
         primaryStage.setScene(new Scene(stackPane));
         primaryStage.show();
     }
+
 }

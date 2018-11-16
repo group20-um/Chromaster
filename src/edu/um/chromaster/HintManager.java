@@ -30,6 +30,7 @@ public class HintManager {
     public static List<Integer> neighbourColors(Graph graph,Node node){
         List<Integer> tmp = new ArrayList<Integer>();
         graph.getEdges().get(node.getId()).stream().forEach(edge -> tmp.add(edge.getTo().getValue()));
+        return tmp;
     }
 
     private static List<List<Node>> cliqueDetector9000(Graph graph, List<List<Node>> cliques, List<Node> _R, List<Node> _P, List<Node> _X) {
