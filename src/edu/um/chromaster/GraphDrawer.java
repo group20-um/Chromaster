@@ -37,22 +37,22 @@ public class GraphDrawer {
 
     public static void limacon(Graph graph,double width, double height){
         double angle = 2*Math.PI/graph.getNodes().size();
-        double r = 200;
+        double r = width;
         graph.getNodes().forEach((id, node) -> {
             node.getMeta().x(width/2 + r*Math.sin(5*angle)*Math.cos(id*angle));
             node.getMeta().y(height/2 + r*Math.sin(5*angle)*Math.sin(id*angle));
         });
     }
 
-    /*public static void rose(Graph graph,double width, double height){
+    public static void rose(Graph graph,double width, double height){
         double angle = 2*Math.PI/graph.getNodes().size();
         double a = 200;
         int k = 2;
         graph.getNodes().forEach((id, node) -> {
-            node.getMeta().x = width/2 + a * Math.cos(k*angle) * Math.cos(angle);
-            node.getMeta().y = height/2 + a * Math.cos(k*angle) * Math.sin(angle);
+            node.getMeta().x(width/2 + a * Math.cos(k*angle) * Math.cos(angle));
+            node.getMeta().y(height/2 + a * Math.cos(k*angle) * Math.sin(angle));
         });
-    }*/
+    }
 
     public static void scale(Graph graph, double width, double height) {
         boolean change = true;

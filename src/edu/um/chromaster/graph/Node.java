@@ -1,15 +1,17 @@
 package edu.um.chromaster.graph;
 
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
 public class Node {
 
     private final int id;
-    private final Meta meta = new Meta();
+    private final Meta meta;
     private int value;
 
     public Node(int id, int value) {
         this.id = id;
+        this.meta = new Meta(String.valueOf(id));
         this.value = value;
     }
 
@@ -30,10 +32,37 @@ public class Node {
     }
 
     public static class Meta {
-        public Color colour = Color.rgb(255, 0, 0);
+
+        public final static Color defaultColour = Color.rgb(0, 0, 0);
+        public Color colour = defaultColour;
+
+
+        private Circle area;
+        private String text;
+
         public boolean visible = false;
         public double displacementX, displacementY;
         private double positionX, positionY;
+
+        public Meta(String text) {
+            this.text = text;
+        }
+
+        public String text() {
+            return this.text;
+        }
+
+        public void text(String text) {
+            this.text = text;
+        }
+
+        public Circle area() {
+            return this.area;
+        }
+
+        public void area(Circle area) {
+            this.area = area;
+        }
 
         public double x() {
             return this.positionX;

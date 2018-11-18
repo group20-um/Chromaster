@@ -4,92 +4,15 @@ import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ChromaticNumber {
 
     public static Graph graph;
-
-    //--- HIGHLY EXPERIMENTAL - Please ignore this piece of this code as it is frankly just a rough plan to distribute
-    // the exact-test over several threads.
-    private static Map<Integer, Thread> threads = new HashMap<>();
-    private static Map<Integer, Boolean> results = new ConcurrentHashMap<>();
-    public static int exactTestAync(Graph graph) {
-        graph.reset();
-
-        //---
-        int upper = upperBound(graph);
-        int lower = limitedTimeLowerBound(graph);
-
-        //--- happens when we are using the very fast lower limit method
-        if(lower > upper) {
-            lower = 1;
-        }
-        System.out.printf("<Exact Test> Range: [%d..%d]%n", lower, upper);
-
-        if(lower == upper) {
-            return lower;
-        }
-
-        for(int i = lower; i < upper; i++) {
-            int finalI = i;
-            Thread thread = new Thread(() -> {
-                System.out.println("Starting testing on " + finalI);
-                Graph g = graph.clone();
-                g.reset();
-                boolean result = exact(g, finalI);
-                updateThreadsMap(threads, result, finalI);
-                results.put(finalI, result);
-            });
-            thread.start();
-            threads.put(i, thread);
-        }
-
-        while (threads.size() > 1) {
-            try {
-                Thread.sleep(100L);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        for(Map.Entry<Integer, Boolean> entry : results.entrySet()) {
-            System.out.println("Result: " + entry.getKey() + " -> " + entry.getValue());
-        }
-
-        //System.out.println("<Exact Test> Exact: " + exact);
-        return -1;
-    }
-
-    private synchronized static void updateThreadsMap(Map<Integer, Thread> map, boolean found, int colours) {
-        if(found) {
-            Iterator<Map.Entry<Integer, Thread>> iterator = map.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<Integer, Thread> entry = iterator.next();
-
-                if(entry.getKey() > colours) {
-                    System.out.println("True " + entry.getKey());
-                    iterator.remove();
-                }
-            }
-        } else {
-            synchronized (map) {
-                Iterator<Map.Entry<Integer, Thread>> iterator = map.entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<Integer, Thread> entry = iterator.next();
-
-                    if (entry.getKey() < colours) {
-                        System.out.println("False " + entry.getKey());
-                        entry.getValue().stop();
-                        iterator.remove();
-                    }
-                }
-                System.out.println("Threads LEFT: " + map.size());
-            }
-        }
-    }
+    private static ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(2);
 
     //---
     private final static long TIME_LIMIT_EXACT = TimeUnit.SECONDS.toNanos(60);
@@ -100,6 +23,10 @@ public class ChromaticNumber {
         UPPER,
         LOWER,
         EXACT
+    }
+
+    public static void computeAsync(Type type, Graph graph, Consumer<Integer> consumer) {
+        CompletableFuture.supplyAsync(() -> compute(type, graph, false), schedule).thenAccept(consumer);
     }
 
     public static int compute(Type type, Graph graph, boolean runTimeBound) {
