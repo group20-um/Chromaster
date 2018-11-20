@@ -66,6 +66,7 @@ public class GraphElement extends Canvas {
                             if (!e.getTo().getMeta().visible) {
                                 t = true;
                                 e.getTo().getMeta().visible = true;
+                                nodes.remove(e.getTo());
                                 draw.set(draw.get() + 1);
                                 break;
                             }
@@ -80,6 +81,7 @@ public class GraphElement extends Canvas {
                     Node tmp = nodes.pop();
                     tmp.getMeta().visible = true;
                 }
+
                 Platform.runLater(this::draw);
             }
         }, 100L, 200L, TimeUnit.MILLISECONDS);
