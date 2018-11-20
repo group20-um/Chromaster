@@ -11,12 +11,13 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Stack;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -75,33 +76,40 @@ public class GraphElement extends Canvas {
 
 
         schedule.scheduleAtFixedRate(() -> {
-            if(graph.getNodes().values().stream().anyMatch(e -> !e.getMeta().visible)) {
+            if(graph.getNodes().values().stream().anyMatch(e -> !e.getMeta().visible())) {
 
                 // Take the node with the highest degree that is still on the stack
                 Node node = nodes.peek();
 
-                if(node.getMeta().visible) {
-                    Optional<Node.Edge> edge = graph.getEdges(node.getId()).stream().filter(e -> !e.getTo().getMeta().visible).findAny();
+                if(node.getMeta().visible()) {
+                    List<Node.Edge> edges = graph.getEdges(node.getId()).stream().filter(e -> !e.getTo().getMeta().visible()).collect(Collectors.toList());
                     // If the parent node (from the stack) is visible and has a neighbour that is not yet visible then make it visible.
-                    if(edge.isPresent()) {
-                        edge.get().getTo().getMeta().visible = true;
+                    if(!edges.isEmpty()) {
+                        Node.Edge edge = edges.get(0);
+                        edge.getTo().getMeta().visible(true);
+                        edges.remove(edge);
+                        edges.forEach(e -> {
+                            nodes.remove(e.getTo());
+                            nodes.push(e.getTo());
+                        });
                     }
                     // If all the neighbours of the parent node are already visible then remove it from the stack and turn
                     // the next node visible to ensure that every step draws exactly one node
                     else {
-                        nodes.remove(node);
+                        nodes.pop();
                         if(!nodes.isEmpty()) {
-                            nodes.pop().getMeta().visible = true;
+                            System.out.println("OMGF: " + nodes.peek().getMeta().visible());
+                            nodes.pop().getMeta().visible(true);
                         }
                     }
 
                 } else {
-                    node.getMeta().visible = true;
+                    node.getMeta().visible(true);
                 }
 
                 Platform.runLater(this::draw);
             }
-        }, 100L, 200L, TimeUnit.MILLISECONDS);
+        }, 100L, 1000L, TimeUnit.MILLISECONDS);
 
     }
 
@@ -110,7 +118,7 @@ public class GraphElement extends Canvas {
 
         graph.getEdges().values().forEach(edgeList -> {
             edgeList.forEach(edge -> {
-                if(edge.getTo().getMeta().visible && edge.getFrom().getMeta().visible) {
+                if(edge.getTo().getMeta().visible() && edge.getFrom().getMeta().visible()) {
                     this.getGraphicsContext2D().setStroke(Color.WHITE);
                     this.getGraphicsContext2D().strokeLine(
                             edge.getFrom().getMeta().x(),
@@ -123,7 +131,7 @@ public class GraphElement extends Canvas {
         });
 
         graph.getNodes().forEach((id, node) -> {
-            if(node.getMeta().visible) {
+            if(node.getMeta().visible()) {
                 GraphicsContext g = this.getGraphicsContext2D();
                 Node.Meta m = node.getMeta();
                 g.setFill(Color.WHITE);
@@ -184,18 +192,18 @@ public class GraphElement extends Canvas {
         this.graph.getNodes().values().stream().filter(filter).forEach(e -> modify.modify(e.getMeta()));
     }
 
-    public static enum HintType {
+    public enum HintType {
         CLIQUE,
         HIGHES_DEGREE,
         MAX_NEIGHBOURS
     }
 
-    public static enum BackgroundType {
+    public enum BackgroundType {
         IMAGE,
         COLOUR
     }
 
-    public static enum RenderType {
+    public enum RenderType {
         CIRCLE,
         SHELL,
         SCALE,

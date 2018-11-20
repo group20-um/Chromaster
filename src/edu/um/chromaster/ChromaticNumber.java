@@ -121,6 +121,11 @@ public class ChromaticNumber {
                 upper--;
                 break;
             }
+            // TODO cleanup
+            else if(upper < lower.get()) {
+                upper = lower.get() - 1;
+                break;
+            }
             upper--;
 
         }
