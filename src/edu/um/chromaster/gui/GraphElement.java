@@ -1,7 +1,9 @@
 package edu.um.chromaster.gui;
 
+import edu.um.chromaster.Game;
 import edu.um.chromaster.GraphDrawer;
 import edu.um.chromaster.HintManager;
+import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 import javafx.application.Platform;
@@ -20,7 +22,6 @@ import java.util.stream.Collectors;
 
 public class GraphElement extends Canvas {
 
-    private final double NODE_RADIUS = 10;
 
     private final Graph graph;
     private RenderType renderType;
@@ -34,6 +35,13 @@ public class GraphElement extends Canvas {
         this.backgroundType = backgroundType;
         this.setWidth(1024);
         this.setHeight(1024);
+
+        this.setOnMouseClicked(event -> {
+            Optional<Node> node = graph.getNodes().values().stream()
+                    .filter(e -> e.getMeta().area().contains(event.getSceneX(), event.getSceneY()))
+                    .findAny();
+            node.ifPresent(e -> Game.getEventHandler().trigger(new NodeClickedEvent(e)));
+        });
     }
 
 
@@ -51,35 +59,44 @@ public class GraphElement extends Canvas {
         }
 
 
-        Stack<Node> nodes = graph.getNodes().values().stream().sorted(Comparator.comparingInt(o -> graph.getEdges(o.getId()).size())).collect(Collectors.toCollection(Stack::new));
-        Node start = nodes.pop();
-        start.getMeta().visible = true;
+        // sort all nodes by #connect nodes descending
+        Stack<Node> nodes = graph.getNodes().values().stream()
+                .sorted((o1, o2) -> {
+                    int a = graph.getEdges(o1.getId()).size();
+                    int b = graph.getEdges(o2.getId()).size();
 
-        AtomicInteger draw = new AtomicInteger(0);
+                    if(a == 0 && b == 0) {
+                        return Integer.compare(-o1.getId(), o2.getId());
+                    }
+
+                    return Integer.compare(a, b);
+                })
+                .collect(Collectors.toCollection(Stack::new));
+
+
         schedule.scheduleAtFixedRate(() -> {
             if(graph.getNodes().values().stream().anyMatch(e -> !e.getMeta().visible)) {
-                int x = draw.get();
-                for (Node node : graph.getNodes().values()) {
-                    if (node.getMeta().visible) {
-                        boolean t = false;
-                        for (Node.Edge e : graph.getEdges(node.getId())) {
-                            if (!e.getTo().getMeta().visible) {
-                                t = true;
-                                e.getTo().getMeta().visible = true;
-                                nodes.remove(e.getTo());
-                                draw.set(draw.get() + 1);
-                                break;
-                            }
-                        }
-                        if (t) {
-                            nodes.remove(node);
-                            break;
+
+                // Take the node with the highest degree that is still on the stack
+                Node node = nodes.peek();
+
+                if(node.getMeta().visible) {
+                    Optional<Node.Edge> edge = graph.getEdges(node.getId()).stream().filter(e -> !e.getTo().getMeta().visible).findAny();
+                    // If the parent node (from the stack) is visible and has a neighbour that is not yet visible then make it visible.
+                    if(edge.isPresent()) {
+                        edge.get().getTo().getMeta().visible = true;
+                    }
+                    // If all the neighbours of the parent node are already visible then remove it from the stack and turn
+                    // the next node visible to ensure that every step draws exactly one node
+                    else {
+                        nodes.remove(node);
+                        if(!nodes.isEmpty()) {
+                            nodes.pop().getMeta().visible = true;
                         }
                     }
-                }
-                if(x == draw.get()) {
-                    Node tmp = nodes.pop();
-                    tmp.getMeta().visible = true;
+
+                } else {
+                    node.getMeta().visible = true;
                 }
 
                 Platform.runLater(this::draw);
@@ -108,17 +125,13 @@ public class GraphElement extends Canvas {
         graph.getNodes().forEach((id, node) -> {
             if(node.getMeta().visible) {
                 GraphicsContext g = this.getGraphicsContext2D();
-
-                // TODO not the ideal position to update, should be moved to the Meta struct to avoid inconsistent data
-                // if the draw method is not called after updating the coordinates of a node
-                node.getMeta().area(new Circle(node.getMeta().x(), node.getMeta().y(), NODE_RADIUS));
-
+                Node.Meta m = node.getMeta();
                 g.setFill(Color.WHITE);
-                g.fillOval(node.getMeta().x() - NODE_RADIUS, node.getMeta().y() - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
-                g.setFill(node.getMeta().colour);
-                g.fillOval(node.getMeta().x() - (int)(NODE_RADIUS * 0.6), node.getMeta().y() - (int)(NODE_RADIUS * 0.6), (int)(NODE_RADIUS * 0.6)*2, (int)(NODE_RADIUS * 0.6)*2);
+                g.fillOval(m.x() - m.radius(), m.y() - m.radius(), m.radius() * 2, m.radius() * 2);
+                g.setFill(m.colour);
+                g.fillOval(m.x() - (int)(m.radius() * 0.6), m.y() - (int)(m.radius() * 0.6), (int)(m.radius() * 0.6)*2, (int)(m.radius() * 0.6)*2);
                 g.setStroke(Color.WHITE);
-                g.strokeText(node.getMeta().text(), (node.getMeta().x() - (int)(NODE_RADIUS * 0.6)) + g.getFont().getSize() / 2, (node.getMeta().y() - (int)(NODE_RADIUS * 0.6)) + g.getFont().getSize(), NODE_RADIUS * 2);
+                g.strokeText(m.text(), (m.x() - (int)(m.radius() * 0.6)) + g.getFont().getSize() / 2, (node.getMeta().y() - (int)(m.radius() * 0.6)) + g.getFont().getSize(), m.radius() * 2);
             }
         });
 
