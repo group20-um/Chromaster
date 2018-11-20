@@ -16,8 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -74,42 +78,62 @@ public class GraphElement extends Canvas {
                 })
                 .collect(Collectors.toCollection(Stack::new));
 
+        final long MAX_TIME_TO_DRAW = 10000;
+        final long MAX_TIME_STEP = (MAX_TIME_TO_DRAW / graph.getNodes().size());
 
-        schedule.scheduleAtFixedRate(() -> {
+        Stack<Node> priorityNodes = new Stack<>();
+        AtomicReference<ScheduledFuture<?>> scheduledFuture = new AtomicReference<>();
+        scheduledFuture.set(schedule.scheduleAtFixedRate(() -> {
             if(graph.getNodes().values().stream().anyMatch(e -> !e.getMeta().visible())) {
 
-                // Take the node with the highest degree that is still on the stack
-                Node node = nodes.peek();
+                // If there is nothing to deal with in the priority queue
+                if(priorityNodes.isEmpty()) {
 
-                if(node.getMeta().visible()) {
-                    List<Node.Edge> edges = graph.getEdges(node.getId()).stream().filter(e -> !e.getTo().getMeta().visible()).collect(Collectors.toList());
-                    // If the parent node (from the stack) is visible and has a neighbour that is not yet visible then make it visible.
-                    if(!edges.isEmpty()) {
-                        Node.Edge edge = edges.get(0);
-                        edge.getTo().getMeta().visible(true);
-                        edges.remove(edge);
-                        edges.forEach(e -> {
-                            nodes.remove(e.getTo());
-                            nodes.push(e.getTo());
-                        });
-                    }
-                    // If all the neighbours of the parent node are already visible then remove it from the stack and turn
-                    // the next node visible to ensure that every step draws exactly one node
-                    else {
-                        nodes.pop();
-                        if(!nodes.isEmpty()) {
-                            System.out.println("OMGF: " + nodes.peek().getMeta().visible());
-                            nodes.pop().getMeta().visible(true);
+                    // Take the node with the highest degree that is still on the stack
+                    Node node = nodes.peek();
+
+                    if (node.getMeta().visible()) {
+                        List<Node.Edge> edges = graph.getEdges(node.getId()).stream().filter(e -> !e.getTo().getMeta().visible()).collect(Collectors.toList());
+                        // If the parent node (from the stack) is visible and has a neighbour that is not yet visible then make it visible.
+                        if (!edges.isEmpty()) {
+                            Node.Edge edge = edges.get(0);
+                            Node toNode = edge.getTo();
+                            toNode.getMeta().visible(true);
+
+                            // Add the neighbouring nodes to the priority list, so we deal with them before we move on
+                            // to anything else.
+                            List<Node> priority = edges.stream().map(Node.Edge::getTo).collect(Collectors.toList());
+                            nodes.removeAll(priority);
+                            priority.remove(edge.getTo());
+                            priorityNodes.addAll(priority);
                         }
+                        // If all the neighbours of the parent node are already visible then remove it from the stack and turn
+                        // the next node visible to ensure that every step draws exactly one node
+                        else {
+                            nodes.remove(node);
+                            if (!nodes.isEmpty()) {
+                                nodes.pop().getMeta().visible(true);
+                            }
+                        }
+
+                    }
+                    // If the peek node is not yet visible
+                    else {
+                        node.getMeta().visible(true);
                     }
 
-                } else {
-                    node.getMeta().visible(true);
+                }
+                // Handle priority queue
+                else {
+                    priorityNodes.pop().getMeta().visible(true);
                 }
 
                 Platform.runLater(this::draw);
+
+            } else {
+                scheduledFuture.get().cancel(true);
             }
-        }, 100L, 1000L, TimeUnit.MILLISECONDS);
+        }, 100L, MAX_TIME_STEP, TimeUnit.MILLISECONDS));
 
     }
 
