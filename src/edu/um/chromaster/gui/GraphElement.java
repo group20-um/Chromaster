@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 public class GraphElement extends Canvas {
 
-    private final double NODE_RADIUS = 10;
 
     private final Graph graph;
     private RenderType renderType;
@@ -39,7 +38,6 @@ public class GraphElement extends Canvas {
 
         this.setOnMouseClicked(event -> {
             Optional<Node> node = graph.getNodes().values().stream()
-                    .filter(e -> e.getMeta().area() != null)
                     .filter(e -> e.getMeta().area().contains(event.getSceneX(), event.getSceneY()))
                     .findAny();
             node.ifPresent(e -> Game.getEventHandler().trigger(new NodeClickedEvent(e)));
@@ -127,17 +125,13 @@ public class GraphElement extends Canvas {
         graph.getNodes().forEach((id, node) -> {
             if(node.getMeta().visible) {
                 GraphicsContext g = this.getGraphicsContext2D();
-
-                // TODO not the ideal position to update, should be moved to the Meta struct to avoid inconsistent data
-                // if the draw method is not called after updating the coordinates of a node
-                node.getMeta().area(new Circle(node.getMeta().x(), node.getMeta().y(), NODE_RADIUS));
-
+                Node.Meta m = node.getMeta();
                 g.setFill(Color.WHITE);
-                g.fillOval(node.getMeta().x() - NODE_RADIUS, node.getMeta().y() - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
-                g.setFill(node.getMeta().colour);
-                g.fillOval(node.getMeta().x() - (int)(NODE_RADIUS * 0.6), node.getMeta().y() - (int)(NODE_RADIUS * 0.6), (int)(NODE_RADIUS * 0.6)*2, (int)(NODE_RADIUS * 0.6)*2);
+                g.fillOval(m.x() - m.radius(), m.y() - m.radius(), m.radius() * 2, m.radius() * 2);
+                g.setFill(m.colour);
+                g.fillOval(m.x() - (int)(m.radius() * 0.6), m.y() - (int)(m.radius() * 0.6), (int)(m.radius() * 0.6)*2, (int)(m.radius() * 0.6)*2);
                 g.setStroke(Color.WHITE);
-                g.strokeText(node.getMeta().text(), (node.getMeta().x() - (int)(NODE_RADIUS * 0.6)) + g.getFont().getSize() / 2, (node.getMeta().y() - (int)(NODE_RADIUS * 0.6)) + g.getFont().getSize(), NODE_RADIUS * 2);
+                g.strokeText(m.text(), (m.x() - (int)(m.radius() * 0.6)) + g.getFont().getSize() / 2, (node.getMeta().y() - (int)(m.radius() * 0.6)) + g.getFont().getSize(), m.radius() * 2);
             }
         });
 
