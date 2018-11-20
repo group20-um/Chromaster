@@ -5,8 +5,8 @@ import edu.um.chromaster.graph.Node;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ChromaticNumber {
@@ -61,11 +61,15 @@ public class ChromaticNumber {
         }, TIME_LIMIT_LOWER);
 
         if(result == -1) {
-            int tmp = graph.getEdges().entrySet().stream().mapToInt(e -> e.getValue().size()).min().getAsInt();
-            return (tmp == 1) ? 2 : tmp;
+            result = basicLowerBound(graph);
         }
 
         return result;
+    }
+
+    private static int basicLowerBound(Graph graph) {
+        int tmp = graph.getEdges().entrySet().stream().mapToInt(e -> e.getValue().size()).min().getAsInt();
+        return (tmp == 1) ? 2 : tmp;
     }
 
     private static int limitedTimeUpper(Graph graph) {
@@ -81,12 +85,23 @@ public class ChromaticNumber {
     private static int exactTest(Graph graph, boolean runTimeBound) {
         //---
         int upper = runTimeBound ? limitedTimeUpper(graph) : upperBound(graph);
-        int lower = runTimeBound ? limitedTimeLowerBound(graph) : lowerBound(graph);
-        System.out.printf("<Exact Test> Range: [%d..%d]%n", lower, upper);
+        AtomicInteger lower = new AtomicInteger(runTimeBound ? limitedTimeLowerBound(graph) : basicLowerBound(graph));
+        if(!runTimeBound) {
+            int finalUpper = upper;
+            CompletableFuture.supplyAsync(() -> lowerBound(graph)).thenAccept((result) -> {
+                synchronized (lower) {
+                    lower.set(result);
+                    System.out.printf("<Exact Test> Updated lower bound: %d%n", lower.get());
+                    System.out.printf("<Exact Test> Range: [%d..%d]%n", lower.get(), finalUpper);
+                }
+            });
+        }
 
-        if(lower == upper) {
+        System.out.printf("<Exact Test> Range: [%d..%d]%n", lower.get(), upper);
+
+        if(lower.get() == upper) {
             ChromaticNumber.graph = graph;
-            return lower;
+            return lower.get();
         }
 
         upper--;
@@ -98,8 +113,7 @@ public class ChromaticNumber {
             result = graph.clone();
             graph.reset();
 
-            //:CORRECTED_CODE
-            if(upper == lower) {
+            if(upper == lower.get()) {
                 upper--;
                 break;
             }

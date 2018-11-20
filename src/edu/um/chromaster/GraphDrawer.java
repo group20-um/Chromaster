@@ -2,6 +2,7 @@ package edu.um.chromaster;
 
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
+import javafx.scene.paint.Color;
 
 import java.util.Random;
 
@@ -59,16 +60,17 @@ public class GraphDrawer {
         while (change) {
             for (Node node : graph.getNodes().values()) {
                 Node.Meta m = node.getMeta();
-                m.x(m.x() * 0.8D);
-                m.y(m.y() * 0.8D);
+                m.x(m.x() * 0.9D);
+                m.y(m.y() * 0.9D);
 
-                if (!(m.x() > -width / 2 && m.x() < width / 2 && m.y() > -height / 2 && m.y() < height / 2)) {
-                    change = true;
-                } else {
-                    change = false;
-                }
+                change = !(m.x() > -width / 2 && m.x() < width / 2 && m.y() > -height / 2 && m.y() < height / 2);
             }
         }
+
+        graph.getNodes().forEach((k, node) -> {
+            node.getMeta().x(node.getMeta().x() + width / 2);
+            node.getMeta().y(node.getMeta().y() + height / 2);
+        });
 
         /*{
             if (m.x() * 1.2D > -width / 2D && m.x() * 1.2D < width / 2D) {
@@ -82,11 +84,18 @@ public class GraphDrawer {
     }
 
     public static void banana(Graph graph, double width, double height) {
+
+        graph.getNodes().forEach((id, node) -> {
+            Node.Meta m = node.getMeta();
+            m.x(m.x() + width / 2);
+            m.y(m.y() + height / 2);
+        });
+
         final double area = width * height;
         double maxDisplacement = Math.sqrt(10000 * area) / 10;
         final double k = Math.sqrt(area / graph.getNodes().size());
         final int iterations = 100;
-        final double gravity = 1;
+        final double gravity = 10;
         final double speed_divisior = 800;
         final double speed = 1;
 
@@ -151,10 +160,34 @@ public class GraphDrawer {
 
                 if(distance > 0) {
                     double limitedDistance = Math.min(maxDisplacement * (speed / speed_divisior), distance);
-                    meta.x(meta.x() + xDistance / distance * limitedDistance);
+                    meta.x(meta.x()+ xDistance / distance * limitedDistance);
                     meta.y(meta.y() + yDistance / distance * limitedDistance);
                 }
             });
+        }
+
+        int i = 100;
+        while (i > 0) {
+            graph.getNodes().forEach((id, node) -> {
+                Node.Meta m = node.getMeta();
+                if (m.x() * 1.2 > -width / 2 && m.x() * 1.2 < width / 2) {
+                    m.x(m.x() * 1.2);
+                    m.y(m.y() * 1.2);
+                } else {
+                    m.x(m.x() * 0.8);
+                    m.y(m.y() * 0.8);
+                }
+
+                if (m.y() * 1.2 > -height / 2 && m.y() * 1.2 < height / 2) {
+                    m.x(m.x() * 1.2);
+                    m.y(m.y() * 1.2);
+                } else {
+                    m.x(m.x() * 0.8);
+                    m.y(m.y() * 0.8);
+                }
+
+            });
+            i--;
         }
 
     }

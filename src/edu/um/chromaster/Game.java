@@ -4,15 +4,12 @@ import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 import edu.um.chromaster.gui.GraphElement;
 import javafx.application.Application;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.util.Optional;
 import java.util.Random;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 public class Game extends Application {
@@ -30,18 +27,18 @@ public class Game extends Application {
         Graph graph = new Graph();
         final int nodes = 50;
         IntStream.range(0, nodes).forEach(i -> graph.addNode(i, -1));
-        Random random = new Random(1L); //TODO same seed to ease debugging efforts
+        Random random = new Random(1); //TODO same seed to ease debugging efforts
 
         for(int from = 0; from < nodes; from++) {
             for(int to = 0; to < nodes; to++) {
-                if (from != to && random.nextDouble() < 0.3) {
+                if (from != to && random.nextDouble() < 0.1) {
                     graph.addEdge(from, to, true);
                 }
             }
         }
 
         ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph, integer -> System.out.printf("Result %d\n", integer));
-        GraphElement graphElement  = new GraphElement(graph, GraphElement.RenderType.SHELL, GraphElement.BackgroundType.COLOUR);
+        GraphElement graphElement  = new GraphElement(graph, GraphElement.RenderType.BANANA, GraphElement.BackgroundType.COLOUR);
 
         graph.getNodes().forEach((id, node) -> {
             node.getMeta().x((random.nextDouble() * graphElement.getWidth()) - graphElement.getWidth() / 2);
