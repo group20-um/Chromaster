@@ -1,6 +1,5 @@
 package edu.um.chromaster.graph;
 
-import edu.um.chromaster.gui.GraphElement;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
@@ -37,17 +36,20 @@ public class Node {
         public final static Color defaultColour = Color.rgb(0, 0, 0);
         public Color colour = defaultColour;
 
-
         private Circle area;
         private String text;
 
-        public boolean visible = false;
+        private boolean visible = false;
         public double displacementX, displacementY;
         private double positionX, positionY;
-        private double radius = 10;
+        private double radius = 20;
 
         public Meta(String text) {
             this.text = text;
+        }
+
+        public boolean visible() {
+            return this.visible;
         }
 
         public String text() {
@@ -72,6 +74,10 @@ public class Node {
 
         public double radius() {
             return this.radius;
+        }
+
+        public void visible(boolean visible) {
+            this.visible = visible;
         }
 
         public void x(double x) {
