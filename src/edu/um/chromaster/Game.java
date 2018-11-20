@@ -1,5 +1,9 @@
 package edu.um.chromaster;
 
+import edu.um.chromaster.event.EventHandler;
+import edu.um.chromaster.event.EventListener;
+import edu.um.chromaster.event.Subscribe;
+import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 import edu.um.chromaster.gui.GraphElement;
@@ -14,31 +18,44 @@ import java.util.stream.IntStream;
 
 public class Game extends Application {
 
+    private final static EventHandler eventHandler = new EventHandler();
+
     public static void main(String[] args) {
+
+
         launch(args);
+
     }
 
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
+        eventHandler.registerListener(new EventListener() {
+
+            @Subscribe
+            public void handleClickEvent(NodeClickedEvent event) {
+                System.out.println(event.getNode().getId());
+            }
+
+        });
 
         StackPane stackPane = new StackPane();
         Graph graph = new Graph();
-        final int nodes = 50;
+        final int nodes = 20;
         IntStream.range(0, nodes).forEach(i -> graph.addNode(i, -1));
-        Random random = new Random(1); //TODO same seed to ease debugging efforts
+        Random random = new Random(); //TODO same seed to ease debugging efforts
 
         for(int from = 0; from < nodes; from++) {
             for(int to = 0; to < nodes; to++) {
-                if (from != to && random.nextDouble() < 0.1) {
+                if (from != to && random.nextDouble() < 0.02) {
                     graph.addEdge(from, to, true);
                 }
             }
         }
 
         ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph, integer -> System.out.printf("Result %d\n", integer));
-        GraphElement graphElement  = new GraphElement(graph, GraphElement.RenderType.BANANA, GraphElement.BackgroundType.COLOUR);
+        GraphElement graphElement  = new GraphElement(graph, GraphElement.RenderType.CIRCLE, GraphElement.BackgroundType.COLOUR);
 
         graph.getNodes().forEach((id, node) -> {
             node.getMeta().x((random.nextDouble() * graphElement.getWidth()) - graphElement.getWidth() / 2);
@@ -65,9 +82,7 @@ public class Game extends Application {
             Optional<Node> node = graph.getNodes().values().stream()
                     .filter(e -> e.getMeta().area().contains(event.getSceneX(), event.getSceneY()))
                     .findAny();
-            node.ifPresent(e -> {
-                System.out.println(e.getId());
-            });
+            node.ifPresent(e -> eventHandler.trigger(new NodeClickedEvent(e)));
 
         });
         primaryStage.setScene(scene);

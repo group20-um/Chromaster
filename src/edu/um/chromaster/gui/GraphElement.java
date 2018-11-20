@@ -10,15 +10,13 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontSmoothingType;
 
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class GraphElement extends Canvas {
 
@@ -52,13 +50,15 @@ public class GraphElement extends Canvas {
             default: throw new IllegalArgumentException();
         }
 
-        /*graph.getNode(graph.getEdges().entrySet().stream()
-                .min((o1, o2) -> -1 * Integer.compare(o1.getValue().size(), o2.getValue().size()))
-                .get().getKey()).getMeta().visible = true;*/
-        graph.getNode(0).getMeta().visible = true;
 
+        Stack<Node> nodes = graph.getNodes().values().stream().sorted(Comparator.comparingInt(o -> graph.getEdges(o.getId()).size())).collect(Collectors.toCollection(Stack::new));
+        Node start = nodes.pop();
+        start.getMeta().visible = true;
+
+        AtomicInteger draw = new AtomicInteger(0);
         schedule.scheduleAtFixedRate(() -> {
             if(graph.getNodes().values().stream().anyMatch(e -> !e.getMeta().visible)) {
+                int x = draw.get();
                 for (Node node : graph.getNodes().values()) {
                     if (node.getMeta().visible) {
                         boolean t = false;
@@ -66,15 +66,23 @@ public class GraphElement extends Canvas {
                             if (!e.getTo().getMeta().visible) {
                                 t = true;
                                 e.getTo().getMeta().visible = true;
+                                draw.set(draw.get() + 1);
                                 break;
                             }
                         }
-                        if (t) break;
+                        if (t) {
+                            nodes.remove(node);
+                            break;
+                        }
                     }
+                }
+                if(x == draw.get()) {
+                    Node tmp = nodes.pop();
+                    tmp.getMeta().visible = true;
                 }
                 Platform.runLater(this::draw);
             }
-        }, 100L, 100L, TimeUnit.MILLISECONDS);
+        }, 100L, 200L, TimeUnit.MILLISECONDS);
 
     }
 

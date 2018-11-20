@@ -85,8 +85,12 @@ public class ChromaticNumber {
     private static int exactTest(Graph graph, boolean runTimeBound) {
         //---
         int upper = runTimeBound ? limitedTimeUpper(graph) : upperBound(graph);
-        AtomicInteger lower = new AtomicInteger(runTimeBound ? limitedTimeLowerBound(graph) : basicLowerBound(graph));
-        if(!runTimeBound) {
+
+        AtomicInteger lower = new AtomicInteger(0);
+
+        if(runTimeBound) {
+            lower.set(limitedTimeLowerBound(graph));
+        } else {
             int finalUpper = upper;
             CompletableFuture.supplyAsync(() -> lowerBound(graph)).thenAccept((result) -> {
                 synchronized (lower) {
@@ -126,6 +130,7 @@ public class ChromaticNumber {
         final int exact = upper+1;
         System.out.println("<Exact Test> Exact: " + exact);
         return exact;
+
     }
 
     private static boolean exact(Graph graph, int colours) {
