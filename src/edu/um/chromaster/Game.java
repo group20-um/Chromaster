@@ -27,6 +27,9 @@ public class Game extends Application {
 
     }
 
+    public static EventHandler getEventHandler() {
+        return eventHandler;
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -44,11 +47,11 @@ public class Game extends Application {
         Graph graph = new Graph();
         final int nodes = 20;
         IntStream.range(0, nodes).forEach(i -> graph.addNode(i, -1));
-        Random random = new Random(); //TODO same seed to ease debugging efforts
+        Random random = new Random(200); //TODO same seed to ease debugging efforts
 
         for(int from = 0; from < nodes; from++) {
             for(int to = 0; to < nodes; to++) {
-                if (from != to && random.nextDouble() < 0.02) {
+                if (from != to && random.nextDouble() < 0.05) {
                     graph.addEdge(from, to, true);
                 }
             }
@@ -78,13 +81,6 @@ public class Game extends Application {
         });
 
         // TODO sample mouse-click to node
-        graphElement.setOnMouseClicked(event -> {
-            Optional<Node> node = graph.getNodes().values().stream()
-                    .filter(e -> e.getMeta().area().contains(event.getSceneX(), event.getSceneY()))
-                    .findAny();
-            node.ifPresent(e -> eventHandler.trigger(new NodeClickedEvent(e)));
-
-        });
         primaryStage.setScene(scene);
         primaryStage.show();
     }
