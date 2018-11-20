@@ -45,13 +45,13 @@ public class Game extends Application {
 
         StackPane stackPane = new StackPane();
         Graph graph = new Graph();
-        final int nodes = 20;
+        final int nodes = 200;
         IntStream.range(0, nodes).forEach(i -> graph.addNode(i, -1));
         Random random = new Random(200); //TODO same seed to ease debugging efforts
 
         for(int from = 0; from < nodes; from++) {
             for(int to = 0; to < nodes; to++) {
-                if (from != to && random.nextDouble() < 0.05) {
+                if (from != to && random.nextDouble() < 0.30) {
                     graph.addEdge(from, to, true);
                 }
             }
