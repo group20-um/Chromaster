@@ -1,5 +1,6 @@
 package edu.um.chromaster.graph;
 
+import edu.um.chromaster.gui.NodeMan;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
@@ -7,11 +8,11 @@ public class Node {
 
     private final int id;
     private final Meta meta;
-    private int value;
+    private int value = -1;
 
     public Node(int id, int value) {
         this.id = id;
-        this.meta = new Meta(String.valueOf(id));
+        this.meta = new Meta(this);
         this.value = value;
     }
 
@@ -36,16 +37,31 @@ public class Node {
         public final static Color defaultColour = Color.rgb(0, 0, 0);
         public Color colour = defaultColour;
 
+        private NodeMan nodeMan;
         private Circle area;
         private String text;
 
         private boolean visible = false;
+        private boolean allowedToChangeColour = true;
         public double displacementX, displacementY;
         private double positionX, positionY;
         private double radius = 20;
 
-        public Meta(String text) {
-            this.text = text;
+        public Meta(Node node) {
+            nodeMan = new NodeMan(node);
+            this.text = String.valueOf(node.getId());
+        }
+
+        public NodeMan getNodeMan() {
+            return this.nodeMan;
+        }
+
+        public boolean isAllowedToChangeColour() {
+            return allowedToChangeColour;
+        }
+
+        public void setAllowedToChangeColour(boolean allowedToChangeColour) {
+            this.allowedToChangeColour = allowedToChangeColour;
         }
 
         public boolean visible() {

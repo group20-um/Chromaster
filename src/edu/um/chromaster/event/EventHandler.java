@@ -2,11 +2,10 @@ package edu.um.chromaster.event;
 
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.LinkedTransferQueue;
 
 public class EventHandler {
 
-    private Map<Class<? extends Event>, TreeSet<EventHolder>> events = new HashMap<>();
+    private Map<Class<? extends Event>, List<EventHolder>> events = new HashMap<>();
     private List<EventListener> eventListeners = new ArrayList<>();
 
 
@@ -48,14 +47,14 @@ public class EventHandler {
             Class<? extends Event> argument = (Class<? extends Event>) method.getParameterTypes()[0];
 
             if(!(this.events.containsKey(argument))) {
-                this.events.put(argument, new TreeSet<>());
+                this.events.put(argument, new LinkedList<>());
             }
 
-            this.events.get(argument).add(new EventHolder(
+            System.out.println("B>" + this.events.get(argument).add(new EventHolder(
                     listener,
                     method,
                     subscribe
-            ));
+            )));
 
         }
 

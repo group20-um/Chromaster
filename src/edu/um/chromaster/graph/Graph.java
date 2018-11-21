@@ -8,10 +8,20 @@ public class Graph implements Cloneable {
     private Map<Integer, Node> nodes = new HashMap<>();
     private Map<Integer, List<Edge>> edges = new HashMap<>();
 
+    private int chromaticNumber = -1;
+
     private int minNodeId = Integer.MAX_VALUE;
     private int maxNodeId = Integer.MIN_VALUE;
 
     public Graph() {}
+
+    public int getChromaticNumber() {
+        return this.chromaticNumber;
+    }
+
+    public void setChromaticNumber(int chromaticNumber) {
+        this.chromaticNumber = chromaticNumber;
+    }
 
     public void reset() {
         this.nodes.values().forEach(e -> e.setValue(-1));

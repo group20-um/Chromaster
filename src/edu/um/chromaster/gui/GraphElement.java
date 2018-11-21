@@ -6,6 +6,7 @@ import edu.um.chromaster.HintManager;
 import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
+import edu.um.chromaster.modes.ThirdGameMode;
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -19,8 +20,6 @@ import java.util.Stack;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -43,7 +42,7 @@ public class GraphElement extends Canvas {
 
         this.setOnMouseClicked(event -> {
             Optional<Node> node = graph.getNodes().values().stream()
-                    .filter(e -> e.getMeta().area().contains(event.getSceneX(), event.getSceneY()))
+                    .filter(e -> e.getMeta().isAllowedToChangeColour() && e.getMeta().visible() && e.getMeta().area().contains(event.getSceneX(), event.getSceneY()))
                     .findAny();
             node.ifPresent(e -> Game.getEventHandler().trigger(new NodeClickedEvent(e)));
         });
@@ -78,12 +77,18 @@ public class GraphElement extends Canvas {
                 })
                 .collect(Collectors.toCollection(Stack::new));
 
-        final long MAX_TIME_TO_DRAW = 10000;
+        final long MAX_TIME_TO_DRAW = 1000;
         final long MAX_TIME_STEP = (MAX_TIME_TO_DRAW / graph.getNodes().size());
 
         Stack<Node> priorityNodes = new Stack<>();
         AtomicReference<ScheduledFuture<?>> scheduledFuture = new AtomicReference<>();
         scheduledFuture.set(schedule.scheduleAtFixedRate(() -> {
+
+            if(Game.getInstance().getGameMode() instanceof ThirdGameMode) {
+                Platform.runLater(this::draw);
+                return;
+            }
+
             if(graph.getNodes().values().stream().anyMatch(e -> !e.getMeta().visible())) {
 
                 // If there is nothing to deal with in the priority queue
@@ -133,7 +138,7 @@ public class GraphElement extends Canvas {
             } else {
                 scheduledFuture.get().cancel(true);
             }
-        }, 100L, MAX_TIME_STEP, TimeUnit.MILLISECONDS));
+        }, 100L, (1000 / 60), TimeUnit.MILLISECONDS));
 
     }
 
@@ -157,13 +162,7 @@ public class GraphElement extends Canvas {
         graph.getNodes().forEach((id, node) -> {
             if(node.getMeta().visible()) {
                 GraphicsContext g = this.getGraphicsContext2D();
-                Node.Meta m = node.getMeta();
-                g.setFill(Color.WHITE);
-                g.fillOval(m.x() - m.radius(), m.y() - m.radius(), m.radius() * 2, m.radius() * 2);
-                g.setFill(m.colour);
-                g.fillOval(m.x() - (int)(m.radius() * 0.6), m.y() - (int)(m.radius() * 0.6), (int)(m.radius() * 0.6)*2, (int)(m.radius() * 0.6)*2);
-                g.setStroke(Color.WHITE);
-                g.strokeText(m.text(), (m.x() - (int)(m.radius() * 0.6)) + g.getFont().getSize() / 2, (node.getMeta().y() - (int)(m.radius() * 0.6)) + g.getFont().getSize(), m.radius() * 2);
+                node.getMeta().getNodeMan().draw(g);
             }
         });
 
