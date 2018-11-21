@@ -14,6 +14,7 @@ public class NodeMan {
         this.node = node;
     }
 
+    //
     public void draw(GraphicsContext g) {
         Node.Meta m = node.getMeta();
 
