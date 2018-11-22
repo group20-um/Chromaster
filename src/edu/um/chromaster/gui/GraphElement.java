@@ -7,14 +7,11 @@ import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 import edu.um.chromaster.modes.ThirdGameMode;
-import javafx.application.Platform;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
-import javafx.scene.layout.*;
+import javafx.geometry.Insets;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,24 +39,28 @@ public class GraphElement extends Pane {
         this.setHeight(1024);
         this.minWidthProperty().set(this.getWidth());
         this.minHeightProperty().set(this.getHeight());
+        this.maxWidthProperty().set(this.getWidth());
+        this.maxHeightProperty().set(this.getHeight());
 
         this.setOnMouseClicked(event -> {
             Optional<Node> node = graph.getNodes().values().stream()
-                    .filter(e -> e.getMeta().isAllowedToChangeColour() && e.getMeta().visible() && e.getMeta().area().contains(event.getSceneX(), event.getSceneY()))
+                    .filter(e -> e.getMeta().isAllowedToChangeColour() && e.getMeta().visible() && e.getMeta().area().contains(event.getX(), event.getY()))
                     .findAny();
             node.ifPresent(e -> Game.getEventHandler().trigger(new NodeClickedEvent(e)));
         });
 
-        this.applyLayout();
-        super.setBackground(new Background(new BackgroundFill(Color.BLUE, null, null)));
-        graph.getNodes().forEach((id, node) -> this.getChildren().addAll(node.getMeta().getGraphicElements()));
-        graph.getEdges().forEach((id, edges) -> edges.forEach((e) -> {
+        super.setBackground(new Background(new BackgroundFill(ColorList.GRAPH_BACKGROUND, null, Insets.EMPTY)));
+        graph.getEdges().forEach((id, edges) -> edges.forEach((to, e) -> {
             this.getChildren().addAll(e.getMeta().getGraphicElements());
-            e.getMeta().visible(true);
         }));
+        graph.getNodes().forEach((id, node) ->  {
+            node.getMeta().visible(true);
+            this.getChildren().addAll(node.getMeta().getGraphicElements());
+        });
+
     }
 
-    private void applyLayout() {
+    public void render() {
         switch (this.renderType) {
             case CIRCLE: GraphDrawer.circle(graph, this.getWidth(), this.getHeight()); break;
             case SHELL: GraphDrawer.shell(graph, this.getWidth(), this.getHeight());  break;
@@ -70,10 +71,6 @@ public class GraphElement extends Pane {
             case ROSE: GraphDrawer.rose(graph, this.getWidth(), this.getHeight()); break;
             default: throw new IllegalArgumentException();
         }
-    }
-
-
-    public void render() {
 
         schedule.schedule(GraphElement.this::requestLayout, (1000 / 60), TimeUnit.MILLISECONDS);
 
@@ -201,7 +198,7 @@ public class GraphElement extends Pane {
     */
 
     public void displayHints(HintType... hintTypes) {
-        this.graph.getNodes().values().forEach(e -> e.getMeta().colour = Node.Meta.defaultColour);
+        this.graph.getNodes().values().forEach(e -> e.getMeta().colour(ColorList.NODE_INNER_DEFAULT));
         for(HintType hintType : hintTypes) {
             switch (hintType) {
                 case CLIQUE: {
@@ -214,15 +211,15 @@ public class GraphElement extends Pane {
                             }
                         }
                         return false;
-                    }, (meta) -> meta.colour = Color.YELLOW);
+                    }, (meta) -> meta.colour(ColorList.HINT_CLIQUE));
                 } break;
                 case HIGHES_DEGREE: {
                     Node node = HintManager.highestDegree(graph);
-                    node.getMeta().colour = Color.PINK;
+                    node.getMeta().colour(ColorList.HINT_HIGHEST_DEGREE);
                 } break;
                 case MAX_NEIGHBOURS:
                     Node node = HintManager.maxNeighboursColoured(graph);
-                    this.computeHighlighting(e -> e == node, (meta) -> meta.colour = Color.GREEN);
+                    this.computeHighlighting(e -> e == node, (meta) -> meta.colour(ColorList.HINT_MAX_NEIGHBOURS));
                     break;
             }
         }

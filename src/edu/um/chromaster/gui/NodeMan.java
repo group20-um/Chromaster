@@ -3,8 +3,6 @@ package edu.um.chromaster.gui;
 import edu.um.chromaster.graph.Node;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Shape;
 
 public class NodeMan   {
 

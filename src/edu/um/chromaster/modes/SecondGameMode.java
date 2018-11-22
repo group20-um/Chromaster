@@ -1,8 +1,11 @@
 package edu.um.chromaster.modes;
 
 
+import edu.um.chromaster.event.Subscribe;
 import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.graph.Graph;
+import edu.um.chromaster.graph.Node;
+import javafx.scene.paint.Color;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -16,27 +19,28 @@ public class SecondGameMode extends GameMode {
     private boolean isPlayerOutOfTime = false;
 
     public SecondGameMode(Graph graph, int timeInSeconds) {
-        super(graph);
+        super(graph, true, true);
         this.timeInSeconds = timeInSeconds;
     }
 
     public int getUsedColours() {
-        return getGraph().getNodes().values().stream().mapToInt(e -> e.getValue()).distinct().sum();
+        return getGraph().getNodes().values().stream().mapToInt(Node::getValue).distinct().sum();
     }
 
     @Override
     public void start() {
         this.schedule.schedule(() -> {
             this.isPlayerOutOfTime = true;
+            getGraph().getNodes().forEach((id, node) -> node.getMeta().colour(Color.RED));
         }, this.timeInSeconds, TimeUnit.SECONDS);
     }
 
     @Override
-    public boolean isGameOver() {
+    public boolean gameWon() {
         return (this.isPlayerOutOfTime && !isGraphFullyColoured());
     }
 
-    @Override
+    @Subscribe
     public void onNodeClicked(NodeClickedEvent event) {
 
     }

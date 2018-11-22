@@ -30,7 +30,7 @@ public class EventHandler {
 
         this.eventListeners.add(listener);
 
-        Method[] methods = listener.getClass().getDeclaredMethods();
+        Method[] methods = listener.getClass().getMethods();
         for(Method method : methods) {
 
             Subscribe subscribe = method.getAnnotation(Subscribe.class);

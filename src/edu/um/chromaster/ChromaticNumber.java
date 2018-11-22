@@ -178,7 +178,7 @@ public class ChromaticNumber {
     }
 
     private static int simpleUpperBound(Graph graph) {
-        return graph.getEdges().values().stream().mapToInt(List::size).max().getAsInt() + 1;
+        return graph.getEdges().values().stream().mapToInt(Map::size).max().getAsInt() + 1;
     }
 
     private static int upperBoundIterative(Graph graph) {

@@ -1,25 +1,24 @@
 package edu.um.chromaster;
 
 import edu.um.chromaster.event.EventHandler;
-import edu.um.chromaster.event.EventListener;
-import edu.um.chromaster.event.Subscribe;
-import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.graph.Graph;
-import edu.um.chromaster.gui.GraphElement;
-import edu.um.chromaster.gui.GraphElementOG;
+import edu.um.chromaster.gui.GraphGameElement;
 import edu.um.chromaster.modes.FirstGameMode;
 import edu.um.chromaster.modes.GameMode;
+import edu.um.chromaster.modes.SecondGameMode;
 import edu.um.chromaster.modes.ThirdGameMode;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.util.Random;
 import java.util.stream.IntStream;
 
 public class Game extends Application {
+
+    public final static Random random = new Random(1); //TODO same seed to ease debugging efforts
 
     private final static EventHandler eventHandler = new EventHandler();
     private static Game instance;
@@ -49,9 +48,8 @@ public class Game extends Application {
 
         StackPane stackPane = new StackPane();
         Graph graph = new Graph();
-        final int nodes = 30;
+        final int nodes = 5;
         IntStream.range(0, nodes).forEach(i -> graph.addNode(i, -1));
-        Random random = new Random(); //TODO same seed to ease debugging efforts
 
         for(int from = 0; from < nodes; from++) {
             for(int to = 0; to < nodes; to++) {
@@ -61,26 +59,16 @@ public class Game extends Application {
             }
         }
 
+
         this.gameMode = new ThirdGameMode(graph);
         this.gameMode.start();
 
-        ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph, graph::setChromaticNumber);
-        GraphElement graphElement  = new GraphElement(graph, GraphElement.RenderType.SPIRAL, GraphElement.BackgroundType.COLOUR);
+        GraphGameElement graphGameElement = new GraphGameElement(graph, gameMode);
+        Scene scene = new Scene(graphGameElement, -1, -1, true, SceneAntialiasing.BALANCED);
 
-        graph.getNodes().forEach((id, node) -> {
-            node.getMeta().x((random.nextDouble() * graphElement.getWidth()) - graphElement.getWidth() / 2);
-            node.getMeta().y((random.nextDouble() * graphElement.getHeight()) - graphElement.getHeight() / 2);
-        });
-
-
-        graphElement.render();
-
-        stackPane.getChildren().add(graphElement);
-        Scene scene = new Scene(stackPane);
-        scene.getStylesheets().add("res/style.css");
 
         // TODO testing hint functions
-        scene.setOnKeyPressed(event -> {
+/*        scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case F1: graphElement.displayHints(GraphElement.HintType.HIGHES_DEGREE); break;
                 case F2: graphElement.displayHints(GraphElement.HintType.CLIQUE); break;
@@ -89,10 +77,11 @@ public class Game extends Application {
             }
             //graphElement.draw();
         });
-
+*/
         // TODO sample mouse-click to node
         primaryStage.setScene(scene);
         primaryStage.show();
+
     }
 
 }
