@@ -1,5 +1,6 @@
 package edu.um.chromaster.graph;
 
+import edu.um.chromaster.ChromaticNumber;
 import edu.um.chromaster.graph.Node.Edge;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,19 +10,19 @@ public class Graph implements Cloneable {
     private Map<Integer, Node> nodes = new HashMap<>();
     private Map<Integer, Map<Integer, Edge>> edges = new HashMap<>();
 
-    private int chromaticNumber = -1;
+    private ChromaticNumber.Result chromaticNumberResult = new ChromaticNumber.Result(-1, -1, -1, false);
 
     private int minNodeId = Integer.MAX_VALUE;
     private int maxNodeId = Integer.MIN_VALUE;
 
     public Graph() {}
 
-    public int getChromaticNumber() {
-        return this.chromaticNumber;
+    public ChromaticNumber.Result getChromaticResult() {
+        return this.chromaticNumberResult;
     }
 
-    public void setChromaticNumber(int chromaticNumber) {
-        this.chromaticNumber = chromaticNumber;
+    public void setChromaticResults(ChromaticNumber.Result chromaticNumberResult) {
+        this.chromaticNumberResult = chromaticNumberResult;
     }
 
     public void reset() {
@@ -97,4 +98,5 @@ public class Graph implements Cloneable {
         this.edges.forEach((k, v) -> v.forEach((to, edge) -> clone.addEdge(edge.getFrom().getId(), edge.getTo().getId(), true)));
         return clone;
     }
+
 }

@@ -26,7 +26,7 @@ public class FirstGameMode extends GameMode {
         if(getGraph().getNodes().values().stream().anyMatch(e -> e.getValue() == -1)) {
             return false;
         }
-        return getGraph().getChromaticNumber() == getGraph().getNodes().values().stream().filter(e -> e.getValue() != -1).mapToInt(Node::getValue).distinct().count();
+        return isValidColoured() && getGraph().getChromaticResult().getExact() == getGraph().getNodes().values().stream().filter(e -> e.getValue() != -1).mapToInt(Node::getValue).distinct().count();
     }
 
     @Subscribe

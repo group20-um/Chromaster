@@ -2,6 +2,7 @@ package edu.um.chromaster.modes;
 
 import edu.um.chromaster.event.EventListener;
 import edu.um.chromaster.graph.Graph;
+import edu.um.chromaster.graph.Node;
 import javafx.scene.paint.Color;
 
 public abstract class GameMode implements EventListener {
@@ -20,6 +21,14 @@ public abstract class GameMode implements EventListener {
         this.showCreateColour = showCreateColour;
     }
 
+    public long getUsedColours() {
+        return this.graph.getNodes().values().stream().filter(e -> e.getValue() != -1).mapToInt(Node::getValue).count();
+    }
+
+    public boolean isValidColoured() {
+        return graph.getNodes().values().stream().noneMatch((node) -> graph.getEdges(node.getId()).stream().anyMatch(e -> e.getTo().getValue() == node.getValue() || node.getValue() == -1));
+    }
+
     public Color getSelectedColour() {
         return selectedColour;
     }
@@ -34,6 +43,11 @@ public abstract class GameMode implements EventListener {
 
     public Graph getGraph() {
         return graph;
+    }
+
+
+    public double getScore() {
+        return 1D;
     }
 
     public void setSelectedColour(Color selectedColour) {

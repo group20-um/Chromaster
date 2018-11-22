@@ -54,7 +54,6 @@ public class GraphElement extends Pane {
             this.getChildren().addAll(e.getMeta().getGraphicElements());
         }));
         graph.getNodes().forEach((id, node) ->  {
-            node.getMeta().visible(true);
             this.getChildren().addAll(node.getMeta().getGraphicElements());
         });
 
@@ -88,7 +87,7 @@ public class GraphElement extends Pane {
                 })
                 .collect(Collectors.toCollection(Stack::new));
 
-        final long MAX_TIME_TO_DRAW = 1000;
+        final long MAX_TIME_TO_DRAW = 10000;
         final long MAX_TIME_STEP = (MAX_TIME_TO_DRAW / graph.getNodes().size());
 
         Stack<Node> priorityNodes = new Stack<>();
@@ -148,7 +147,7 @@ public class GraphElement extends Pane {
             } else {
                 scheduledFuture.get().cancel(true);
             }
-        }, 100L, (1000 / 60), TimeUnit.MILLISECONDS));
+        }, 100L, MAX_TIME_STEP, TimeUnit.MILLISECONDS));
 
     }
 

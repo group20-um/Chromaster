@@ -46,9 +46,8 @@ public class Game extends Application {
         instance = this;
 
 
-        StackPane stackPane = new StackPane();
         Graph graph = new Graph();
-        final int nodes = 5;
+        final int nodes = 50;
         IntStream.range(0, nodes).forEach(i -> graph.addNode(i, -1));
 
         for(int from = 0; from < nodes; from++) {
@@ -60,10 +59,10 @@ public class Game extends Application {
         }
 
 
-        this.gameMode = new ThirdGameMode(graph);
+        this.gameMode = new FirstGameMode(graph);
         this.gameMode.start();
 
-        GraphGameElement graphGameElement = new GraphGameElement(graph, gameMode);
+        GraphGameElement graphGameElement = new GraphGameElement(primaryStage, graph, gameMode);
         Scene scene = new Scene(graphGameElement, -1, -1, true, SceneAntialiasing.BALANCED);
 
 

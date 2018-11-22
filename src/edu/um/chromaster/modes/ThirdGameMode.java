@@ -41,8 +41,13 @@ public class ThirdGameMode extends GameMode {
     }
 
     @Override
+    public double getScore() {
+        return (getGraph().getNodes().values().stream().filter(e -> e.getValue() != -1).mapToInt(Node::getValue).count());
+    }
+
+    @Override
     public boolean gameWon() {
-        return getGraph().getNodes().values().stream().filter(e -> e.getValue() != -1).mapToInt(Node::getValue).count() == getGraph().getNodes().size();
+        return isValidColoured() && getGraph().getNodes().values().stream().filter(e -> e.getValue() != -1).mapToInt(Node::getValue).count() == getGraph().getNodes().size();
     }
 
     @Subscribe
@@ -64,6 +69,7 @@ public class ThirdGameMode extends GameMode {
 
             if(!path.isEmpty()) {
                 Node node = path.peek();
+
                 node.getMeta().visible(true);
                 node.getMeta().setAllowedToChangeColour(true);
                 getGraph().getEdges(node.getId()).forEach(e -> {

@@ -25,17 +25,17 @@ public class ChromaticNumber {
         EXACT
     }
 
-    public static void computeAsync(Type type, Graph graph, Consumer<Integer> consumer) {
+    public static void computeAsync(Type type, Graph graph, Consumer<Result> consumer) {
         CompletableFuture.supplyAsync(() -> compute(type, graph, false), schedule).thenAccept(consumer);
     }
 
-    public static int compute(Type type, Graph graph, boolean runTimeBound) {
+    public static Result compute(Type type, Graph graph, boolean runTimeBound) {
         graph.reset();
 
         switch (type) {
 
-            case LOWER: return runTimeBound ? limitedTimeLowerBound(graph) : lowerBound(graph);
-            case UPPER: return runTimeBound ? limitedTimeUpper(graph) : upperBound(graph);
+            case LOWER: return runTimeBound ? limitedTimeLowerBound(graph) : new Result(-1, lowerBound(graph), -1, true);
+            case UPPER: return runTimeBound ? limitedTimeUpper(graph) : new Result(-1, -1, upperBound(graph), true);
             case EXACT: return runTimeBound ? limitedTimeExactTest(graph) : exactTest(graph, false);
 
         }
@@ -43,7 +43,7 @@ public class ChromaticNumber {
     }
 
     //---
-    private static int limitedTimeExactTest(Graph graph) {
+    private static Result limitedTimeExactTest(Graph graph) {
         return timeBoundMethodExecution(new MethodRunnable() {
             @Override
             public void run() {
@@ -52,16 +52,17 @@ public class ChromaticNumber {
         }, TIME_LIMIT_EXACT);
     }
 
-    private static int limitedTimeLowerBound(Graph graph) {
-        int result = timeBoundMethodExecution(new MethodRunnable() {
+    private static Result limitedTimeLowerBound(Graph graph) {
+        Result result = timeBoundMethodExecution(new MethodRunnable() {
             @Override
             public void run() {
-                this.setResult(lowerBound(graph));
+                Result r = new Result(-1, lowerBound(graph), -1, true);
+                this.setResult(r);
             }
         }, TIME_LIMIT_LOWER);
 
-        if(result == -1) {
-            result = basicLowerBound(graph);
+        if(result.getLower() == -1) {
+            result = new Result(-1, basicLowerBound(graph), -1, true);
         }
 
         return result;
@@ -72,24 +73,34 @@ public class ChromaticNumber {
         return (tmp == 1) ? 2 : tmp;
     }
 
-    private static int limitedTimeUpper(Graph graph) {
-        return timeBoundMethodExecution(new MethodRunnable() {
+    private static Result limitedTimeUpper(Graph graph) {
+        Result result = timeBoundMethodExecution(new MethodRunnable() {
             @Override
             public void run() {
-                this.setResult(upperBound(graph));
+                Result r = new Result(-1, -1, upperBound(graph), true);
+                this.setResult(r);
             }
         }, TIME_LIMIT_UPPER);
+
+        if(result.getUpper() == -1) {
+            result = new Result(0, 0, simpleUpperBound(graph), true);
+        }
+        return result;
     }
 
     // --- EXACT SECTION ---
-    private static int exactTest(Graph graph, boolean runTimeBound) {
+    private static Result exactTest(Graph graph, boolean runTimeBound) {
         //---
-        int upper = runTimeBound ? limitedTimeUpper(graph) : upperBound(graph);
+        int upper = runTimeBound ? limitedTimeUpper(graph).getUpper() : upperBound(graph);
+
+        if(upper == -1) {
+            return new Result(-1, -1, -1, true);
+        }
 
         AtomicInteger lower = new AtomicInteger(0);
 
         if(runTimeBound) {
-            lower.set(limitedTimeLowerBound(graph));
+            lower.set(limitedTimeLowerBound(graph).getLower());
         } else {
             int finalUpper = upper;
             CompletableFuture.supplyAsync(() -> lowerBound(graph)).thenAccept((result) -> {
@@ -101,11 +112,14 @@ public class ChromaticNumber {
             });
         }
 
+        final int upperResult = upper;
+        final int lowerResult = lower.get();
+
         System.out.printf("<Exact Test> Range: [%d..%d]%n", lower.get(), upper);
 
         if(lower.get() == upper) {
             ChromaticNumber.graph = graph;
-            return lower.get();
+            return new Result(lowerResult, lowerResult, upper, true);
         }
 
 
@@ -135,7 +149,7 @@ public class ChromaticNumber {
 
         final int exact = upper+1;
         System.out.println("<Exact Test> Exact: " + exact);
-        return exact;
+        return new Result(exact, lowerResult, upperResult, true);
 
     }
 
@@ -322,15 +336,15 @@ public class ChromaticNumber {
     }
 
     //--- Utility
-    public static int timeBoundMethodExecution(MethodRunnable runnable, final long timeInMilliseconds) {
+    public static Result timeBoundMethodExecution(MethodRunnable runnable, final long timeInMilliseconds) {
         Thread thread = new Thread(runnable);
         thread.start();
         long time = System.nanoTime();
         long countdown = time + timeInMilliseconds;
 
         // TODO replace busy waiting
-        while (runnable.getResult() == -1 && time < countdown) {
-            System.out.print(""); //
+        while (!runnable.getResult().isReady() && time < countdown) {
+            System.out.print(""); //for some reason this code does not work without this. is there maybe some sort of byte-code optimisation going on removing this type of loop
             time = System.nanoTime();
         }
         //thread.interrupt();
@@ -341,17 +355,54 @@ public class ChromaticNumber {
 
     private static abstract class MethodRunnable implements Runnable {
 
-        private int result = -1;
+        private Result result;
 
         @Override
         public abstract void run();
 
-        public void setResult(int result) {
+        public void setResult(Result result) {
             this.result = result;
         }
 
-        public int getResult() {
+        public Result getResult() {
             return this.result;
+        }
+
+    }
+
+    public static class Result {
+
+        private int exact = -1;
+        private int upper = -1;
+        private int lower = -1;
+
+        private boolean isReady = false;
+
+        public Result(int exact, int lower, int upper, boolean isReady) {
+            this.exact = exact;
+            this.lower = lower;
+            this.upper = upper;
+            this.isReady = isReady;
+        }
+
+        public void ready() {
+            this.isReady = true;
+        }
+
+        public boolean isReady() {
+            return isReady;
+        }
+
+        public int getExact() {
+            return exact;
+        }
+
+        public int getLower() {
+            return lower;
+        }
+
+        public int getUpper() {
+            return upper;
         }
 
     }

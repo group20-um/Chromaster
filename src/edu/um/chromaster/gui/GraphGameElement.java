@@ -6,6 +6,7 @@ import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.modes.GameMode;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
 public class GraphGameElement extends BorderPane {
 
@@ -13,13 +14,13 @@ public class GraphGameElement extends BorderPane {
     private GraphElement graphElement;
     private ColourSelectorElement colourSelectorElement;
 
-    public GraphGameElement(Graph graph, GameMode gameMode) {
-        ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph.clone(), graph::setChromaticNumber);
+    public GraphGameElement(Stage stage, Graph graph, GameMode gameMode) {
+        ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph.clone(), graph::setChromaticResults);
 
         this.getStylesheets().add("res/style.css");
 
         this.graphElement = new GraphElement(graph, GraphElement.RenderType.SPIRAL, null);
-        this.colourSelectorElement = new ColourSelectorElement();
+        this.colourSelectorElement = new ColourSelectorElement(stage);
         this.gameMode = gameMode;
 
         // distribute graph nodes randomly

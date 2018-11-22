@@ -9,6 +9,6 @@
 }
 
 .disabled {
-    -fx-opacity: 0.9;
+    -fx-opacity: 0.5;
 }
 

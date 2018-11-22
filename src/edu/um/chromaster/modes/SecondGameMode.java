@@ -23,7 +23,7 @@ public class SecondGameMode extends GameMode {
         this.timeInSeconds = timeInSeconds;
     }
 
-    public int getUsedColours() {
+    public long getUsedColours() {
         return getGraph().getNodes().values().stream().mapToInt(Node::getValue).distinct().sum();
     }
 
