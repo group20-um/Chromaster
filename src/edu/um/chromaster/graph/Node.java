@@ -122,11 +122,13 @@ public class Node {
 
         public void x(double x) {
             this.positionX = x;
+            this.inner.centerXProperty().set(x);
             this.updateCircles();
         }
 
         public void y(double y) {
             this.positionY = y;
+            this.inner.centerYProperty().set(y);
             this.updateCircles();
         }
 
@@ -193,13 +195,10 @@ public class Node {
 
         public class Meta {
 
-            private Edge edge;
-
             private Line line = new Line();
             private boolean visible = true;
 
             public Meta(Edge edge) {
-                this.edge = edge;
 
                 this.line.startXProperty().bind(from.getMeta().area().centerXProperty());
                 this.line.startYProperty().bind(from.getMeta().area().centerYProperty());
