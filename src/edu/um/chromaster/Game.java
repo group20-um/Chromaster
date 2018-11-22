@@ -3,14 +3,14 @@ package edu.um.chromaster;
 import edu.um.chromaster.event.EventHandler;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.gui.GraphElement;
-import edu.um.chromaster.gui.GraphElementOG;
+import edu.um.chromaster.modes.FirstGameMode;
 import edu.um.chromaster.modes.GameMode;
+import edu.um.chromaster.modes.SecondGameMode;
 import edu.um.chromaster.modes.ThirdGameMode;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.util.Random;
@@ -48,7 +48,7 @@ public class Game extends Application {
 
         StackPane stackPane = new StackPane();
         Graph graph = new Graph();
-        final int nodes = 30;
+        final int nodes = 5;
         IntStream.range(0, nodes).forEach(i -> graph.addNode(i, -1));
 
         for(int from = 0; from < nodes; from++) {
@@ -67,7 +67,7 @@ public class Game extends Application {
             node.getMeta().y((random.nextDouble() * graphElement.getHeight()) - graphElement.getHeight() / 2);
         });
 
-        this.gameMode = new ThirdGameMode(graph);
+        this.gameMode = new SecondGameMode(graph, 2);
         this.gameMode.start();
 
 

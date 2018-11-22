@@ -52,11 +52,12 @@ public class ThirdGameMode extends GameMode {
         if(n.getMeta().isAllowedToChangeColour()) {
 
             n.setValue((int) (Game.random.nextDouble() * Integer.MAX_VALUE));
-            n.getMeta().colour = Color.color(Game.random.nextDouble(), Game.random.nextDouble(), Game.random.nextDouble());
+            n.getMeta().colour(Color.color(Game.random.nextDouble(), Game.random.nextDouble(), Game.random.nextDouble()));
 
             n.getMeta().setAllowedToChangeColour(false);
 
-            getGraph().getEdges(n.getId()).stream().filter(e -> e.getTo().getMeta().colour == ColorList.NODE_INNER_DEFAULT).forEach(e -> e.getTo().getMeta().visible(false));
+            // TODO fix the comparision
+            getGraph().getEdges(n.getId()).stream().filter(e -> e.getTo().getMeta().colour() == ColorList.NODE_INNER_DEFAULT).forEach(e -> e.getTo().getMeta().visible(false));
 
             path.pop();
 
@@ -68,8 +69,7 @@ public class ThirdGameMode extends GameMode {
                     e.getTo().getMeta().visible(true);
                     e.getTo().getMeta().setAllowedToChangeColour(false);
                 });
-            }
-        }
+            }        }
 
     }
 

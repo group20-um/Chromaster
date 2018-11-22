@@ -42,8 +42,6 @@ public class Node {
 
     public class Meta {
 
-        public Color colour = ColorList.NODE_INNER_DEFAULT;
-
         private String textValue;
         private Text text = new Text();
         private Circle outer = new Circle();
@@ -85,6 +83,16 @@ public class Node {
         public void setAllowedToChangeColour(boolean allowedToChangeColour) {
             this.allowedToChangeColour = allowedToChangeColour;
             updateCircles();
+        }
+
+        public void colour(Color colour) {
+            this.inner.fillProperty().set(colour);
+            updateCircles();
+        }
+
+        public Color colour() {
+            // TODO look up if this cast is actually save
+            return (Color) this.inner.getFill();
         }
 
         public void highlight(boolean highlight) {
@@ -155,7 +163,7 @@ public class Node {
 
                 if(highlight()) {
                     this.outer.fillProperty().setValue(ColorList.NODE_HIGHLIGHTED);
-                } else if(!isAllowedToChangeColour() && graph.getEdges(id).stream().noneMatch(e -> e.getTo().getMeta().isAllowedToChangeColour())) {
+                } else if(!isAllowedToChangeColour()) {
                     this.outer.getStyleClass().add("disabled");
                     this.inner.getStyleClass().add("disabled");
                 } else if(isAllowedToChangeColour()) {
@@ -165,7 +173,6 @@ public class Node {
                 this.inner.centerXProperty().setValue(x());
                 this.inner.centerYProperty().setValue(y());
                 this.inner.radiusProperty().setValue(radius() * 0.6);
-                this.inner.fillProperty().setValue(colour);
 
                 this.text.textProperty().setValue(textValue);
                 this.text.xProperty().setValue(x() - (this.text.getFont().getSize() / 2) * (textValue.length() / 2));

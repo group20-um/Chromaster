@@ -17,7 +17,7 @@ public class ColorList {
 
 
     public final static Color HINT_CLIQUE = Color.GREEN;
-    public final static Color HINT_HIGHEST_DEGREE = Color.BLUE;
+    public final static Color HINT_HIGHEST_DEGREE = Color.RED;
     public final static Color HINT_MAX_NEIGHBOURS = Color.PINK;
 
 

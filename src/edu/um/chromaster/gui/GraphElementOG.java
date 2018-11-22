@@ -165,7 +165,7 @@ public class GraphElementOG extends Canvas {
                 Node.Meta m = node.getMeta();
                 g.setFill(m.isAllowedToChangeColour() ? Color.WHITE : Color.DARKGRAY);
                 g.fillOval(m.x() - m.radius(), m.y() - m.radius(), m.radius() * 2, m.radius() * 2);
-                g.setFill(m.colour);
+                g.setFill(m.colour());
                 g.fillOval(m.x() - (int) (m.radius() * 0.6), m.y() - (int) (m.radius() * 0.6), (int) (m.radius() * 0.6) * 2, (int) (m.radius() * 0.6) * 2);
                 g.setStroke(Color.WHITE);
                 g.strokeText(m.text(), (m.x() - (int) (m.radius() * 0.6)) + g.getFont().getSize() / 2, (node.getMeta().y() - (int) (m.radius() * 0.6)) + g.getFont().getSize(), m.radius() * 2);
@@ -190,7 +190,7 @@ public class GraphElementOG extends Canvas {
     }
 
     public void displayHints(GraphElement.HintType... hintTypes) {
-        this.graph.getNodes().values().forEach(e -> e.getMeta().colour = ColorList.NODE_INNER_DEFAULT);
+        this.graph.getNodes().values().forEach(e -> e.getMeta().colour(ColorList.NODE_INNER_DEFAULT));
         for(GraphElement.HintType hintType : hintTypes) {
             switch (hintType) {
                 case CLIQUE: {
@@ -203,15 +203,15 @@ public class GraphElementOG extends Canvas {
                             }
                         }
                         return false;
-                    }, (meta) -> meta.colour = Color.YELLOW);
+                    }, (meta) -> meta.colour(Color.YELLOW));
                 } break;
                 case HIGHES_DEGREE: {
                     Node node = HintManager.highestDegree(graph);
-                    node.getMeta().colour = Color.PINK;
+                    node.getMeta().colour(Color.PINK);
                 } break;
                 case MAX_NEIGHBOURS:
                     Node node = HintManager.maxNeighboursColoured(graph);
-                    this.computeHighlighting(e -> e == node, (meta) -> meta.colour = Color.GREEN);
+                    this.computeHighlighting(e -> e == node, (meta) -> meta.colour(Color.GREEN));
                     break;
             }
         }

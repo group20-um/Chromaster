@@ -198,7 +198,7 @@ public class GraphElement extends Pane {
     */
 
     public void displayHints(HintType... hintTypes) {
-        this.graph.getNodes().values().forEach(e -> e.getMeta().colour = ColorList.NODE_INNER_DEFAULT);
+        this.graph.getNodes().values().forEach(e -> e.getMeta().colour(ColorList.NODE_INNER_DEFAULT));
         for(HintType hintType : hintTypes) {
             switch (hintType) {
                 case CLIQUE: {
@@ -211,15 +211,15 @@ public class GraphElement extends Pane {
                             }
                         }
                         return false;
-                    }, (meta) -> meta.colour = ColorList.HINT_CLIQUE);
+                    }, (meta) -> meta.colour(ColorList.HINT_CLIQUE));
                 } break;
                 case HIGHES_DEGREE: {
                     Node node = HintManager.highestDegree(graph);
-                    node.getMeta().colour = ColorList.HINT_HIGHEST_DEGREE;
+                    node.getMeta().colour(ColorList.HINT_HIGHEST_DEGREE);
                 } break;
                 case MAX_NEIGHBOURS:
                     Node node = HintManager.maxNeighboursColoured(graph);
-                    this.computeHighlighting(e -> e == node, (meta) -> meta.colour = ColorList.HINT_MAX_NEIGHBOURS);
+                    this.computeHighlighting(e -> e == node, (meta) -> meta.colour(ColorList.HINT_MAX_NEIGHBOURS));
                     break;
             }
         }
