@@ -1,4 +1,14 @@
-.node:hover {
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
-    -fx-background-radius: 20px;
+.node {
 }
+
+.node_border {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+}
+.node_border:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(53,59,72,0.8), 10, 0, 0, 0);
+}
+
+.disabled {
+    -fx-opacity: 0.1;
+}
+

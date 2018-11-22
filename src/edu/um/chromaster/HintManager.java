@@ -22,7 +22,7 @@ public class HintManager {
 
     public static Node maxNeighboursColoured(Graph graph) {
         return graph.getNode(graph.getEdges().entrySet().stream()
-                .max(Comparator.comparingInt(o -> (int) o.getValue().stream().filter(e -> e.getTo().getValue() != -1).count())).get().getKey());
+                .max(Comparator.comparingInt(o -> (int) o.getValue().values().stream().filter(e -> e.getTo().getValue() != -1).count())).get().getKey());
     }
 
     public static List<Node> cliqueDetector9000(Graph graph) {
@@ -33,7 +33,7 @@ public class HintManager {
 
     public static List<Integer> neighbourColors(Graph graph,Node node){
         List<Integer> tmp = new ArrayList<Integer>();
-        graph.getEdges().get(node.getId()).stream().forEach(edge -> tmp.add(edge.getTo().getValue()));
+        graph.getEdges().get(node.getId()).values().forEach(edge -> tmp.add(edge.getTo().getValue()));
         return tmp;
     }
 

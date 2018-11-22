@@ -1,17 +1,14 @@
 package edu.um.chromaster;
 
 import edu.um.chromaster.event.EventHandler;
-import edu.um.chromaster.event.EventListener;
-import edu.um.chromaster.event.Subscribe;
-import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.gui.GraphElement;
 import edu.um.chromaster.gui.GraphElementOG;
-import edu.um.chromaster.modes.FirstGameMode;
 import edu.um.chromaster.modes.GameMode;
 import edu.um.chromaster.modes.ThirdGameMode;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -20,6 +17,8 @@ import java.util.Random;
 import java.util.stream.IntStream;
 
 public class Game extends Application {
+
+    public final static Random random = new Random(1); //TODO same seed to ease debugging efforts
 
     private final static EventHandler eventHandler = new EventHandler();
     private static Game instance;
@@ -51,7 +50,6 @@ public class Game extends Application {
         Graph graph = new Graph();
         final int nodes = 30;
         IntStream.range(0, nodes).forEach(i -> graph.addNode(i, -1));
-        Random random = new Random(); //TODO same seed to ease debugging efforts
 
         for(int from = 0; from < nodes; from++) {
             for(int to = 0; to < nodes; to++) {
@@ -61,9 +59,6 @@ public class Game extends Application {
             }
         }
 
-        this.gameMode = new ThirdGameMode(graph);
-        this.gameMode.start();
-
         ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph, graph::setChromaticNumber);
         GraphElement graphElement  = new GraphElement(graph, GraphElement.RenderType.SPIRAL, GraphElement.BackgroundType.COLOUR);
 
@@ -72,11 +67,12 @@ public class Game extends Application {
             node.getMeta().y((random.nextDouble() * graphElement.getHeight()) - graphElement.getHeight() / 2);
         });
 
+        this.gameMode = new ThirdGameMode(graph);
+        this.gameMode.start();
 
-        graphElement.render();
 
         stackPane.getChildren().add(graphElement);
-        Scene scene = new Scene(stackPane);
+        Scene scene = new Scene(stackPane, -1, -1, true, SceneAntialiasing.BALANCED);
         scene.getStylesheets().add("res/style.css");
 
         // TODO testing hint functions
@@ -93,6 +89,8 @@ public class Game extends Application {
         // TODO sample mouse-click to node
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        graphElement.render();
     }
 
 }

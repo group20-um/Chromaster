@@ -146,7 +146,7 @@ public class GraphElementOG extends Canvas {
         this.drawBackground();
 
         graph.getEdges().values().forEach(edgeList -> {
-            edgeList.forEach(edge -> {
+            edgeList.forEach((to, edge) -> {
                 if(edge.getTo().getMeta().visible() && edge.getFrom().getMeta().visible()) {
                     this.getGraphicsContext2D().setStroke(Color.WHITE);
                     this.getGraphicsContext2D().strokeLine(
@@ -190,7 +190,7 @@ public class GraphElementOG extends Canvas {
     }
 
     public void displayHints(GraphElement.HintType... hintTypes) {
-        this.graph.getNodes().values().forEach(e -> e.getMeta().colour = Node.Meta.defaultColour);
+        this.graph.getNodes().values().forEach(e -> e.getMeta().colour = ColorList.NODE_INNER_DEFAULT);
         for(GraphElement.HintType hintType : hintTypes) {
             switch (hintType) {
                 case CLIQUE: {

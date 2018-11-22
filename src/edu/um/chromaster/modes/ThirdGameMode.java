@@ -3,9 +3,9 @@ package edu.um.chromaster.modes;
 import edu.um.chromaster.Game;
 import edu.um.chromaster.event.Subscribe;
 import edu.um.chromaster.event.events.NodeClickedEvent;
-import edu.um.chromaster.event.EventListener;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
+import edu.um.chromaster.gui.ColorList;
 import javafx.scene.paint.Color;
 
 import java.util.Collections;
@@ -28,7 +28,7 @@ public class ThirdGameMode extends GameMode {
         });
 
         path.addAll(getGraph().getNodes().values());
-        Collections.shuffle(path);
+        Collections.shuffle(path, Game.random);
 
         Node node = path.peek();
         node.getMeta().visible(true);
@@ -37,7 +37,6 @@ public class ThirdGameMode extends GameMode {
             e.getTo().getMeta().visible(true);
             e.getTo().getMeta().setAllowedToChangeColour(false);
         });
-
     }
 
     @Override
@@ -52,12 +51,12 @@ public class ThirdGameMode extends GameMode {
 
         if(n.getMeta().isAllowedToChangeColour()) {
 
-            n.setValue((int) (Math.random() * Integer.MAX_VALUE));
-            n.getMeta().colour = Color.color(Math.random(), Math.random(), Math.random());
+            n.setValue((int) (Game.random.nextDouble() * Integer.MAX_VALUE));
+            n.getMeta().colour = Color.color(Game.random.nextDouble(), Game.random.nextDouble(), Game.random.nextDouble());
 
             n.getMeta().setAllowedToChangeColour(false);
 
-            getGraph().getEdges(n.getId()).stream().filter(e -> e.getTo().getMeta().colour == Node.Meta.defaultColour).forEach(e -> e.getTo().getMeta().visible(false));
+            getGraph().getEdges(n.getId()).stream().filter(e -> e.getTo().getMeta().colour == ColorList.NODE_INNER_DEFAULT).forEach(e -> e.getTo().getMeta().visible(false));
 
             path.pop();
 
@@ -73,6 +72,5 @@ public class ThirdGameMode extends GameMode {
         }
 
     }
-
 
 }

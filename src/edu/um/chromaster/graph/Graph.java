@@ -2,11 +2,12 @@ package edu.um.chromaster.graph;
 
 import edu.um.chromaster.graph.Node.Edge;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Graph implements Cloneable {
 
     private Map<Integer, Node> nodes = new HashMap<>();
-    private Map<Integer, List<Edge>> edges = new HashMap<>();
+    private Map<Integer, Map<Integer, Edge>> edges = new HashMap<>();
 
     private int chromaticNumber = -1;
 
@@ -37,9 +38,9 @@ public class Graph implements Cloneable {
 
     public void addEdge(int from, int to, boolean bidirectional) {
         if(!(this.edges.containsKey(from))) {
-            this.edges.put(from, new ArrayList<>());
+            this.edges.put(from, new HashMap<>());
         }
-        this.edges.get(from).add(new Edge(this.getNode(from), this.getNode(to)));
+        this.edges.get(from).put(to, new Edge(this.getNode(from), this.getNode(to)));
         if(bidirectional) {
             addEdge(to, from, false);
         }
@@ -61,15 +62,23 @@ public class Graph implements Cloneable {
         return null;
     }
 
+    public Edge getEdge(int from, int to) {
+        return this.getEdgeMap(from).get(to);
+    }
+
+    public Map<Integer, Edge> getEdgeMap(int node) {
+        return this.edges.getOrDefault(node, Collections.emptyMap());
+    }
+
     public List<Edge> getEdges(int node) {
-        return this.edges.getOrDefault(node, new ArrayList<>());
+        return new ArrayList<>(this.getEdgeMap(node).values());
     }
 
     public Map<Integer, Node> getNodes() {
         return this.nodes;
     }
 
-    public Map<Integer, List<Edge>> getEdges() {
+    public Map<Integer, Map<Integer, Edge>> getEdges() {
         return this.edges;
     }
 
@@ -85,7 +94,7 @@ public class Graph implements Cloneable {
     public Graph clone() {
         Graph clone = new Graph();
         this.nodes.forEach((k, v) -> clone.addNode(k, v.getValue()));
-        this.edges.forEach((k, v) -> v.forEach(edge -> clone.addEdge(edge.getFrom().getId(), edge.getTo().getId(), true)));
+        this.edges.forEach((k, v) -> v.forEach((to, edge) -> clone.addEdge(edge.getFrom().getId(), edge.getTo().getId(), true)));
         return clone;
     }
 }

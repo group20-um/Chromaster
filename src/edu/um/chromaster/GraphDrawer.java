@@ -2,13 +2,8 @@ package edu.um.chromaster;
 
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
-import javafx.scene.paint.Color;
-
-import java.util.Random;
 
 public class GraphDrawer {
-
-    private final static Random random = new Random();
 
     private GraphDrawer() {}
 
@@ -120,7 +115,7 @@ public class GraphDrawer {
             }
 
             graph.getEdges().values().forEach(edgeList -> {
-                edgeList.forEach(edge -> {
+                edgeList.forEach((to, edge) -> {
                     Node.Meta aMeta = edge.getFrom().getMeta();
                     Node.Meta bMeta = edge.getTo().getMeta();
 
