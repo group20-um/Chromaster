@@ -50,11 +50,11 @@ public class EventHandler {
                 this.events.put(argument, new LinkedList<>());
             }
 
-            System.out.println("B>" + this.events.get(argument).add(new EventHolder(
+            this.events.get(argument).add(new EventHolder(
                     listener,
                     method,
                     subscribe
-            )));
+            ));
 
         }
 

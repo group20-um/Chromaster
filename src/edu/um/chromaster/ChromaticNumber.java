@@ -108,6 +108,7 @@ public class ChromaticNumber {
             return lower.get();
         }
 
+
         upper--;
         graph.reset();
 

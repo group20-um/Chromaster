@@ -11,6 +11,7 @@ public abstract class GameMode implements EventListener {
 
     public GameMode(Graph graph) {
         this.graph = graph;
+        graph.reset();
     }
 
     public Graph getGraph() {

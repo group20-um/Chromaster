@@ -17,7 +17,6 @@ public class ThirdGameMode extends GameMode {
 
     public ThirdGameMode(Graph graph) {
         super(graph);
-        graph.reset();
         Game.getEventHandler().registerListener(this);
     }
 
@@ -43,7 +42,7 @@ public class ThirdGameMode extends GameMode {
 
     @Override
     public boolean isGameOver() {
-        return getGraph().getNodes().values().stream().mapToInt(e -> e.getValue()).count() == getGraph().getNodes().size();
+        return getGraph().getNodes().values().stream().mapToInt(Node::getValue).count() == getGraph().getNodes().size();
     }
 
     @Subscribe

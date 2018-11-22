@@ -6,6 +6,8 @@ import edu.um.chromaster.event.Subscribe;
 import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.gui.GraphElement;
+import edu.um.chromaster.gui.GraphElementOG;
+import edu.um.chromaster.modes.FirstGameMode;
 import edu.um.chromaster.modes.GameMode;
 import edu.um.chromaster.modes.ThirdGameMode;
 import javafx.application.Application;
@@ -22,13 +24,10 @@ public class Game extends Application {
     private final static EventHandler eventHandler = new EventHandler();
     private static Game instance;
 
-    private static GameMode gameMode = null;
+    private GameMode gameMode = null;
 
     public static void main(String[] args) {
-
-
         launch(args);
-
     }
 
     public static Game getInstance() {
@@ -44,7 +43,7 @@ public class Game extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         instance = this;
 
 
@@ -73,9 +72,12 @@ public class Game extends Application {
             node.getMeta().y((random.nextDouble() * graphElement.getHeight()) - graphElement.getHeight() / 2);
         });
 
+
         graphElement.render();
+
         stackPane.getChildren().add(graphElement);
         Scene scene = new Scene(stackPane);
+        scene.getStylesheets().add("res/style.css");
 
         // TODO testing hint functions
         scene.setOnKeyPressed(event -> {
@@ -85,7 +87,7 @@ public class Game extends Application {
                 case F3: graphElement.displayHints(GraphElement.HintType.MAX_NEIGHBOURS); break;
                 case F4: graphElement.displayHints(GraphElement.HintType.HIGHES_DEGREE, GraphElement.HintType.CLIQUE, GraphElement.HintType.MAX_NEIGHBOURS);
             }
-            graphElement.draw();
+            //graphElement.draw();
         });
 
         // TODO sample mouse-click to node

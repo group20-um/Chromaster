@@ -31,7 +31,7 @@ public class Graph implements Cloneable {
         minNodeId = Math.min(id, minNodeId);
         maxNodeId = Math.max(id, maxNodeId);
         if(!(this.nodes.containsKey(id))) {
-            this.nodes.put(id, new Node(id, value));
+            this.nodes.put(id, new Node(this, id, value));
         }
     }
 
@@ -40,7 +40,6 @@ public class Graph implements Cloneable {
             this.edges.put(from, new ArrayList<>());
         }
         this.edges.get(from).add(new Edge(this.getNode(from), this.getNode(to)));
-
         if(bidirectional) {
             addEdge(to, from, false);
         }

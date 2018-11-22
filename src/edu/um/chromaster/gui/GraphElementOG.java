@@ -11,10 +11,7 @@ import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,21 +24,21 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class GraphElement extends Pane {
+public class GraphElementOG extends Canvas {
 
 
     private final Graph graph;
-    private RenderType renderType;
+    private GraphElement.RenderType renderType;
+    private GraphElement.BackgroundType backgroundType;
 
-    private ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(2);
+    private ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(1);
 
-    public GraphElement(Graph graph, RenderType renderType, BackgroundType backgroundType) {
+    public GraphElementOG(Graph graph, GraphElement.RenderType renderType, GraphElement.BackgroundType backgroundType) {
         this.graph = graph;
         this.renderType = renderType;
+        this.backgroundType = backgroundType;
         this.setWidth(1024);
         this.setHeight(1024);
-        this.minWidthProperty().set(this.getWidth());
-        this.minHeightProperty().set(this.getHeight());
 
         this.setOnMouseClicked(event -> {
             Optional<Node> node = graph.getNodes().values().stream()
@@ -49,17 +46,11 @@ public class GraphElement extends Pane {
                     .findAny();
             node.ifPresent(e -> Game.getEventHandler().trigger(new NodeClickedEvent(e)));
         });
-
-        this.applyLayout();
-        super.setBackground(new Background(new BackgroundFill(Color.BLUE, null, null)));
-        graph.getNodes().forEach((id, node) -> this.getChildren().addAll(node.getMeta().getGraphicElements()));
-        graph.getEdges().forEach((id, edges) -> edges.forEach((e) -> {
-            this.getChildren().addAll(e.getMeta().getGraphicElements());
-            e.getMeta().visible(true);
-        }));
     }
 
-    private void applyLayout() {
+
+    public void render() {
+
         switch (this.renderType) {
             case CIRCLE: GraphDrawer.circle(graph, this.getWidth(), this.getHeight()); break;
             case SHELL: GraphDrawer.shell(graph, this.getWidth(), this.getHeight());  break;
@@ -70,12 +61,7 @@ public class GraphElement extends Pane {
             case ROSE: GraphDrawer.rose(graph, this.getWidth(), this.getHeight()); break;
             default: throw new IllegalArgumentException();
         }
-    }
 
-
-    public void render() {
-
-        schedule.schedule(GraphElement.this::requestLayout, (1000 / 60), TimeUnit.MILLISECONDS);
 
         // sort all nodes by #connect nodes descending
         Stack<Node> nodes = graph.getNodes().values().stream()
@@ -99,6 +85,7 @@ public class GraphElement extends Pane {
         scheduledFuture.set(schedule.scheduleAtFixedRate(() -> {
 
             if(Game.getInstance().getGameMode() instanceof ThirdGameMode) {
+                Platform.runLater(this::draw);
                 return;
             }
 
@@ -146,7 +133,7 @@ public class GraphElement extends Pane {
                     priorityNodes.pop().getMeta().visible(true);
                 }
 
-                //aPlatform.runLater(this::draw);
+                Platform.runLater(this::draw);
 
             } else {
                 scheduledFuture.get().cancel(true);
@@ -155,10 +142,8 @@ public class GraphElement extends Pane {
 
     }
 
-    /*
     public void draw() {
         this.drawBackground();
-
 
         graph.getEdges().values().forEach(edgeList -> {
             edgeList.forEach(edge -> {
@@ -174,11 +159,16 @@ public class GraphElement extends Pane {
             });
         });
 
-
         graph.getNodes().forEach((id, node) -> {
             if(node.getMeta().visible()) {
                 GraphicsContext g = this.getGraphicsContext2D();
-                node.getMeta().innerCircle()
+                Node.Meta m = node.getMeta();
+                g.setFill(m.isAllowedToChangeColour() ? Color.WHITE : Color.DARKGRAY);
+                g.fillOval(m.x() - m.radius(), m.y() - m.radius(), m.radius() * 2, m.radius() * 2);
+                g.setFill(m.colour);
+                g.fillOval(m.x() - (int) (m.radius() * 0.6), m.y() - (int) (m.radius() * 0.6), (int) (m.radius() * 0.6) * 2, (int) (m.radius() * 0.6) * 2);
+                g.setStroke(Color.WHITE);
+                g.strokeText(m.text(), (m.x() - (int) (m.radius() * 0.6)) + g.getFont().getSize() / 2, (node.getMeta().y() - (int) (m.radius() * 0.6)) + g.getFont().getSize(), m.radius() * 2);
             }
         });
 
@@ -198,11 +188,10 @@ public class GraphElement extends Pane {
             default: throw new IllegalArgumentException();
         }
     }
-    */
 
-    public void displayHints(HintType... hintTypes) {
+    public void displayHints(GraphElement.HintType... hintTypes) {
         this.graph.getNodes().values().forEach(e -> e.getMeta().colour = Node.Meta.defaultColour);
-        for(HintType hintType : hintTypes) {
+        for(GraphElement.HintType hintType : hintTypes) {
             switch (hintType) {
                 case CLIQUE: {
                     List<List<Node>> cliques = new ArrayList<>();
@@ -230,27 +219,6 @@ public class GraphElement extends Pane {
 
     private void computeHighlighting(Predicate<Node> filter, Callback<Node.Meta> modify) {
         this.graph.getNodes().values().stream().filter(filter).forEach(e -> modify.modify(e.getMeta()));
-    }
-
-    public static enum HintType {
-        CLIQUE,
-        HIGHES_DEGREE,
-        MAX_NEIGHBOURS
-    }
-
-    public static enum BackgroundType {
-        IMAGE,
-        COLOUR
-    }
-
-    public static enum RenderType {
-        CIRCLE,
-        SHELL,
-        SCALE,
-        BANANA,
-        SPIRAL,
-        ROSE,
-        LIMACON
     }
 
     public interface Callback<T> {
