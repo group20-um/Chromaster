@@ -1,6 +1,8 @@
 package edu.um.chromaster.graph;
 
 import edu.um.chromaster.gui.ColorList;
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -61,8 +63,32 @@ public class Node {
             this.textValue = String.valueOf(node.getId());
             this.text.setFill(ColorList.NODE_TEXT_DEFAULT);
 
-            outer.setOnMouseEntered(event -> {
+            EnteredEvent enteredEvent = new EnteredEvent(node);
+            inner.setOnMouseEntered(enteredEvent);
+            outer.setOnMouseEntered(enteredEvent);
+            text.setOnMouseEntered(enteredEvent);
 
+            ExitedEvent exitedEvent = new ExitedEvent(node);
+            inner.setOnMouseExited(exitedEvent);
+            outer.setOnMouseExited(exitedEvent);
+            text.setOnMouseExited(exitedEvent);
+
+            this.inner.getStyleClass().add("node");
+            this.outer.getStyleClass().add("node_border");
+            updateCircles();
+
+        }
+
+        private class EnteredEvent implements EventHandler<MouseEvent> {
+
+            private Node node;
+
+            public EnteredEvent(Node node) {
+                this.node = node;
+            }
+
+            @Override
+            public void handle(MouseEvent event) {
                 List<Node> connectedNodes = node.graph.getEdges(node.getId()).stream().map(Edge::getTo).collect(Collectors.toList());
                 connectedNodes.add(node);
                 node.graph.getEdges().values().forEach(map -> map.values().forEach(edge -> {
@@ -80,9 +106,19 @@ public class Node {
                     e.getMeta().line.strokeProperty().set(ColorList.EDGE_HOVER);
                 });
                 outer.setFill(ColorList.NODE_OUTER_DEFAULT);
+            }
+        }
 
-            });
-            outer.setOnMouseExited(event -> {
+        private class ExitedEvent implements EventHandler<MouseEvent> {
+
+            private Node node;
+
+            public ExitedEvent(Node node) {
+                this.node = node;
+            }
+
+            @Override
+            public void handle(MouseEvent event) {
                 node.graph.getEdges().values().forEach(map -> map.values().forEach(edge -> {
                     edge.getTo().getMeta().unhide();
                     edge.getFrom().getMeta().unhide();
@@ -94,12 +130,7 @@ public class Node {
                     e.getMeta().line.strokeProperty().set(ColorList.EDGE_DEFAULT);
                 });
                 outer.setFill(ColorList.NODE_OUTER_DEFAULT);
-            });
-
-            this.inner.getStyleClass().add("node");
-            this.outer.getStyleClass().add("node_border");
-            updateCircles();
-
+            }
         }
 
 
@@ -258,6 +289,7 @@ public class Node {
             public Meta() {
                 Map<Integer, Edge> edges = from.graph.getEdgeMap(from.getId());
                 if(edges.containsKey(to.getId())) {
+                    from.graph.getEdge(to.getId(), from.getId()).getMeta().line.strokeProperty().bindBidirectional(this.line.strokeProperty());
                     this.line.strokeProperty().bindBidirectional(edges.get(to.getId()).meta.line.strokeProperty());
                 }
                 this.line.startXProperty().bind(from.getMeta().area().centerXProperty());

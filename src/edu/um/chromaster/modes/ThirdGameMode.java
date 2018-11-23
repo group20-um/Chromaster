@@ -55,7 +55,7 @@ public class ThirdGameMode extends GameMode {
 
         Node n = event.getNode();
 
-        if(n.getMeta().isAllowedToChangeColour()) {
+        if(n.getMeta().isAllowedToChangeColour() && this.getSelectedColour() != null) {
 
             event.getNode().getMeta().colour(getSelectedColour());
             event.getNode().setValue(getSelectedColour().hashCode());

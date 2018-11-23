@@ -6,11 +6,8 @@ import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.event.events.SelectColourEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
-import javafx.scene.paint.Color;
 
 public class FirstGameMode extends GameMode {
-
-    Color selectedColour;
 
     public FirstGameMode(Graph graph) {
         super(graph, true, true);
@@ -31,12 +28,15 @@ public class FirstGameMode extends GameMode {
 
     @Subscribe
     public void onNodeClicked(NodeClickedEvent event) {
-        event.getNode().getMeta().colour(selectedColour);
-        event.getNode().setValue(selectedColour.hashCode());
+
+        if(this.getSelectedColour() != null) {
+            event.getNode().getMeta().colour(this.getSelectedColour());
+            event.getNode().setValue(this.getSelectedColour().hashCode());
+        }
     }
 
     @Subscribe
     public void onSelectColour(SelectColourEvent event) {
-        selectedColour = event.getColor();
+        this.setSelectedColour(event.getColor());
     }
 }
