@@ -4,6 +4,7 @@ import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 
+
 public class FirstGameMode extends GameMode {
 
     public FirstGameMode(Graph graph) {
@@ -21,7 +22,6 @@ public class FirstGameMode extends GameMode {
     }
 
     @Override
-    public void onNodeClicked(NodeClickedEvent event) {
-
+    public void onNodeClicked(NodeClickedEvent event)
     }
 }
