@@ -3,6 +3,9 @@ package edu.um.chromaster.event;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * An EventHolder is a class to structure all registered events.
+ */
 public class EventHolder implements Comparable<EventHolder> {
 
     private final EventListener listener;

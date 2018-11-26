@@ -1,4 +1,6 @@
 package edu.um.chromaster.event;
 
-public class Event {
-}
+/**
+ * A simple class that is used in the {@link EventHandler} to manage events more easily.
+ */
+public class Event { }

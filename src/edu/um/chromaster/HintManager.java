@@ -13,7 +13,7 @@ public class HintManager {
     private HintManager() {}
 
     public static int chromaticNumber(Graph graph) {
-        return graph.getChromaticNumber();
+        return graph.getChromaticResult().getExact();
     }
 
     public static Node highestDegree(Graph graph) {

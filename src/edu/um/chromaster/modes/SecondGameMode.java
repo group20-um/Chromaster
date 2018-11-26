@@ -1,6 +1,7 @@
 package edu.um.chromaster.modes;
 
 
+import edu.um.chromaster.event.Subscribe;
 import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
@@ -18,11 +19,11 @@ public class SecondGameMode extends GameMode {
     private boolean isPlayerOutOfTime = false;
 
     public SecondGameMode(Graph graph, int timeInSeconds) {
-        super(graph);
+        super(graph, true, true);
         this.timeInSeconds = timeInSeconds;
     }
 
-    public int getUsedColours() {
+    public long getUsedColours() {
         return getGraph().getNodes().values().stream().mapToInt(Node::getValue).distinct().sum();
     }
 
@@ -35,13 +36,16 @@ public class SecondGameMode extends GameMode {
     }
 
     @Override
-    public boolean isGameOver() {
+    public boolean gameWon() {
         return (this.isPlayerOutOfTime && !isGraphFullyColoured());
     }
 
-    @Override
+    @Subscribe
     public void onNodeClicked(NodeClickedEvent event) {
-
+        if(this.getSelectedColour() != null) {
+            event.getNode().getMeta().colour(this.getSelectedColour());
+            event.getNode().setValue(this.getSelectedColour().hashCode());
+        }
     }
 
     private boolean isGraphFullyColoured() {

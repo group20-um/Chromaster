@@ -11,7 +11,6 @@ import javafx.geometry.Insets;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,17 +43,18 @@ public class GraphElement extends Pane {
 
         this.setOnMouseClicked(event -> {
             Optional<Node> node = graph.getNodes().values().stream()
-                    .filter(e -> e.getMeta().isAllowedToChangeColour() && e.getMeta().visible() && e.getMeta().area().contains(event.getSceneX(), event.getSceneY()))
+                    .filter(e -> e.getMeta().isAllowedToChangeColour() && e.getMeta().visible() && e.getMeta().area().contains(event.getX(), event.getY()))
                     .findAny();
             node.ifPresent(e -> Game.getEventHandler().trigger(new NodeClickedEvent(e)));
         });
 
+
+        super.getStyleClass().add("graph-background");
         super.setBackground(new Background(new BackgroundFill(ColorList.GRAPH_BACKGROUND, null, Insets.EMPTY)));
         graph.getEdges().forEach((id, edges) -> edges.forEach((to, e) -> {
             this.getChildren().addAll(e.getMeta().getGraphicElements());
         }));
         graph.getNodes().forEach((id, node) ->  {
-            node.getMeta().visible(true);
             this.getChildren().addAll(node.getMeta().getGraphicElements());
         });
 
@@ -88,7 +88,7 @@ public class GraphElement extends Pane {
                 })
                 .collect(Collectors.toCollection(Stack::new));
 
-        final long MAX_TIME_TO_DRAW = 1000;
+        final long MAX_TIME_TO_DRAW = 10000;
         final long MAX_TIME_STEP = (MAX_TIME_TO_DRAW / graph.getNodes().size());
 
         Stack<Node> priorityNodes = new Stack<>();
@@ -148,7 +148,7 @@ public class GraphElement extends Pane {
             } else {
                 scheduledFuture.get().cancel(true);
             }
-        }, 100L, (1000 / 60), TimeUnit.MILLISECONDS));
+        }, 100L, MAX_TIME_STEP, TimeUnit.MILLISECONDS));
 
     }
 

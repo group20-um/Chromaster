@@ -1,14 +1,19 @@
 package edu.um.chromaster.graph;
 
 import edu.um.chromaster.gui.ColorList;
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Node {
 
@@ -44,6 +49,9 @@ public class Node {
 
         private String textValue;
         private Text text = new Text();
+        {
+            text.fontProperty().set(new Font("Yu Gothic UI Regular", 12));
+        }
         private Circle outer = new Circle();
         private Circle inner = new Circle();
 
@@ -55,20 +63,21 @@ public class Node {
         private double positionX, positionY;
         private double radius = 20;
 
+
+
         public Meta(Node node) {
             this.textValue = String.valueOf(node.getId());
             this.text.setFill(ColorList.NODE_TEXT_DEFAULT);
 
-            outer.setOnMouseEntered(event -> {
-                outer.setFill(ColorList.NODE_OUTER_DEFAULT);
-                node.graph.getEdges(node.getId()).forEach(e -> {
-                    e.getMeta().line.strokeProperty().set(ColorList.EDGE_HOVER);
-                });
-            });
-            outer.setOnMouseExited(event -> {
-                node.graph.getEdges(node.getId()).forEach(e -> e.getMeta().line.setStroke(ColorList.EDGE_DEFAULT));
-                outer.setFill(ColorList.NODE_OUTER_DEFAULT);
-            });
+            EnteredEvent enteredEvent = new EnteredEvent(node);
+            inner.setOnMouseEntered(enteredEvent);
+            outer.setOnMouseEntered(enteredEvent);
+            text.setOnMouseEntered(enteredEvent);
+
+            ExitedEvent exitedEvent = new ExitedEvent(node);
+            inner.setOnMouseExited(exitedEvent);
+            outer.setOnMouseExited(exitedEvent);
+            text.setOnMouseExited(exitedEvent);
 
             this.inner.getStyleClass().add("node");
             this.outer.getStyleClass().add("node_border");
@@ -76,27 +85,100 @@ public class Node {
 
         }
 
+        private class EnteredEvent implements EventHandler<MouseEvent> {
+
+            private Node node;
+
+            public EnteredEvent(Node node) {
+                this.node = node;
+            }
+
+            @Override
+            public void handle(MouseEvent event) {
+                List<Node> connectedNodes = node.graph.getEdges(node.getId()).stream().map(Edge::getTo).collect(Collectors.toList());
+                connectedNodes.add(node);
+                node.graph.getEdges().values().forEach(map -> map.values().forEach(edge -> {
+
+                    if(!connectedNodes.contains(edge.getFrom()) || !connectedNodes.contains(edge.getTo())) {
+                        edge.getTo().getMeta().hide();
+                        edge.getFrom().getMeta().hide();
+                        edge.getMeta().hide();
+                    }
+
+                }));
+
+                node.graph.getEdges(node.getId()).forEach(e -> {
+                    e.getTo().getMeta().highlight(true);
+                    e.getMeta().line.strokeProperty().set(ColorList.EDGE_HOVER);
+                });
+                outer.setFill(ColorList.NODE_OUTER_DEFAULT);
+            }
+        }
+
+        private class ExitedEvent implements EventHandler<MouseEvent> {
+
+            private Node node;
+
+            public ExitedEvent(Node node) {
+                this.node = node;
+            }
+
+            @Override
+            public void handle(MouseEvent event) {
+                node.graph.getEdges().values().forEach(map -> map.values().forEach(edge -> {
+                    edge.getTo().getMeta().unhide();
+                    edge.getFrom().getMeta().unhide();
+                    edge.getMeta().unhide();
+                }));
+
+                node.graph.getEdges(node.getId()).forEach(e -> {
+                    e.getTo().getMeta().highlight(false);
+                    e.getMeta().line.strokeProperty().set(ColorList.EDGE_DEFAULT);
+                });
+                outer.setFill(ColorList.NODE_OUTER_DEFAULT);
+            }
+        }
+
+
+        public void hide() {
+            this.outer.getStyleClass().add("disabled");
+            this.inner.getStyleClass().add("disabled");
+        }
+
+        public void unhide() {
+            this.outer.getStyleClass().remove("disabled");
+            this.inner.getStyleClass().remove("disabled");
+        }
+
+
         public boolean isAllowedToChangeColour() {
             return allowedToChangeColour;
         }
 
         public void setAllowedToChangeColour(boolean allowedToChangeColour) {
             this.allowedToChangeColour = allowedToChangeColour;
-            updateCircles();
+
+            if(this.allowedToChangeColour) {
+                this.text.fillProperty().set(Color.GOLD);
+            } else {
+                this.text.fillProperty().set(Color.WHITE);
+
+            }
         }
 
         public void colour(Color colour) {
-            this.inner.fillProperty().set(colour);
+            this.outer.fillProperty().set(colour);
             updateCircles();
         }
 
         public Color colour() {
             // TODO look up if this cast is actually save
-            return (Color) this.inner.getFill();
+            return (Color) this.outer.getFill();
         }
 
         public void highlight(boolean highlight) {
             this.highlight = highlight;
+            updateCircles();
         }
 
         public boolean highlight() {
@@ -152,9 +234,6 @@ public class Node {
             this.inner.visibleProperty().setValue(visible());
             this.text.visibleProperty().setValue(visible());
 
-            this.outer.getStyleClass().remove("disabled");
-            this.inner.getStyleClass().remove("disabled");
-
             if(visible()) {
 
                 this.outer.centerXProperty().setValue(x());
@@ -163,9 +242,6 @@ public class Node {
 
                 if(highlight()) {
                     this.outer.fillProperty().setValue(ColorList.NODE_HIGHLIGHTED);
-                } else if(!isAllowedToChangeColour()) {
-                    this.outer.getStyleClass().add("disabled");
-                    this.inner.getStyleClass().add("disabled");
                 } else if(isAllowedToChangeColour()) {
                     this.outer.fillProperty().set(ColorList.NODE_OUTER_DEFAULT);
                 }
@@ -217,16 +293,28 @@ public class Node {
             private Line line = new Line();
 
             public Meta() {
+
                 Map<Integer, Edge> edges = from.graph.getEdgeMap(from.getId());
                 if(edges.containsKey(to.getId())) {
+                    from.graph.getEdge(to.getId(), from.getId()).getMeta().line.strokeProperty().bindBidirectional(this.line.strokeProperty());
                     this.line.strokeProperty().bindBidirectional(edges.get(to.getId()).meta.line.strokeProperty());
                 }
+                this.line.fillProperty().set(Color.GOLD);
+
                 this.line.startXProperty().bind(from.getMeta().area().centerXProperty());
                 this.line.startYProperty().bind(from.getMeta().area().centerYProperty());
                 this.line.endXProperty().bind(to.getMeta().area().centerXProperty());
                 this.line.endYProperty().bind(to.getMeta().area().centerYProperty());
                 this.line.strokeWidthProperty().setValue(2);
                 this.line.visibleProperty().bind(from.getMeta().area().visibleProperty().and(to.getMeta().area().visibleProperty()));
+            }
+
+            public void hide() {
+                this.line.getStyleClass().add("disabled");
+            }
+
+            public void unhide() {
+                this.line.getStyleClass().remove("disabled");
             }
 
             public boolean visible() {

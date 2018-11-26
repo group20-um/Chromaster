@@ -2,7 +2,7 @@ package edu.um.chromaster;
 
 import edu.um.chromaster.event.EventHandler;
 import edu.um.chromaster.graph.Graph;
-import edu.um.chromaster.gui.GraphElement;
+import edu.um.chromaster.gui.GraphGameElement;
 import edu.um.chromaster.modes.FirstGameMode;
 import edu.um.chromaster.modes.GameMode;
 import edu.um.chromaster.modes.SecondGameMode;
@@ -46,9 +46,8 @@ public class Game extends Application {
         instance = this;
 
 
-        StackPane stackPane = new StackPane();
         Graph graph = new Graph();
-        final int nodes = 5;
+        final int nodes = 30;
         IntStream.range(0, nodes).forEach(i -> graph.addNode(i, -1));
 
         for(int from = 0; from < nodes; from++) {
@@ -59,24 +58,16 @@ public class Game extends Application {
             }
         }
 
-        ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph, graph::setChromaticNumber);
-        GraphElement graphElement  = new GraphElement(graph, GraphElement.RenderType.SPIRAL, GraphElement.BackgroundType.COLOUR);
 
-        graph.getNodes().forEach((id, node) -> {
-            node.getMeta().x((random.nextDouble() * graphElement.getWidth()) - graphElement.getWidth() / 2);
-            node.getMeta().y((random.nextDouble() * graphElement.getHeight()) - graphElement.getHeight() / 2);
-        });
-
-        this.gameMode = new SecondGameMode(graph, 2);
+        this.gameMode = new FirstGameMode(graph);
         this.gameMode.start();
 
+        GraphGameElement graphGameElement = new GraphGameElement(primaryStage, graph, gameMode);
+        Scene scene = new Scene(graphGameElement, -1, -1, true, SceneAntialiasing.BALANCED);
 
-        stackPane.getChildren().add(graphElement);
-        Scene scene = new Scene(stackPane, -1, -1, true, SceneAntialiasing.BALANCED);
-        scene.getStylesheets().add("res/style.css");
 
         // TODO testing hint functions
-        scene.setOnKeyPressed(event -> {
+/*        scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case F1: graphElement.displayHints(GraphElement.HintType.HIGHES_DEGREE); break;
                 case F2: graphElement.displayHints(GraphElement.HintType.CLIQUE); break;
@@ -85,12 +76,11 @@ public class Game extends Application {
             }
             //graphElement.draw();
         });
-
+*/
         // TODO sample mouse-click to node
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        graphElement.render();
     }
 
 }

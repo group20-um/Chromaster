@@ -3,6 +3,9 @@ package edu.um.chromaster.event;
 import java.lang.reflect.Method;
 import java.util.*;
 
+/**
+ * The EventHandler stores, and triggers listeners based on the registered listeners.
+ */
 public class EventHandler {
 
     private Map<Class<? extends Event>, List<EventHolder>> events = new HashMap<>();
@@ -30,7 +33,7 @@ public class EventHandler {
 
         this.eventListeners.add(listener);
 
-        Method[] methods = listener.getClass().getDeclaredMethods();
+        Method[] methods = listener.getClass().getMethods();
         for(Method method : methods) {
 
             Subscribe subscribe = method.getAnnotation(Subscribe.class);
