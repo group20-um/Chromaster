@@ -157,13 +157,6 @@ public class Node {
 
         public void setAllowedToChangeColour(boolean allowedToChangeColour) {
             this.allowedToChangeColour = allowedToChangeColour;
-
-            if(this.allowedToChangeColour) {
-                this.text.fillProperty().set(Color.GOLD);
-            } else {
-                this.text.fillProperty().set(Color.WHITE);
-
-            }
         }
 
         public void colour(Color colour) {

@@ -69,7 +69,7 @@ public class Game extends Application {
 
 
 
-        this.gameMode = new FirstGameMode(graph);
+        this.gameMode = new SecondGameMode(graph, 20);
         this.gameMode.start();
 
         GraphGameElement graphGameElement = new GraphGameElement(primaryStage, graph, gameMode);
