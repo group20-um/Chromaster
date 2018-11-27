@@ -32,8 +32,6 @@ public class GraphGameElement extends BorderPane {
 
         this.graphElement.render();
 
-
-
         this.setMinSize(1024, 1024);
         this.setPrefSize(1024, 1024);
         this.setMaxSize(1024, 1024);

@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 
 import java.util.Collections;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 public class ThirdGameMode extends GameMode {
 
@@ -28,8 +29,12 @@ public class ThirdGameMode extends GameMode {
             e.getMeta().visible(false);
         });
 
-        path.addAll(getGraph().getNodes().values());
-        Collections.shuffle(path, Game.random);
+        for(Node n : getGraph().getNodes().values()) {
+            path.push(n);
+        }
+        System.out.println("values -> "+ getGraph().getNodes().values().size());
+        //Collections.shuffle(path, Game.random);
+        System.out.printf("A> Total nodes %d, stack size: %d%n", getGraph().getNodes().size(), path.size());
 
         Node node = path.peek();
         node.getMeta().visible(true);
@@ -55,17 +60,20 @@ public class ThirdGameMode extends GameMode {
 
         Node n = event.getNode();
 
-        if(n.getMeta().isAllowedToChangeColour() && this.getSelectedColour() != null) {
+        boolean neighbourHasSelectedColour = getGraph().getEdges(n.getId()).stream().noneMatch(e -> e.getTo().getValue() == getSelectedColour().hashCode());
+
+        if(neighbourHasSelectedColour && n.getMeta().isAllowedToChangeColour() && this.getSelectedColour() != null) {
 
             event.getNode().getMeta().colour(getSelectedColour());
             event.getNode().setValue(getSelectedColour().hashCode());
-
             n.getMeta().setAllowedToChangeColour(false);
 
-            // TODO fix the comparision
-            getGraph().getEdges(n.getId()).stream().filter(e -> e.getTo().getMeta().colour() == ColorList.NODE_INNER_DEFAULT).forEach(e -> e.getTo().getMeta().visible(false));
-
+            System.out.printf("A> Total nodes %d, stack size: %d%n", getGraph().getNodes().size(), path.size());
             path.pop();
+            System.out.printf("B> Total nodes %d, stack size: %d%n", getGraph().getNodes().size(), path.size());
+
+            // TODO fix the comparision
+            getGraph().getEdges(n.getId()).stream().filter(e -> e.getTo().getValue() == -1).forEach(e -> e.getTo().getMeta().visible(false));
 
             if(!path.isEmpty()) {
                 Node node = path.peek();

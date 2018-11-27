@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 public class GraphElement extends Pane {
 
-
     private final Graph graph;
     private RenderType renderType;
 
@@ -34,8 +33,8 @@ public class GraphElement extends Pane {
     public GraphElement(Graph graph, RenderType renderType, BackgroundType backgroundType) {
         this.graph = graph;
         this.renderType = renderType;
-        this.setWidth(1024);
-        this.setHeight(1024);
+        this.setWidth(1280);
+        this.setHeight(720);
         this.minWidthProperty().set(this.getWidth());
         this.minHeightProperty().set(this.getHeight());
         this.maxWidthProperty().set(this.getWidth());
@@ -146,6 +145,7 @@ public class GraphElement extends Pane {
                 //aPlatform.runLater(this::draw);
 
             } else {
+                List<Node> notVisible = graph.getNodes().values().stream().filter(e -> !e.getMeta().visible()).collect(Collectors.toList());
                 scheduledFuture.get().cancel(true);
             }
         }, 100L, MAX_TIME_STEP, TimeUnit.MILLISECONDS));

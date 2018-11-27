@@ -121,26 +121,36 @@ public class ChromaticNumber {
 
         AtomicReference<Graph> colouredGraph = new AtomicReference<>();
 
+        AtomicReference<Integer> exactTestResult = new AtomicReference<Integer>(null);
+        AtomicReference<Integer> lowerTestResult = new AtomicReference<Integer>(null);
+
         //--- Run the exact test async, so we can run the lower-bound algorithm in parallel
-        Future future = schedule.submit(() -> {
+        AtomicReference<Future> future = new AtomicReference<>();
+        future.set(schedule.submit(() -> {
             while(exact(graph, upper.get())) {
                 System.out.printf("<Exact Test> The graph CAN be coloured with %d colours.%n", upper.get());
                 colouredGraph.set(graph.clone());
                 graph.reset();
 
                 if(upper.get() == lower.get()) {
-                    upper.addAndGet(-1);
+                    System.out.println(future.get().isCancelled());
+                    if (!future.get().isCancelled()) {
+                        upper.addAndGet(-1);
+                    }
                     break;
                 }
                 // TODO cleanup
                 else if(upper.get() < lower.get()) {
-                    upper.set(lower.get() - 1);
+                    System.out.println(future.get().isCancelled());
+                    if(!future.get().isCancelled()) {
+                        upper.set(lower.get() - 1);
+                    }
                     break;
                 }
                 upper.addAndGet(-1);
             }
 
-        });
+        }));
 
         //--- run the lower-bound algorithm async at the same time as the exact tests are going on
         Future lowerBoundFuture = null;
@@ -148,12 +158,17 @@ public class ChromaticNumber {
             lowerBoundFuture = CompletableFuture.supplyAsync(() -> lowerBound(graph)).thenAccept((result) -> {
                 lower.set(result);
                 System.out.printf("<Exact Test> Updated lower bound: %d%n", lower.get());
-                System.out.printf("<Exact Test> Range: [%d..%d]%n", lower.get(), upper.get());
+                System.out.printf("<Exact Test> Range: [%d..%d]%n", Math.min(lower.get(), upper.get()), Math.max(lower.get(), upper.get()));
 
                 //--- if the result is greater than or equal to the upper (aka. the current chromatic number test value)
                 // then we are done, and the result (lower-bound) is the chromatic number.
                 if(result >= upper.get()) {
-                    future.cancel(true); // cancel the main check to stop it from eroding our data.
+                    future.get().cancel(true); // cancel the main check to stop it from eroding our data.
+                    try {
+                        future.get().get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
                     upper.set(result - 1); // set result
                     System.out.printf("<Exact Test> Exact: %d (determined by lower-bound async execution)%n", (upper.get() + 1) );
                 }
@@ -166,7 +181,7 @@ public class ChromaticNumber {
             if(lowerBoundFuture != null) {
                 ((CompletableFuture) lowerBoundFuture).join();
             }
-            future.get();
+            future.get().get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }

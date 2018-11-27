@@ -299,7 +299,7 @@ public class Node {
                     from.graph.getEdge(to.getId(), from.getId()).getMeta().line.strokeProperty().bindBidirectional(this.line.strokeProperty());
                     this.line.strokeProperty().bindBidirectional(edges.get(to.getId()).meta.line.strokeProperty());
                 }
-                this.line.fillProperty().set(Color.GOLD);
+                this.line.strokeProperty().set(ColorList.EDGE_DEFAULT);
 
                 this.line.startXProperty().bind(from.getMeta().area().centerXProperty());
                 this.line.startYProperty().bind(from.getMeta().area().centerYProperty());
