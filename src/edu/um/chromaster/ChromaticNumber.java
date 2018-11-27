@@ -4,10 +4,7 @@ import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -15,7 +12,6 @@ import java.util.stream.Collectors;
 
 public class ChromaticNumber {
 
-    public static Graph graph;
     private static ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(2);
 
     //---
@@ -38,8 +34,8 @@ public class ChromaticNumber {
 
         switch (type) {
 
-            case LOWER: return runTimeBound ? limitedTimeLowerBound(graph) : new Result(-1, lowerBound(graph), -1, true);
-            case UPPER: return runTimeBound ? limitedTimeUpper(graph) : new Result(-1, -1, upperBound(graph), true);
+            case LOWER: return runTimeBound ? limitedTimeLowerBound(graph) : new Result(null,-1, lowerBound(graph), -1, true);
+            case UPPER: return runTimeBound ? limitedTimeUpper(graph) : new Result(null,-1, -1, upperBound(graph), true);
             case EXACT: return runTimeBound ? limitedTimeExactTest(graph) : exactTest(graph, false);
 
         }
@@ -60,13 +56,13 @@ public class ChromaticNumber {
         Result result = timeBoundMethodExecution(new MethodRunnable() {
             @Override
             public void run() {
-                Result r = new Result(-1, lowerBound(graph), -1, true);
+                Result r = new Result(null,-1, lowerBound(graph), -1, true);
                 this.setResult(r);
             }
         }, TIME_LIMIT_LOWER);
 
         if(result.getLower() == -1) {
-            result = new Result(-1, basicLowerBound(graph), -1, true);
+            result = new Result(null,-1, basicLowerBound(graph), -1, true);
         }
 
         return result;
@@ -81,65 +77,55 @@ public class ChromaticNumber {
         Result result = timeBoundMethodExecution(new MethodRunnable() {
             @Override
             public void run() {
-                Result r = new Result(-1, -1, upperBound(graph), true);
+                Result r = new Result(null,-1, -1, upperBound(graph), true);
                 this.setResult(r);
             }
         }, TIME_LIMIT_UPPER);
 
         if(result.getUpper() == -1) {
-            result = new Result(0, 0, simpleUpperBound(graph), true);
+            result = new Result(null,0, 0, simpleUpperBound(graph), true);
         }
         return result;
     }
 
     // --- EXACT SECTION ---
     private static Result exactTest(Graph graph, boolean runTimeBound) {
-        //---
+        //--- the upper bound that we either find by running our upper-bound algorithm
         final AtomicInteger upper = new AtomicInteger(runTimeBound ? limitedTimeUpper(graph).getUpper() : upperBound(graph));
 
+        // if the upper bound algorithm fails, we cannot do anything anymore
         if(upper.get() == -1) {
-            return new Result(-1, -1, -1, true);
+            return new Result(null,-1, -1, -1, true);
         }
 
+        // run the lower bound algorithm, if it is supposed to be time-limited
         AtomicInteger lower = new AtomicInteger(0);
-        AtomicReference<Boolean> cancelLoopAndTakeUpper = new AtomicReference<>();
-        cancelLoopAndTakeUpper.set(null);
-
         if(runTimeBound) {
             lower.set(limitedTimeLowerBound(graph).getLower());
-        } else {
-            CompletableFuture.supplyAsync(() -> lowerBound(graph)).thenAccept((result) -> {
-                synchronized (lower) {
-                    lower.set(result);
-                    System.out.printf("<Exact Test> Updated lower bound: %d%n", lower.get());
-                    System.out.printf("<Exact Test> Range: [%d..%d]%n", lower.get(), upper.get());
-
-                    if(lower.get() == upper.get()) {
-                        cancelLoopAndTakeUpper.set(true);
-                    }
-                }
-            });
         }
 
+        //--- the current range of values we are expecting to inspect
         final int upperResult = upper.get();
         final int lowerResult = lower.get();
-
         System.out.printf("<Exact Test> Range: [%d..%d]%n", lowerResult, upperResult);
 
+        //--- if the bounds are equal then this is the chromatic number
         if(upperResult == lowerResult) {
-            ChromaticNumber.graph = graph;
-            return new Result(lowerResult, lowerResult, upperResult, true);
+            return new Result(graph, lowerResult, lowerResult, upperResult, true);
         }
 
-
+        //--- we do start testing upperBound-1 because we know for sure that upper-bound itself is going to work, so
+        // testing it is a waste of resources.
         upper.addAndGet(-1);
         graph.reset();
 
+        AtomicReference<Graph> colouredGraph = new AtomicReference<>();
+
+        //--- Run the exact test async, so we can run the lower-bound algorithm in parallel
         Future future = schedule.submit(() -> {
-            Graph result = graph.clone();
             while(exact(graph, upper.get())) {
                 System.out.printf("<Exact Test> The graph CAN be coloured with %d colours.%n", upper.get());
-                result = graph.clone();
+                colouredGraph.set(graph.clone());
                 graph.reset();
 
                 if(upper.get() == lower.get()) {
@@ -153,17 +139,43 @@ public class ChromaticNumber {
                 }
                 upper.addAndGet(-1);
             }
-            ChromaticNumber.graph = result;
 
         });
 
-        while (cancelLoopAndTakeUpper.get() == null) {
+        //--- run the lower-bound algorithm async at the same time as the exact tests are going on
+        Future lowerBoundFuture = null;
+        if(!(runTimeBound)) {
+            lowerBoundFuture = CompletableFuture.supplyAsync(() -> lowerBound(graph)).thenAccept((result) -> {
+                lower.set(result);
+                System.out.printf("<Exact Test> Updated lower bound: %d%n", lower.get());
+                System.out.printf("<Exact Test> Range: [%d..%d]%n", lower.get(), upper.get());
 
+                //--- if the result is greater than or equal to the upper (aka. the current chromatic number test value)
+                // then we are done, and the result (lower-bound) is the chromatic number.
+                if(result >= upper.get()) {
+                    future.cancel(true); // cancel the main check to stop it from eroding our data.
+                    upper.set(result - 1); // set result
+                    System.out.printf("<Exact Test> Exact: %d (determined by lower-bound async execution)%n", (upper.get() + 1) );
+                }
+            });
         }
 
-        final int exact = upper.addAndGet(1);
+        //--- we have to wait for both the lower-bound (if running at all), and the exact test to finish before submitting
+        // any results
+        try {
+            if(lowerBoundFuture != null) {
+                ((CompletableFuture) lowerBoundFuture).join();
+            }
+            future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        //--- we are done, we have to increase the upper-bound by +1 because it contains the current upper-bound we tested
+        // was no longer valid so the value before that is the chromatic number.
+        final int exact = upper.get() + 1;
         System.out.println("<Exact Test> Exact: " + exact);
-        return new Result(exact, lowerResult, upperResult, true);
+        return new Result(colouredGraph.get(), exact, lowerResult, upperResult, true);
 
 
     }
@@ -387,17 +399,24 @@ public class ChromaticNumber {
 
     public static class Result {
 
+        private Graph solution;
+
         private int exact = -1;
         private int upper = -1;
         private int lower = -1;
 
         private boolean isReady = false;
 
-        public Result(int exact, int lower, int upper, boolean isReady) {
+        public Result(Graph solution, int exact, int lower, int upper, boolean isReady) {
+            this.solution = solution;
             this.exact = exact;
             this.lower = lower;
             this.upper = upper;
             this.isReady = isReady;
+        }
+
+        public Graph getSolution() {
+            return solution;
         }
 
         public void ready() {

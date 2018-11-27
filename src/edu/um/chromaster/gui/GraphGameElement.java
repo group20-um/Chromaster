@@ -6,6 +6,7 @@ import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.modes.GameMode;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class GraphGameElement extends BorderPane {
@@ -38,12 +39,23 @@ public class GraphGameElement extends BorderPane {
         this.setMaxSize(1024, 1024);
         this.setCenter(this.graphElement);
         this.setTop(this.colourSelectorElement);
+
         //--- TODO
         Button button = new Button("Check Win Condition");
         button.setOnAction(event -> {
             System.out.println("Did the user win? " + gameMode.gameWon());
         });
-        this.setBottom(button);
+
+        Button buttonSolution = new Button("Show Solution");
+        buttonSolution.setOnAction(event -> {
+            graph.getChromaticResult().getSolution().getNodes().forEach((id, node) -> {
+                graph.getNode(id).getMeta().text(String.valueOf(node.getValue()));
+            });
+        });
+
+        HBox hBox = new HBox();
+        hBox.getChildren().addAll(button, buttonSolution);
+        this.setBottom(hBox);
 
         gameMode.start();
     }

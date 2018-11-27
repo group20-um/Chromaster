@@ -2,6 +2,7 @@ package edu.um.chromaster;
 
 import edu.um.chromaster.event.EventHandler;
 import edu.um.chromaster.graph.Graph;
+import edu.um.chromaster.graph.RandomGraph;
 import edu.um.chromaster.gui.GraphGameElement;
 import edu.um.chromaster.modes.FirstGameMode;
 import edu.um.chromaster.modes.GameMode;
@@ -45,18 +46,27 @@ public class Game extends Application {
     public void start(Stage primaryStage) {
         instance = this;
 
+/*
+            Graph graph = new Graph();
+            final int nodes = 30;
+            IntStream.range(0, nodes).forEach(i -> graph.addNode(i, -1));
 
-        Graph graph = new Graph();
-        final int nodes = 30;
-        IntStream.range(0, nodes).forEach(i -> graph.addNode(i, -1));
-
-        for(int from = 0; from < nodes; from++) {
-            for(int to = 0; to < nodes; to++) {
-                if (from != to && random.nextDouble() < 0.1) {
-                    graph.addEdge(from, to, true);
+            for (int from = 0; from < nodes; from++) {
+                for (int to = 0; to < nodes; to++) {
+                    if (from != to && random.nextDouble() < 0.1) {
+                        graph.addEdge(from, to, true);
+                    }
                 }
-            }
-        }
+            }*/
+
+
+        RandomGraph g = new RandomGraph();
+        g.setLIMIT(10);
+        g.setPMedium();
+        g.setNada(true);
+        System.out.println(g.getProbability());
+        Graph graph = g.getGraph();
+
 
 
         this.gameMode = new FirstGameMode(graph);

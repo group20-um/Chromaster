@@ -167,7 +167,7 @@ public class Node {
         }
 
         public void colour(Color colour) {
-            this.outer.fillProperty().set(colour);
+            this.inner.fillProperty().set(colour);
             updateCircles();
         }
 

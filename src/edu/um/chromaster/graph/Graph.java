@@ -10,7 +10,7 @@ public class Graph implements Cloneable {
     private Map<Integer, Node> nodes = new HashMap<>();
     private Map<Integer, Map<Integer, Edge>> edges = new HashMap<>();
 
-    private ChromaticNumber.Result chromaticNumberResult = new ChromaticNumber.Result(-1, -1, -1, false);
+    private ChromaticNumber.Result chromaticNumberResult = new ChromaticNumber.Result(null,-1, -1, -1, false);
 
     private int minNodeId = Integer.MAX_VALUE;
     private int maxNodeId = Integer.MIN_VALUE;
@@ -47,14 +47,17 @@ public class Graph implements Cloneable {
      * Adds a new node with an id and a certain value if it does not already exist, if it already exists, it will be ignored.
      * @param id The id of the new node.
      * @param value The value associated with the new node.
+     * @return true, if the node was added, false, if the node already exists.
      */
-    public void addNode(int id, int value) {
+    public boolean addNode(int id, int value) {
         if(!(this.nodes.containsKey(id))) {
             minNodeId = Math.min(id, minNodeId);
             maxNodeId = Math.max(id, maxNodeId);
             this.nodes.put(id, new Node(this, id, value));
             this.edges.put(id, new HashMap<>());
+            return true;
         }
+        return false;
     }
 
     /**
@@ -77,14 +80,10 @@ public class Graph implements Cloneable {
     /**
      * Gets the node with id 'id'.
      * @param id The node of the id to retrieve.
-     * @return Returns the {@link Node} reference associated with the provided id.
-     * @throws IllegalArgumentException if the provided id does not exist.
+     * @return Returns the {@link Node} reference associated with the provided id, or null, if the node does not exist.
      */
     public Node getNode(int id) {
-        if(this.nodes.containsKey(id)) {
-            return this.nodes.get(id);
-        }
-        throw new IllegalArgumentException();
+        return this.nodes.get(id);
     }
 
     /**
@@ -106,15 +105,9 @@ public class Graph implements Cloneable {
      * Returns the edge between two nodes.
      * @param from The id of the node where the edge starts.
      * @param to The id of the node where the edge ends.
-     * @return Never null, returns the edge between the nodes.
-     * @throws IllegalArgumentException if no such edge exists.
+     * @return The edge, if the edge between 'from' to 'to' exists, otherwise null.
      */
     public Edge getEdge(int from, int to) {
-
-        if(!this.edges.containsKey(from) || !this.edges.get(from).containsKey(to)) {
-            throw new IllegalArgumentException();
-        }
-
         return this.getEdgeMap(from).get(to);
     }
 
@@ -122,13 +115,8 @@ public class Graph implements Cloneable {
      * Returns a Map containing all {@link Edge}s starting at the provided node.
      * @param node The node the edges start at.
      * @return Never null, a map where the key is the id of the node the edge goes to, and the value of the Edge.
-     * @throws IllegalArgumentException if
      */
     public Map<Integer, Edge> getEdgeMap(int node) {
-        if(!this.edges.containsKey(node)) {
-            throw new IllegalArgumentException();
-        }
-
         return this.edges.get(node);
     }
 
