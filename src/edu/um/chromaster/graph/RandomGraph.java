@@ -1,5 +1,6 @@
 package edu.um.chromaster.graph;
 
+import edu.um.chromaster.Game;
 
 public class RandomGraph {
 
@@ -41,22 +42,21 @@ public class RandomGraph {
 
     public Graph setNada(){
         Graph g=new Graph();
-        while(!(numberVertices>1 &&numberVertices<=LIMIT)) {
-            numberVertices = (int) (Math.random() * LIMIT);
-        }
+
+        numberVertices = (int) (Game.random.nextDouble() * (LIMIT - 2))+2;
+
         for(int cnt=0; cnt<numberVertices;cnt++)
             g.addNode(cnt, -1);
+
         int cntEdges=0;
         int cnt=0;
+
         for(int a=0; a<numberVertices; a++){
             for(int c=0; c<numberVertices;c++){
                 cnt++;
-                double x=Math.random();
-                //System.out.println(x +" "+a);
+                double x = Game.random.nextDouble();
                 if(x<probability || g.getEdges(a).size()==0) {
-                    //int b=(int) (Math.random()*numberVertices);
-                    //System.out.println("Edge from "+a+" to "+b);
-                    if(!edgeExists(a,c,g)&&a!=c) {
+                    if(!edgeExists(a,c,g) && a!=c) {
                         g.addEdge(a, c, true);
                         cntEdges++;
                     }
@@ -67,45 +67,7 @@ public class RandomGraph {
         System.out.println("XVertices "+numberVertices+" edges: "+numberEdges);
         return g;
     }
-    /*
-    public Graph completlyRandom(){
-        Graph g = new Graph();
-        while (!(numberVertices > 1 && numberVertices <= LIMIT)){
-            numberVertices = (int) (Math.random() * LIMIT);
-        }
-        for (int cnt = 0; cnt < numberVertices; cnt++) {
-            g.addNode(cnt, -1);
-        }
-        int cntEdges=0;
-        int count=0;
-        int maxEdges=numberVertices*(numberVertices-1)/2;
-        while(count<=maxEdges){
-            if(count<numberVertices){
-                for(int a=0; a<numberVertices; a++) {
-                    count++;
-                    double x = Math.random();
-                    if (x < probability || g.getEdges(a).size() == 0) {
-                        int b = (int) (Math.random() * numberVertices);
-                        g.addEdge(a, b, true);
-                        cntEdges++;
-                    }
-                }
-            }
-            else{
-                count++;
-                double x = Math.random();
-                int a=(int)(Math.random()*numberVertices);
-                if (x < probability || g.getEdges(a).size() == 0) {
-                    int b = (int) (Math.random() * numberVertices);
-                    g.addEdge(a, b, true);
-                    cntEdges++;
-                }
-            }
-        }
-        numberEdges=cntEdges;
-        return g;
-    }
-    */
+
     public Graph setVertices(int vertices){
         Graph g=new Graph();
         numberVertices=vertices;
@@ -133,17 +95,22 @@ public class RandomGraph {
         int min=(int) (Math.ceil(0.5+Math.sqrt( 0.25+2*numberEdges )));
         int max= numberEdges+1;
         int vertices=0;
-        while(!(vertices>=min&&vertices<=max)){
-            vertices=(int)(Math.random()*max+1);
-        }
+        vertices=(int)(Game.random.nextDouble()*(max-min+1)+min);
         numberVertices=vertices;
         for(int cnt=0; cnt<vertices;cnt++)
             g.addNode(cnt, -1);
         int cntEdges=0;
+        for(int a=0; a<vertices; a++) {
+            if (g.getEdges(a).size() == 0) {
+                int b = (int) (Game.random.nextDouble() * (numberVertices + 1));
+                g.addEdge(a, b, true);
+                cntEdges++;
+            }
+        }
         while(cntEdges<numberEdges){
             for(int a=0; a<vertices; a++){
                 for(int b=0; b<vertices;b++){
-                    if(Math.random()<probability||g.getEdges(a).size()==0){
+                    if(Math.random()<probability){
                         if(!edgeExists(a,b,g)&&a!=b) {
                             g.addEdge(a, b, true);
                             cntEdges++;
@@ -163,11 +130,18 @@ public class RandomGraph {
         for(int cnt=0; cnt<vertices;cnt++)
             g.addNode(cnt, -1);
         int cntEdges=0;
+        for(int a=0; a<vertices; a++) {
+            if (g.getEdges(a).size() == 0) {
+                int b = (int) (Game.random.nextDouble() * (numberVertices + 1));
+                g.addEdge(a, b, true);
+                cntEdges++;
+            }
+        }
         while(cntEdges<numberEdges){
             for(int a=0; a<vertices; a++){
                 for(int b=0; b<vertices;b++){
-                    if(Math.random()<probability||g.getEdges(a).size()==0) { //test if edge already exists!!!
-                        if (!edgeExists(a, b, g)&&a!=b) {
+                    if(Math.random()<probability){
+                        if(!edgeExists(a,b,g)&&a!=b) {
                             g.addEdge(a, b, true);
                             cntEdges++;
                         }
@@ -178,19 +152,13 @@ public class RandomGraph {
         return g;
     }
     public void setPEasy(){
-        while(probability==0||probability>PROBEASY){
-            probability=Math.random();
-        }
+        probability=Game.random.nextDouble()*(PROBEASY-0.01)+0.01;
     }
     public void setPMedium(){
-        while(!(probability>PROBEASY&&probability<PROBMEDIUM)){
-            probability=Math.random();
-        }
+        probability=Game.random.nextDouble()*(PROBMEDIUM-PROBEASY)+PROBEASY;
     }
     public void setPHard(){
-        while(!(probability>PROBMEDIUM &&probability<PROBHARD)){
-            probability=Math.random();
-        }
+        probability=Game.random.nextDouble()*(-PROBMEDIUM+PROBHARD)+PROBMEDIUM;
     }
     public void setLIMIT(int limit){
         LIMIT=limit;

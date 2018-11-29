@@ -1,6 +1,7 @@
 package edu.um.chromaster.graph;
 
 import edu.um.chromaster.gui.ColorList;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -47,11 +48,10 @@ public class Node {
 
     public class Meta {
 
+        public final static double DEFAULT_RADIUS = 20;
+
         private String textValue;
         private Text text = new Text();
-        {
-            text.fontProperty().set(new Font("Yu Gothic UI Regular", 12));
-        }
         private Circle outer = new Circle();
         private Circle inner = new Circle();
 
@@ -61,7 +61,7 @@ public class Node {
 
         public double displacementX, displacementY;
         private double positionX, positionY;
-        private double radius = 20;
+        private double radius = DEFAULT_RADIUS;
 
 
 
@@ -99,11 +99,16 @@ public class Node {
                 connectedNodes.add(node);
                 node.graph.getEdges().values().forEach(map -> map.values().forEach(edge -> {
 
-                    if(!connectedNodes.contains(edge.getFrom()) || !connectedNodes.contains(edge.getTo())) {
-                        edge.getTo().getMeta().hide();
+                    if(!connectedNodes.contains(edge.getFrom())) {
                         edge.getFrom().getMeta().hide();
-                        edge.getMeta().hide();
                     }
+
+                    if(!connectedNodes.contains(edge.getTo())) {
+                        edge.getTo().getMeta().hide();
+                    }
+
+                    edge.getMeta().hide();
+
 
                 }));
 
@@ -223,33 +228,35 @@ public class Node {
         }
 
         private void updateCircles() {
-            this.outer.visibleProperty().setValue(visible());
-            this.inner.visibleProperty().setValue(visible());
-            this.text.visibleProperty().setValue(visible());
+            Platform.runLater(() -> {
+                Meta.this.outer.visibleProperty().setValue(visible());
+                Meta.this.inner.visibleProperty().setValue(visible());
+                Meta.this.text.visibleProperty().setValue(visible());
 
-            if(visible()) {
+                if(visible()) {
 
-                this.outer.centerXProperty().setValue(x());
-                this.outer.centerYProperty().setValue(y());
-                this.outer.radiusProperty().setValue(radius());
+                    Meta.this.outer.centerXProperty().setValue(x());
+                    Meta.this.outer.centerYProperty().setValue(y());
+                    Meta.this.outer.radiusProperty().setValue(radius());
 
-                if(highlight()) {
-                    this.outer.fillProperty().setValue(ColorList.NODE_HIGHLIGHTED);
-                } else if(isAllowedToChangeColour()) {
-                    this.outer.fillProperty().set(ColorList.NODE_OUTER_DEFAULT);
+                    if(highlight()) {
+                        Meta.this.outer.fillProperty().setValue(ColorList.NODE_HIGHLIGHTED);
+                    } else if(isAllowedToChangeColour()) {
+                        Meta.this.outer.fillProperty().set(ColorList.NODE_OUTER_DEFAULT);
+                    }
+
+                    Meta.this.inner.centerXProperty().setValue(x());
+                    Meta.this.inner.centerYProperty().setValue(y());
+                    Meta.this.inner.radiusProperty().setValue(radius() * 0.6);
+
+                    Meta.this.text.textProperty().setValue(textValue);
+                    Meta.this.text.xProperty().setValue(x() - (Meta.this.text.getFont().getSize() / 2) * (textValue.length() / 2));
+                    Meta.this.text.yProperty().setValue(y() + (Meta.this.text.getFont().getSize() / 4));
+                    Meta.this.text.textAlignmentProperty().set(TextAlignment.CENTER);
+                    Meta.this.text.setTextAlignment(TextAlignment.CENTER);
                 }
 
-                this.inner.centerXProperty().setValue(x());
-                this.inner.centerYProperty().setValue(y());
-                this.inner.radiusProperty().setValue(radius() * 0.6);
-
-                this.text.textProperty().setValue(textValue);
-                this.text.xProperty().setValue(x() - (this.text.getFont().getSize() / 2) * (textValue.length() / 2));
-                this.text.yProperty().setValue(y() + (this.text.getFont().getSize() / 4));
-                this.text.textAlignmentProperty().set(TextAlignment.CENTER);
-                this.text.setTextAlignment(TextAlignment.CENTER);
-            }
-
+            });
         }
 
         public Shape[] getGraphicElements() {
@@ -287,19 +294,21 @@ public class Node {
 
             public Meta() {
 
-                Map<Integer, Edge> edges = from.graph.getEdgeMap(from.getId());
-                if(edges.containsKey(to.getId())) {
-                    from.graph.getEdge(to.getId(), from.getId()).getMeta().line.strokeProperty().bindBidirectional(this.line.strokeProperty());
-                    this.line.strokeProperty().bindBidirectional(edges.get(to.getId()).meta.line.strokeProperty());
-                }
-                this.line.fillProperty().set(Color.GOLD);
+                Platform.runLater(() -> {
+                    Map<Integer, Edge> edges = from.graph.getEdgeMap(from.getId());
+                    if(edges.containsKey(to.getId()) && !line.strokeProperty().isBound()) {
+                        from.graph.getEdge(to.getId(), from.getId()).getMeta().line.strokeProperty().bindBidirectional(Meta.this.line.strokeProperty());
+                    }
+                    Meta.this.line.strokeProperty().set(ColorList.EDGE_DEFAULT);
 
-                this.line.startXProperty().bind(from.getMeta().area().centerXProperty());
-                this.line.startYProperty().bind(from.getMeta().area().centerYProperty());
-                this.line.endXProperty().bind(to.getMeta().area().centerXProperty());
-                this.line.endYProperty().bind(to.getMeta().area().centerYProperty());
-                this.line.strokeWidthProperty().setValue(2);
-                this.line.visibleProperty().bind(from.getMeta().area().visibleProperty().and(to.getMeta().area().visibleProperty()));
+                    Meta.this.line.startXProperty().bind(from.getMeta().area().centerXProperty());
+                    Meta.this.line.startYProperty().bind(from.getMeta().area().centerYProperty());
+                    Meta.this.line.endXProperty().bind(to.getMeta().area().centerXProperty());
+                    Meta.this.line.endYProperty().bind(to.getMeta().area().centerYProperty());
+                    Meta.this.line.strokeWidthProperty().setValue(2);
+                    Meta.this.line.visibleProperty().bind(from.getMeta().area().visibleProperty().and(to.getMeta().area().visibleProperty()));
+                });
+
             }
 
             public void hide() {

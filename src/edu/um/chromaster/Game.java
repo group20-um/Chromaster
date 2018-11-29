@@ -46,31 +46,17 @@ public class Game extends Application {
     public void start(Stage primaryStage) {
         instance = this;
 
-/*
-            Graph graph = new Graph();
-            final int nodes = 30;
-            IntStream.range(0, nodes).forEach(i -> graph.addNode(i, -1));
-
-            for (int from = 0; from < nodes; from++) {
-                for (int to = 0; to < nodes; to++) {
-                    if (from != to && random.nextDouble() < 0.1) {
-                        graph.addEdge(from, to, true);
-                    }
-                }
-            }*/
-
-
         RandomGraph g = new RandomGraph();
-        g.setLIMIT(10);
-        g.setPMedium();
+        g.setLIMIT(100);
+        g.setPHard();
         g.setNada(true);
         System.out.println(g.getProbability());
         Graph graph = g.getGraph();
 
 
 
-        this.gameMode = new SecondGameMode(graph, 20);
-        this.gameMode.start();
+       this.gameMode = new FirstGameMode(graph);
+
 
         GraphGameElement graphGameElement = new GraphGameElement(primaryStage, graph, gameMode);
         Scene scene = new Scene(graphGameElement, -1, -1, true, SceneAntialiasing.BALANCED);

@@ -3,6 +3,8 @@ package edu.um.chromaster;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 
+import java.util.Map;
+
 public class GraphDrawer {
 
     private GraphDrawer() {}
@@ -76,6 +78,110 @@ public class GraphDrawer {
             }
         }*/
 
+    }
+
+    // http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.13.8444&rep=rep1&type=pdf
+    public static void test(Graph graph, double width, double height) {
+
+        final double area = width * height;
+        final double k = Math.sqrt(area / graph.getNodes().size());
+        double t = width / 10D;
+        final int iterations = 5;
+
+        graph.getNodes().forEach((id, node) -> {
+            node.getMeta().x((Game.random.nextDouble() * width));
+            node.getMeta().y((Game.random.nextDouble() * height));
+            assert !Double.isNaN(node.getMeta().x());
+            assert !Double.isNaN(node.getMeta().y());
+        });
+
+        for (int i = 0; i < iterations; i++) {
+
+            System.out.println("iteration: " + i);
+
+            // calculate repulsive force
+            for (Node v : graph.getNodes().values()) {
+                Node.Meta vM = v.getMeta();
+                vM.displacementX = 0;
+                vM.displacementY = 0;
+
+                for (Node u : graph.getNodes().values()) {
+                    if (v != u) {
+                        Node.Meta uM = u.getMeta();
+                        double deltaX = vM.x() - uM.x();
+                        double deltaY = vM.y() - uM.y();
+
+                        assert (deltaX == deltaX);
+                        assert (deltaY == deltaY);
+
+                        //
+                        double a = (deltaX / Math.abs(deltaX)) * repulsiveForce(k, Math.abs(deltaX));
+                        double b = (deltaY / Math.abs(deltaY)) * repulsiveForce(k, Math.abs(deltaY));
+
+                        assert !Double.isNaN(a);
+                        assert !Double.isNaN(b);
+                        vM.displacementX += a;
+                        vM.displacementY += b;
+
+                        assert !Double.isNaN(vM.displacementX);
+                        assert !Double.isNaN(vM.displacementY);
+
+                    }
+                }
+            }
+
+            // calculate attractive forces
+            for (Map<Integer, Node.Edge> eList : graph.getEdges().values()) {
+                for (Node.Edge e : eList.values()) {
+                    double deltaX = e.getFrom().getMeta().x() - e.getTo().getMeta().x();
+                    double deltaY = e.getFrom().getMeta().y() - e.getTo().getMeta().y();
+
+                    double a = (deltaX / Math.abs(deltaX)) * attractiveForce(k, Math.abs(deltaX));
+                    double b = (deltaY / Math.abs(deltaY)) * attractiveForce(k, Math.abs(deltaY));
+
+                    assert !Double.isNaN(a);
+                    assert !Double.isNaN(b);
+
+                    e.getFrom().getMeta().displacementX -= a;
+                    e.getFrom().getMeta().displacementY -= b;
+
+                    e.getTo().getMeta().displacementX += a;
+                    e.getTo().getMeta().displacementY += b;
+
+                    assert !Double.isNaN(e.getFrom().getMeta().displacementX);
+                    assert !Double.isNaN(e.getFrom().getMeta().displacementY);
+                    assert !Double.isNaN(e.getTo().getMeta().displacementX);
+                    assert !Double.isNaN(e.getTo().getMeta().displacementY);
+                }
+            }
+
+            // limit the maximum displacement
+            for (Node v : graph.getNodes().values()) {
+                Node.Meta vM = v.getMeta();
+
+                double a = vM.x() + (vM.displacementX / Math.abs(vM.displacementX)) * t;
+                double b = vM.y() + (vM.displacementY / Math.abs(vM.displacementY)) * t;
+                assert !Double.isNaN(a);
+                assert !Double.isNaN(b);
+
+
+                //vM.x(Math.min(Math.max(a, 1), height));
+                //vM.y(Math.min(Math.max(b, 1), width));
+
+                vM.x(a);
+                vM.y(b);
+
+                assert !Double.isNaN(vM.x());
+                assert !Double.isNaN(vM.y());
+
+            }
+
+            t -= (width / 10D / iterations);
+
+        }
+
+
+        System.out.println(t);
     }
 
     public static void banana(Graph graph, double width, double height) {
@@ -188,11 +294,15 @@ public class GraphDrawer {
     }
 
     private static double attractiveForce(double k, double x) {
-        return Math.pow(x, 2) / k;
+        double y = Math.pow(x, 2) / k;
+        assert y != 0 && !Double.isNaN(y);
+        return y;
     }
 
     private static double repulsiveForce(double k, double x) {
-        return Math.pow(k, 2) / x;
+        double y = Math.pow(-k, 2) / x;
+        assert y != 0 && !Double.isNaN(y);
+        return y;
     }
 
 }

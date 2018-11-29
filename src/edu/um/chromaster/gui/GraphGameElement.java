@@ -20,7 +20,7 @@ public class GraphGameElement extends BorderPane {
 
         this.getStylesheets().add("res/style.css");
 
-        this.graphElement = new GraphElement(graph, GraphElement.RenderType.SPIRAL, null);
+        this.graphElement = new GraphElement(graph, GraphElement.RenderType.SPIRAL);
         this.colourSelectorElement = new ColourSelectorElement(stage);
         this.gameMode = gameMode;
 
@@ -31,8 +31,6 @@ public class GraphGameElement extends BorderPane {
         });
 
         this.graphElement.render();
-
-
 
         this.setMinSize(1024, 1024);
         this.setPrefSize(1024, 1024);

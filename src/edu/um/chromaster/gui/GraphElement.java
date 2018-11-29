@@ -25,17 +25,16 @@ import java.util.stream.Collectors;
 
 public class GraphElement extends Pane {
 
-
     private final Graph graph;
-    private RenderType renderType;
 
     private ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(2);
+    private RenderType renderType = RenderType.SPIRAL;
 
-    public GraphElement(Graph graph, RenderType renderType, BackgroundType backgroundType) {
-        this.graph = graph;
+    public GraphElement(Graph graph, RenderType renderType) {
         this.renderType = renderType;
-        this.setWidth(1024);
-        this.setHeight(1024);
+        this.graph = graph;
+        this.setWidth(1280);
+        this.setHeight(720);
         this.minWidthProperty().set(this.getWidth());
         this.minHeightProperty().set(this.getHeight());
         this.maxWidthProperty().set(this.getWidth());
@@ -69,6 +68,7 @@ public class GraphElement extends Pane {
             case LIMACON: GraphDrawer.limacon(graph, this.getWidth(), this.getHeight()); break;
             case SPIRAL: GraphDrawer.archemedianSprial(graph, this.getWidth(), this.getHeight()); break;
             case ROSE: GraphDrawer.rose(graph, this.getWidth(), this.getHeight()); break;
+            case TEST: GraphDrawer.test(graph, this.getWidth(), this.getHeight()); break;
             default: throw new IllegalArgumentException();
         }
 
@@ -143,8 +143,6 @@ public class GraphElement extends Pane {
                     priorityNodes.pop().getMeta().visible(true);
                 }
 
-                //aPlatform.runLater(this::draw);
-
             } else {
                 scheduledFuture.get().cancel(true);
             }
@@ -152,50 +150,6 @@ public class GraphElement extends Pane {
 
     }
 
-    /*
-    public void draw() {
-        this.drawBackground();
-
-
-        graph.getEdges().values().forEach(edgeList -> {
-            edgeList.forEach(edge -> {
-                if(edge.getTo().getMeta().visible() && edge.getFrom().getMeta().visible()) {
-                    this.getGraphicsContext2D().setStroke(Color.WHITE);
-                    this.getGraphicsContext2D().strokeLine(
-                            edge.getFrom().getMeta().x(),
-                            edge.getFrom().getMeta().y(),
-                            edge.getTo().getMeta().x(),
-                            edge.getTo().getMeta().y()
-                    );
-                }
-            });
-        });
-
-
-        graph.getNodes().forEach((id, node) -> {
-            if(node.getMeta().visible()) {
-                GraphicsContext g = this.getGraphicsContext2D();
-                node.getMeta().innerCircle()
-            }
-        });
-
-        this.getGraphicsContext2D().restore();
-
-    }
-
-    private void drawBackground() {
-        switch (this.backgroundType) {
-            case IMAGE: {
-                this.getGraphicsContext2D().drawImage(new Image("file:///C:/Users/Jan/Downloads/Earth_Eastern_Hemisphere.jpg"), 0, 0);
-            } break;
-            case COLOUR: {
-                this.getGraphicsContext2D().setFill(Color.DARKBLUE);
-                this.getGraphicsContext2D().fillRect(0, 0, this.getWidth(), this.getHeight());
-            } break;
-            default: throw new IllegalArgumentException();
-        }
-    }
-    */
 
     public void displayHints(HintType... hintTypes) {
         this.graph.getNodes().values().forEach(e -> e.getMeta().colour(ColorList.NODE_INNER_DEFAULT));
@@ -235,11 +189,6 @@ public class GraphElement extends Pane {
         MAX_NEIGHBOURS
     }
 
-    public static enum BackgroundType {
-        IMAGE,
-        COLOUR
-    }
-
     public static enum RenderType {
         CIRCLE,
         SHELL,
@@ -247,7 +196,8 @@ public class GraphElement extends Pane {
         BANANA,
         SPIRAL,
         ROSE,
-        LIMACON
+        LIMACON,
+        TEST
     }
 
     public interface Callback<T> {

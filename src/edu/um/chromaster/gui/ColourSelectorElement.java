@@ -24,13 +24,16 @@ public class ColourSelectorElement extends ListView<Color> {
                 Color.BLUE
         ));
 
+        Color initColor = this.getItems().get(0);
+        this.setStyle(String.format("-fx-border-width: 5; -fx-border-color: rgb(%.0f, %.0f, %.0f);", initColor.getRed() * 255, initColor.getGreen() * 255, initColor.getBlue() * 255));
 
         this.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         this.setOnMouseClicked(event -> {
             Color selectedColour = ColourSelectorElement.this.getSelectionModel().getSelectedItem();
 
-
             if(selectedColour == null) {
+                this.setStyle("-fx-border-width: 5; -fx-border-color: white;");
+
                 ColorPicker colorPicker = new ColorPicker();
                 final Stage dialog = new Stage();
                 dialog.initModality(Modality.APPLICATION_MODAL);
@@ -47,10 +50,14 @@ public class ColourSelectorElement extends ListView<Color> {
                         return;
                     }
 
+                    Color newColour = colorPicker.getValue();
+                    this.setStyle(String.format("-fx-border-width: 5; -fx-border-color: rgb(%.0f, %.0f, %.0f);", newColour.getRed() * 255, newColour.getGreen() * 255, newColour.getBlue() * 255));
                     ColourSelectorElement.this.getItems().add(colorPicker.getValue());
                 });
 
                 return;
+            } else {
+                this.setStyle(String.format("-fx-border-width: 5; -fx-border-color: rgb(%.0f, %.0f, %.0f);", selectedColour.getRed() * 255, selectedColour.getGreen() * 255, selectedColour.getBlue() * 255));
             }
 
             Game.getEventHandler().trigger(new SelectColourEvent(selectedColour));
@@ -65,6 +72,7 @@ public class ColourSelectorElement extends ListView<Color> {
                 if (item == null) {
                     setText(null);
                     setTextFill(null);
+                    setBackground(null);
                 } else {
                     setBackground(new Background(new BackgroundFill(item, null, null)));
                 }

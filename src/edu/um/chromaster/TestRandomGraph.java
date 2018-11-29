@@ -9,7 +9,6 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class TestRandomGraph extends Application {
-
     public static void main(String[] args) {
         launch(args);
     }
@@ -19,19 +18,17 @@ public class TestRandomGraph extends Application {
 
         RandomGraph graph = new RandomGraph();
         graph.setPMedium();
-        graph.setNada(true);
         System.out.println(graph.getProbability());
-
-
+        graph.setNada(true);
         Graph newGraph = graph.getGraph();
-        GraphElement g = new GraphElement(newGraph, GraphElement.RenderType.SHELL, GraphElement.BackgroundType.COLOUR);
+        GraphElement g = new GraphElement(newGraph, GraphElement.RenderType.SPIRAL);
         g.render();
 
         StackPane stackPane = new StackPane();
-        stackPane.getChildren().add(g);
-
         Scene scene = new Scene(stackPane);
+        stackPane.getChildren().add(g);
         primaryStage.setScene(scene);
         primaryStage.show();
+
     }
 }
