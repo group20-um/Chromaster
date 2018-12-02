@@ -11,11 +11,10 @@ import javafx.geometry.Insets;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
-import java.util.Stack;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -64,7 +63,6 @@ public class GraphElement extends Pane {
             case LIMACON: GraphDrawer.limacon(graph, width, height); break;
             case SPIRAL: GraphDrawer.archemedianSprial(graph, width, height); break;
             case ROSE: GraphDrawer.rose(graph, width, height); break;
-            case TEST: GraphDrawer.test2(graph, width, height); break;
             default: throw new IllegalArgumentException();
         }
 
@@ -155,9 +153,14 @@ public class GraphElement extends Pane {
     }
 
 
-    public void displayHints(HintType... hintTypes) {
-        this.graph.getNodes().values().forEach(e -> e.getMeta().highlight(false));
-        for(HintType hintType : hintTypes) {
+    public void displayHints(HintTypes... hintTypes) {
+        this.graph.getNodes().values().forEach(e -> e.getMeta().hint(null));
+        for(HintTypes hintType : hintTypes) {
+
+            if(!(hintType.isVisual())) {
+                throw new IllegalArgumentException();
+            }
+
             switch (hintType) {
                 case CLIQUE: {
                     List<List<Node>> cliques = new ArrayList<>();
@@ -169,39 +172,137 @@ public class GraphElement extends Pane {
                             }
                         }
                         return false;
-                    }, (meta) -> meta.highlight(true));
+                    }, (meta) -> meta.hint(ColorList.HINT_CLIQUE));
                 } break;
-                case HIGHES_DEGREE: {
+                case HIGHEST_DEGREE: {
                     Node node = HintManager.highestDegree(graph);
-                    node.getMeta().highlight(true);
+                    node.getMeta().hint(ColorList.HINT_HIGHEST_DEGREE);
                 } break;
                 case MAX_NEIGHBOURS:
                     Node node = HintManager.maxNeighboursColoured(graph);
-                    this.computeHighlighting(e -> e == node, (meta) -> meta.highlight(true));
+                    this.computeHighlighting(e -> e == node, (meta) -> meta.hint(ColorList.HINT_MAX_NEIGHBOURS));
                     break;
+
+                case SOLUTION: {
+                    Graph solution = this.graph.getChromaticResult().getSolution();
+                    List<Color> colours = new LinkedList<>();
+                    double exact = this.graph.getChromaticResult().getExact() + 1;
+                    System.out.println(exact);
+                    for(int i = 0; i < exact; i++) {
+                        colours.add(Color.rgb((int) (50 + (155D * i/exact) * Game.random.nextDouble()), (int) (50 + (155D * i/exact) * Game.random.nextDouble()) , (int) (50 + (155D * i/exact) * Game.random.nextDouble())));
+                    }
+
+                    this.graph.getNodes().values().forEach(n -> n.getMeta().hint(colours.get(solution.getNode(n.getId()).getValue())));
+                } break;
+
+                default: throw new IllegalStateException();
             }
         }
+    }
+
+    public int getHint(HintTypes hintType) {
+
+        if(hintType.isVisual()) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (hintType) {
+            case UPPER_BOUND: return graph.getChromaticResult().getUpper();
+            case LOWER_BOUND: return graph.getChromaticResult().getLower();
+        }
+
+        throw new IllegalStateException();
     }
 
     private void computeHighlighting(Predicate<Node> filter, Callback<Node.Meta> modify) {
         this.graph.getNodes().values().stream().filter(filter).forEach(e -> modify.modify(e.getMeta()));
     }
 
-    public static enum HintType {
-        CLIQUE,
-        HIGHES_DEGREE,
-        MAX_NEIGHBOURS
+    public enum HintTypes implements HintType {
+        CLIQUE {
+            @Override
+            public String getDisplayName() {
+                return "Largest Clique";
+            }
+
+            @Override
+            public boolean isVisual() {
+                return true;
+            }
+        },
+        HIGHEST_DEGREE {
+            @Override
+            public String getDisplayName() {
+                return "Node w/ max. Degree";
+            }
+
+            @Override
+            public boolean isVisual() {
+                return true;
+            }
+        },
+        MAX_NEIGHBOURS {
+            @Override
+            public String getDisplayName() {
+                return "Max Neghbours";
+            }
+
+            @Override
+            public boolean isVisual() {
+                return true;
+            }
+        },
+        UPPER_BOUND {
+            @Override
+            public String getDisplayName() {
+                return "Upper Bound";
+            }
+
+            @Override
+            public boolean isVisual() {
+                return false;
+            }
+        },
+        LOWER_BOUND {
+            @Override
+            public String getDisplayName() {
+                return "Lower Bound";
+            }
+
+            @Override
+            public boolean isVisual() {
+                return false;
+            }
+        },
+        SOLUTION {
+            @Override
+            public String getDisplayName() {
+                return "Solution";
+            }
+
+            @Override
+            public boolean isVisual() {
+                return true;
+            }
+        }
     }
 
-    public static enum RenderType {
+    public enum RenderType {
         CIRCLE,
         SHELL,
         SCALE,
         BANANA,
         SPIRAL,
         ROSE,
-        LIMACON,
-        TEST
+        LIMACON
+    }
+
+    public interface HintType {
+
+        String getDisplayName();
+
+        boolean isVisual();
+
     }
 
     public interface Callback<T> {

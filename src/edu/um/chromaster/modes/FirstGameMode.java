@@ -35,6 +35,10 @@ public class FirstGameMode extends GameMode {
         if(this.getSelectedColour() != null) {
             event.getNode().getMeta().colour(this.getSelectedColour());
             event.getNode().setValue(this.getSelectedColour().hashCode());
+
+            if(this.gameWon()) {
+                System.out.println("GAME WON - First Game Mode");
+            }
         }
     }
 

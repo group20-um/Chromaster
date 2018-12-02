@@ -46,7 +46,7 @@ public class Game extends Application {
         //---
 
         RandomGraph g = new RandomGraph();
-        g.setLIMIT(10);
+        g.setLIMIT(50);
         g.setPHard();
         g.setNada(true);
 
@@ -57,11 +57,18 @@ public class Game extends Application {
         GameElement graphGameElement = new GameElement(primaryStage, graph, gameMode);
         Scene scene = new Scene(graphGameElement, 1280, 720, true, SceneAntialiasing.BALANCED);
         scene.getStylesheets().add("res/style.css");
+        graphGameElement.getStyleClass().add("game");
 
+        primaryStage.setMinWidth(680);
+        primaryStage.setMinHeight(480);
         // TODO sample mouse-click to node
         primaryStage.setTitle("Chromaster");
-        primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> graphGameElement.changeWindowSize(newValue.doubleValue(), primaryStage.getHeight()));
-        primaryStage.heightProperty().addListener((observable, oldValue, newValue) -> graphGameElement.changeWindowSize(primaryStage.getWidth(), newValue.doubleValue()));
+        primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
+            graphGameElement.changeWindowSize(Math.max(newValue.doubleValue(), 680), primaryStage.getHeight());
+        });
+        primaryStage.heightProperty().addListener((observable, oldValue, newValue) -> {
+            graphGameElement.changeWindowSize(primaryStage.getWidth(), Math.max(newValue.doubleValue(), 480));
+        });
         primaryStage.setScene(scene);
 
         primaryStage.show();

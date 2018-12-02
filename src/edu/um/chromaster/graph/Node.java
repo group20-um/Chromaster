@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
@@ -55,6 +56,7 @@ public class Node {
         private Text text = new Text();
         private Circle outer = new Circle();
         private Circle inner = new Circle();
+        private Circle hintCircle = new Circle();
 
         private boolean visible = false;
         private boolean allowedToChangeColour = true;
@@ -63,7 +65,6 @@ public class Node {
         public double displacementX, displacementY;
         private double positionX, positionY;
         private double radius = DEFAULT_RADIUS;
-
 
 
         public Meta(Node node) {
@@ -149,11 +150,13 @@ public class Node {
         public void hide() {
             this.outer.getStyleClass().add("disabled");
             this.inner.getStyleClass().add("disabled");
+            this.hintCircle.getStyleClass().add("disabled");
         }
 
         public void unhide() {
             this.outer.getStyleClass().remove("disabled");
             this.inner.getStyleClass().remove("disabled");
+            this.hintCircle.getStyleClass().remove("disabled");
         }
 
 
@@ -171,7 +174,6 @@ public class Node {
         }
 
         public Color colour() {
-            // TODO look up if this cast is actually save
             return (Color) this.outer.getFill();
         }
 
@@ -213,6 +215,15 @@ public class Node {
             return this.radius;
         }
 
+        public void hint(Color color) {
+            if (color != null) {
+                hintCircle.visibleProperty().set(true);
+                hintCircle.fillProperty().set(color);
+            } else {
+                hintCircle.visibleProperty().set(false);
+            }
+        }
+
         public void visible(boolean visible) {
             this.visible = visible;
             updateCircles();
@@ -246,6 +257,13 @@ public class Node {
                         Meta.this.outer.fillProperty().set(ColorList.NODE_OUTER_DEFAULT);
                     }
 
+                    Meta.this.hintCircle.centerXProperty().setValue(x());
+                    Meta.this.hintCircle.centerYProperty().setValue(y());
+                    Meta.this.hintCircle.centerYProperty().setValue(y());
+                    Meta.this.hintCircle.radiusProperty().setValue(radius() * 1.2D);
+                    Meta.this.hintCircle.fillProperty().set(null);
+                    Meta.this.hintCircle.setVisible(hintCircle.getFill() != null);
+
                     Meta.this.inner.centerXProperty().setValue(x());
                     Meta.this.inner.centerYProperty().setValue(y());
                     Meta.this.inner.radiusProperty().setValue(radius() * 0.6);
@@ -261,7 +279,7 @@ public class Node {
         }
 
         public Shape[] getGraphicElements() {
-            return new Shape[] {outer, inner, text};
+            return new Shape[] {hintCircle, outer, inner, text};
         }
     }
 

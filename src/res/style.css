@@ -1,3 +1,7 @@
+.game {
+    -fx-font: normal bold 14 Langdon;
+}
+
 .node {
 }
 
@@ -24,4 +28,29 @@
 
 .disabled {
     -fx-opacity: 0.5;
+}
+
+.game-bar {
+    -fx-spacing: 10px;
+    -fx-alignment: center;
+}
+
+.button {
+    -fx-background-color: #353535;
+    -fx-text-fill: #b7b7b7;
+    -fx-padding: 5px;
+
+    -fx-border-color: #D24D57;
+    -fx-border-width: 2px;
+}
+
+.button:hover {
+    -fx-border-color: #8c3c3a;
+    -fx-font-weight: bold;
+}
+
+.tooltip {
+    -fx-font: normal bold 28 Langdon;
+    -fx-base: #AE3522;
+    -fx-text-fill: orange;
 }

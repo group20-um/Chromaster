@@ -34,7 +34,7 @@ public class TestChromaticNumber {
                     return;
                 }
 
-                if(l.startsWith("EXACT")) {
+                if(l.startsWith("EXACT_EXPERIMENTAL")) {
                     exact.set(Integer.valueOf(l.split(" = ")[1]));
                     return;
                 }
@@ -60,10 +60,10 @@ public class TestChromaticNumber {
     }
 
     public void submit(String name, Graph graph, int exact) {
-        //ChromaticNumber.Result result = ChromaticNumber.compute(ChromaticNumber.Type.EXACT, graph, true);
+        //ChromaticNumber.Result result = ChromaticNumber.compute(ChromaticNumber.Type.EXACT_EXPERIMENTAL, graph, true);
         //System.out.println(String.format("%s> Got %d, expected %d", name, result.getExact(), exact));
 
-        ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph, new Consumer<ChromaticNumber.Result>() {
+        ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT_EXPERIMENTAL, graph, new Consumer<ChromaticNumber.Result>() {
             @Override
             public void accept(ChromaticNumber.Result result) {
                 System.out.println(String.format("%s: %d> Got %d, expected %d", name, graph.hashCode(), result.getExact(), exact));

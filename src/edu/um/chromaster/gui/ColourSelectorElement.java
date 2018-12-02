@@ -79,7 +79,7 @@ public class ColourSelectorElement extends ListView<Color> {
 
                         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Do you want to add this colour to your list?");
                         alert.showAndWait().ifPresent(buttonType -> {
-                            if(buttonType.getButtonData() == ButtonBar.ButtonData.APPLY) {
+                            if(buttonType.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
                                 Color newColour = colorPicker.getValue();
                                 Game.getEventHandler().trigger(new SelectColourEvent(newColour));
                                 this.setStyle(String.format("-fx-border-width: 5; -fx-border-color: rgb(%.0f, %.0f, %.0f);", newColour.getRed() * 255, newColour.getGreen() * 255, newColour.getBlue() * 255));

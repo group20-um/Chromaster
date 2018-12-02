@@ -84,6 +84,8 @@ public class ThirdGameMode extends GameMode {
                     e.getTo().getMeta().visible(true);
                     e.getTo().getMeta().setAllowedToChangeColour(false);
                 });
+            } else {
+                System.out.println("game won - third game mode");
             }
         }
 

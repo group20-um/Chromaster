@@ -50,7 +50,7 @@ public class SecondGameMode extends GameMode {
 
     @Override
     public boolean gameWon() {
-        return (this.isPlayerOutOfTime && isValidColoured() && !isGraphFullyColoured());
+        return (isValidColoured() && !isGraphFullyColoured());
     }
 
     @Subscribe
@@ -58,6 +58,10 @@ public class SecondGameMode extends GameMode {
         if(this.getSelectedColour() != null && event.getNode().getMeta().isAllowedToChangeColour()) {
             event.getNode().getMeta().colour(this.getSelectedColour());
             event.getNode().setValue(this.getSelectedColour().hashCode());
+
+            if(gameWon()) {
+                System.out.println("YEAA - Second Game Mode");
+            }
         }
     }
 
