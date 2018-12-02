@@ -28,17 +28,11 @@ public class GraphElement extends Pane {
     private final Graph graph;
 
     private ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(2);
-    private RenderType renderType = RenderType.SPIRAL;
+    private RenderType renderType;
 
     public GraphElement(Graph graph, RenderType renderType) {
         this.renderType = renderType;
         this.graph = graph;
-        this.setWidth(1280);
-        this.setHeight(720);
-        this.minWidthProperty().set(this.getWidth());
-        this.minHeightProperty().set(this.getHeight());
-        this.maxWidthProperty().set(this.getWidth());
-        this.maxHeightProperty().set(this.getHeight());
 
         this.setOnMouseClicked(event -> {
             Optional<Node> node = graph.getNodes().values().stream()
@@ -59,18 +53,28 @@ public class GraphElement extends Pane {
 
     }
 
-    public void render() {
+    public void applyLayout() {
+        double width = this.getMinWidth() * 0.9D;
+        double height = this.getMinHeight();
         switch (this.renderType) {
-            case CIRCLE: GraphDrawer.circle(graph, this.getWidth(), this.getHeight()); break;
-            case SHELL: GraphDrawer.shell(graph, this.getWidth(), this.getHeight());  break;
-            case SCALE: GraphDrawer.scale(graph, this.getWidth(), this.getHeight()); break;
-            case BANANA: GraphDrawer.banana(graph, this.getWidth(), this.getHeight()); break;
-            case LIMACON: GraphDrawer.limacon(graph, this.getWidth(), this.getHeight()); break;
-            case SPIRAL: GraphDrawer.archemedianSprial(graph, this.getWidth(), this.getHeight()); break;
-            case ROSE: GraphDrawer.rose(graph, this.getWidth(), this.getHeight()); break;
-            case TEST: GraphDrawer.test(graph, this.getWidth(), this.getHeight()); break;
+            case CIRCLE: GraphDrawer.circle(graph, width, height); break;
+            case SHELL: GraphDrawer.shell(graph, width, height);  break;
+            case SCALE: GraphDrawer.scale(graph, width, height); break;
+            case BANANA: GraphDrawer.banana(graph, width, height); break;
+            case LIMACON: GraphDrawer.limacon(graph, width, height); break;
+            case SPIRAL: GraphDrawer.archemedianSprial(graph, width, height); break;
+            case ROSE: GraphDrawer.rose(graph, width, height); break;
+            case TEST: GraphDrawer.test2(graph, width, height); break;
             default: throw new IllegalArgumentException();
         }
+
+        // move it closer to the top, preventing it from moving parts of the graph off-screen when the user players in a weird resolution
+        double distanceTop = (width * 0.1D) - graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().y()).min().getAsDouble();
+        graph.getNodes().values().forEach(e -> e.getMeta().y(e.getMeta().y() - distanceTop));
+
+    }
+
+    public void render() {
 
         schedule.schedule(GraphElement.this::requestLayout, (1000 / 60), TimeUnit.MILLISECONDS);
 
@@ -88,8 +92,8 @@ public class GraphElement extends Pane {
                 })
                 .collect(Collectors.toCollection(Stack::new));
 
-        final long MAX_TIME_TO_DRAW = 10000;
-        final long MAX_TIME_STEP = (MAX_TIME_TO_DRAW / graph.getNodes().size());
+        final long MAX_TIME_TO_DRAW = 1;
+        final long MAX_TIME_STEP = 1; //(MAX_TIME_TO_DRAW / graph.getNodes().size())
 
         Stack<Node> priorityNodes = new Stack<>();
         AtomicReference<ScheduledFuture<?>> scheduledFuture = new AtomicReference<>();
@@ -152,7 +156,7 @@ public class GraphElement extends Pane {
 
 
     public void displayHints(HintType... hintTypes) {
-        this.graph.getNodes().values().forEach(e -> e.getMeta().colour(ColorList.NODE_INNER_DEFAULT));
+        this.graph.getNodes().values().forEach(e -> e.getMeta().highlight(false));
         for(HintType hintType : hintTypes) {
             switch (hintType) {
                 case CLIQUE: {
@@ -165,15 +169,15 @@ public class GraphElement extends Pane {
                             }
                         }
                         return false;
-                    }, (meta) -> meta.colour(ColorList.HINT_CLIQUE));
+                    }, (meta) -> meta.highlight(true));
                 } break;
                 case HIGHES_DEGREE: {
                     Node node = HintManager.highestDegree(graph);
-                    node.getMeta().colour(ColorList.HINT_HIGHEST_DEGREE);
+                    node.getMeta().highlight(true);
                 } break;
                 case MAX_NEIGHBOURS:
                     Node node = HintManager.maxNeighboursColoured(graph);
-                    this.computeHighlighting(e -> e == node, (meta) -> meta.colour(ColorList.HINT_MAX_NEIGHBOURS));
+                    this.computeHighlighting(e -> e == node, (meta) -> meta.highlight(true));
                     break;
             }
         }

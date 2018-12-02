@@ -2,8 +2,7 @@
 }
 
 .graph-background {
-    -fx-background-color: linear-gradient(to bottom right, #b92b27, #1565C0);
-    -fx-background-color: linear-gradient(to bottom right, #00F260, #0575E6);
+    -fx-background: none;
 }
 
 .node_border {
@@ -11,6 +10,16 @@
 }
 .node_border:hover {
     -fx-effect: dropshadow(three-pass-box, rgba(53,59,72,0.8), 10, 0, 0, 0);
+}
+
+.color-selector-element {
+    -fx-border-width: 5;
+    -fx-border-color: white;
+    -fx-opacity: 0.5;
+}
+
+.color-selector-element:hover {
+    -fx-opacity: 1;
 }
 
 .disabled {

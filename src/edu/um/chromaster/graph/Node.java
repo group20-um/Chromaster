@@ -1,5 +1,6 @@
 package edu.um.chromaster.graph;
 
+import edu.um.chromaster.Game;
 import edu.um.chromaster.gui.ColorList;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -20,7 +21,7 @@ public class Node {
 
     private final Graph graph;
     private final int id;
-    private final Meta meta;
+    private Meta meta;
     private int value = -1;
 
     protected Node(Graph graph, int id, int value) {

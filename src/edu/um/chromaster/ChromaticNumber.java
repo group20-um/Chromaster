@@ -12,7 +12,9 @@ import java.util.stream.Collectors;
 
 public class ChromaticNumber {
 
-    private static ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(2);
+    private static ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(6);
+
+    public static boolean DEBUG_FLAG = true;
 
     //---
     private final static long TIME_LIMIT_EXACT = TimeUnit.SECONDS.toNanos(60);
@@ -25,7 +27,7 @@ public class ChromaticNumber {
         EXACT
     }
 
-    public static void computeAsync(Type type, Graph graph, Consumer<Result> consumer) {
+    public static void  computeAsync(Type type, Graph graph, Consumer<Result> consumer) {
         CompletableFuture.supplyAsync(() -> compute(type, graph, false), schedule).thenAccept(consumer);
     }
 
@@ -107,7 +109,7 @@ public class ChromaticNumber {
         //--- the current range of values we are expecting to inspect
         final int upperResult = upper.get();
         final int lowerResult = lower.get();
-        System.out.printf("<Exact Test> Range: [%d..%d]%n", lowerResult, upperResult);
+        if(DEBUG_FLAG) System.out.printf("<Exact Test: %d> Range: [%d..%d]%n", graph.hashCode(), lowerResult, upperResult);
 
         //--- if the bounds are equal then this is the chromatic number
         if(upperResult == lowerResult) {
@@ -116,42 +118,42 @@ public class ChromaticNumber {
 
         //--- we do start testing upperBound-1 because we know for sure that upper-bound itself is going to work, so
         // testing it is a waste of resources.
-        upper.addAndGet(-1);
+        AtomicInteger testValue = new AtomicInteger(upper.get());
+        testValue.addAndGet(-1);
         graph.reset();
 
         AtomicReference<Graph> colouredGraph = new AtomicReference<>();
-
-        AtomicReference<Integer> exactTestResult = new AtomicReference<Integer>(null);
-        AtomicReference<Integer> lowerTestResult = new AtomicReference<Integer>(null);
 
         //--- Run the exact test async, so we can run the lower-bound algorithm in parallel
         final AtomicReference<Future> exactFuture = new AtomicReference<>();
         final AtomicReference<Future> lowerBoundFuture = new AtomicReference<>();
 
         exactFuture.set(schedule.submit(() -> {
-            while(exact(graph, upper.get())) {
-                System.out.printf("<Exact Test> The graph CAN be coloured with %d colours.%n", upper.get());
+
+            while (exactFuture.get() == null) {}
+
+            while(!exactFuture.get().isCancelled() && exact(graph, testValue.get())) {
+                if(DEBUG_FLAG) System.out.printf("<Exact Test: %d> The graph CAN be coloured with %d colours.%n", graph.hashCode(), testValue.get());
                 colouredGraph.set(graph.clone());
                 graph.reset();
 
-                if(upper.get() == lower.get()) {
-                    System.out.println(exactFuture.get().isCancelled());
+                if(testValue.get() == lower.get()) {
                     if (!exactFuture.get().isCancelled()) {
-                        upper.addAndGet(-1);
+                        testValue.addAndGet(-1);
                     }
                     break;
                 }
                 // TODO cleanup
-                else if(upper.get() < lower.get()) {
-                    System.out.println(exactFuture.get().isCancelled());
+                else if(testValue.get() < lower.get()) {
                     if(!exactFuture.get().isCancelled()) {
-                        upper.set(lower.get() - 1);
+                        testValue.set(lower.get() - 1);
                     }
                     break;
                 }
-                upper.addAndGet(-1);
+                testValue.addAndGet(-1);
             }
 
+            while (lowerBoundFuture.get() == null) {}
             if(!(exactFuture.get().isCancelled())) {
                 synchronized (lowerBoundFuture) {
                     if (lowerBoundFuture.get() != null) {
@@ -168,24 +170,19 @@ public class ChromaticNumber {
                 final int result = lowerBound(graph);
 
                 lower.set(result);
-                System.out.printf("<Exact Test> Updated lower bound: %d%n", lower.get());
-                System.out.printf("<Exact Test> Range: [%d..%d]%n", Math.min(lower.get(), upper.get()), Math.max(lower.get(), upper.get()));
+                if(DEBUG_FLAG) System.out.printf("<Exact Test: %d> Updated lower bound: %d%n", graph.hashCode(), lower.get());
+                if(DEBUG_FLAG) System.out.printf("<Exact Test: %d> Range: [%d..%d]%n", graph.hashCode(), lower.get(), upperResult);
 
-                //--- if the result is greater than or equal to the upper (aka. the current chromatic number test value)
+                //--- if the result is greater the upper-bound
                 // then we are done, and the result (lower-bound) is the chromatic number.
-                if (result >= upper.get()) {
+                if (result == upperResult) {
                     exactFuture.get().cancel(true); // cancel the main check to stop it from eroding our data.
-                    try {
-                        exactFuture.get().get();
-                    } catch (InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
-                    }
 
-                    synchronized (lowerBoundFuture) {
-                        if (!lowerBoundFuture.get().isCancelled()) {
-                            upper.set(result - 1); // set result
-                            System.out.printf("<Exact Test> Exact: %d (determined by lower-bound async execution)%n", (upper.get() + 1));
-                        }
+                    while (lowerBoundFuture.get() == null) {}
+
+                    if (!lowerBoundFuture.get().isCancelled()) {
+                        testValue.set(result - 1); // set result
+                        if(DEBUG_FLAG) System.out.printf("<Exact Test: %d> Exact: %d (determined by lower-bound async execution)%n", graph.hashCode(), (testValue.get() + 1));
                     }
                 }
             }));
@@ -195,17 +192,20 @@ public class ChromaticNumber {
         // any results
         try {
             if(lowerBoundFuture.get() != null) {
-                lowerBoundFuture.get();
+                lowerBoundFuture.get().get();
             }
-            exactFuture.get().get();
+
+            while (!exactFuture.get().isDone() && !exactFuture.get().isCancelled()) {
+                Thread.sleep(1L);
+            }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
         //--- we are done, we have to increase the upper-bound by +1 because it contains the current upper-bound we tested
         // was no longer valid so the value before that is the chromatic number.
-        final int exact = upper.get() + 1;
-        System.out.println("<Exact Test> Exact: " + exact);
+        final int exact = testValue.get() + 1;
+        if(DEBUG_FLAG) System.out.printf("<Exact Test: %d> Exact: %d%n", graph.hashCode(), exact);
         return new Result(colouredGraph.get(), exact, lowerResult, upperResult, true);
 
 
@@ -300,64 +300,6 @@ public class ChromaticNumber {
 
     }
 
-    private static int simpleGreedyUpperBound(Graph graph) {
-        HashMap<Integer, Node> unvisited = new LinkedHashMap<>();
-        Map.Entry<Integer, Node> entry = graph.getNodes().entrySet().stream().findFirst().get();
-        unvisited.put(entry.getKey(), entry.getValue());
-
-        int max = 0;
-        while (!unvisited.isEmpty()){
-            // is this (too) slow?
-            Node node = unvisited.values().stream().findFirst().get();
-            unvisited.remove(node.getId());
-
-            //--- What colours does its neighbours have?
-            List<Node.Edge> edges = graph.getEdges(node.getId());
-            List<Integer> colours = edges.stream()
-                    .filter(edge -> edge.getTo().getValue() != -1)
-                    .map(edge -> edge.getTo().getValue())
-                    .collect(Collectors.toList());
-
-            //--- No colours -> first node being visited in the graph
-            if (colours.isEmpty()) {
-                node.setValue(0);
-            }
-            //--- At least one colour -> not the first node anymore
-            else {
-
-                //--- "Highest"  value/colour adjacent to the node
-                final int maxColour = colours.stream().max(Comparator.naturalOrder()).get();
-
-                int colour = 0; // Lowest value we can chose for a valid colour
-
-                //--- try to ideally find an existing colour that we can reuse
-                while (colour <= maxColour) {
-                    if (!colours.contains(colour)) {
-                        break;
-                    }
-                    colour++;
-                }
-
-                node.setValue(colour);
-                max = Math.max(max, colour);
-
-            }
-
-            //--- call for neighbour nodes & figure out the "highest" value/colour used
-            for (Node.Edge edge : edges) {
-                if (edge.getTo().getValue() == -1) {
-                    Node e = edge.getTo();
-                    unvisited.put(e.getId(), e);
-                }
-            }
-
-        }
-
-        return max + 1;
-
-    }
-
-
     //--- LOWER BOUND --
 
     private static int lowerBound(Graph graph) {
@@ -413,7 +355,7 @@ public class ChromaticNumber {
 
     private static abstract class MethodRunnable implements Runnable {
 
-        private Result result;
+        private Result result = new Result(null, -1, -1, -1, false);
 
         @Override
         public abstract void run();
