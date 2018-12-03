@@ -16,7 +16,6 @@ import javafx.scene.paint.Color;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
@@ -24,12 +23,13 @@ import java.util.stream.Collectors;
 
 public class GraphElement extends Pane {
 
+    private final GameElement gameElement;
     private final Graph graph;
 
-    private ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(2);
     private RenderType renderType;
 
-    public GraphElement(Graph graph, RenderType renderType) {
+    public GraphElement(GameElement gameElement, Graph graph, RenderType renderType) {
+        this.gameElement = gameElement;
         this.renderType = renderType;
         this.graph = graph;
 
@@ -37,7 +37,7 @@ public class GraphElement extends Pane {
             Optional<Node> node = graph.getNodes().values().stream()
                     .filter(e -> e.getMeta().isAllowedToChangeColour() && e.getMeta().visible() && e.getMeta().area().contains(event.getX(), event.getY()))
                     .findAny();
-            node.ifPresent(e -> Game.getEventHandler().trigger(new NodeClickedEvent(e)));
+            node.ifPresent(e -> Game.getInstance().getEventHandler().trigger(new NodeClickedEvent(e)));
         });
 
 
@@ -74,7 +74,7 @@ public class GraphElement extends Pane {
 
     public void render() {
 
-        schedule.schedule(GraphElement.this::requestLayout, (1000 / 60), TimeUnit.MILLISECONDS);
+        Game.getInstance().getSchedule().schedule(GraphElement.this::requestLayout, (1000 / 60), TimeUnit.MILLISECONDS);
 
         // sort all nodes by #connect nodes descending
         Stack<Node> nodes = graph.getNodes().values().stream()
@@ -95,7 +95,7 @@ public class GraphElement extends Pane {
 
         Stack<Node> priorityNodes = new Stack<>();
         AtomicReference<ScheduledFuture<?>> scheduledFuture = new AtomicReference<>();
-        scheduledFuture.set(schedule.scheduleAtFixedRate(() -> {
+        scheduledFuture.set(Game.getInstance().getSchedule().scheduleAtFixedRate(() -> {
 
             if(Game.getInstance().getGameMode() instanceof ThirdGameMode) {
                 return;
@@ -146,6 +146,7 @@ public class GraphElement extends Pane {
                 }
 
             } else {
+                while (scheduledFuture.get() == null); // like that should never actually happen... hopefully
                 scheduledFuture.get().cancel(true);
             }
         }, 100L, MAX_TIME_STEP, TimeUnit.MILLISECONDS));
@@ -185,14 +186,18 @@ public class GraphElement extends Pane {
 
                 case SOLUTION: {
                     Graph solution = this.graph.getChromaticResult().getSolution();
-                    List<Color> colours = new LinkedList<>();
-                    double exact = this.graph.getChromaticResult().getExact() + 1;
-                    System.out.println(exact);
-                    for(int i = 0; i < exact; i++) {
-                        colours.add(Color.rgb((int) (50 + (155D * i/exact) * Game.random.nextDouble()), (int) (50 + (155D * i/exact) * Game.random.nextDouble()) , (int) (50 + (155D * i/exact) * Game.random.nextDouble())));
+                    List<Color> colours = this.gameElement.getColourSelectorElement().getItems();
+
+                    int delta = this.graph.getChromaticResult().getExact() - colours.size();
+                    if(delta > 0) {
+
+                        for(int i = 0; i < delta; i++) {
+                            colours.add(Color.color(100/255D + i/delta * 100D * Game.random.nextDouble(), 100/255D + i/delta * 100D * Game.random.nextDouble(), 100/255D + i/delta * 100D * Game.random.nextDouble()));
+                        }
+
                     }
 
-                    this.graph.getNodes().values().forEach(n -> n.getMeta().hint(colours.get(solution.getNode(n.getId()).getValue())));
+                    this.graph.getNodes().values().forEach(n -> n.getMeta().hint(colours.get(solution.getNode(n.getId()).getValue() - 1)));
                 } break;
 
                 default: throw new IllegalStateException();

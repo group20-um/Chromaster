@@ -3,35 +3,34 @@ package edu.um.chromaster.modes;
 
 import edu.um.chromaster.Game;
 import edu.um.chromaster.event.Subscribe;
+import edu.um.chromaster.event.events.GameEndEvent;
 import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.event.events.SelectColourEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 
 public class SecondGameMode extends GameMode {
 
-    private ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(1);
-    private int timeInSeconds;
+    private long time = 0;
     private long startTime = 0;
 
     private boolean isPlayerOutOfTime = false;
 
-    public SecondGameMode(Graph graph, int timeInSeconds) {
+    public SecondGameMode(Graph graph, int time) {
         super(graph, true, true);
-        this.timeInSeconds = timeInSeconds;
-        Game.getEventHandler().registerListener(this);
+        this.time = time;
+        Game.getInstance().getEventHandler().registerListener(this);
     }
 
-    public int getTime() {
-        return timeInSeconds;
+    public long getTime() {
+        return time;
     }
 
     public long getTimeLeft() {
-        return Math.max(0, TimeUnit.MILLISECONDS.toSeconds(((timeInSeconds * 1000L) + startTime) - System.currentTimeMillis()));
+        return Math.max(0, time + startTime - System.currentTimeMillis());
     }
 
     public long getUsedColours() {
@@ -42,15 +41,19 @@ public class SecondGameMode extends GameMode {
     public void start() {
         this.startTime = System.currentTimeMillis();
         getGraph().getNodes().forEach((id, node) -> node.getMeta().setAllowedToChangeColour(true));
-        this.schedule.schedule(() -> {
+        Game.getInstance().getSchedule().schedule(() -> {
             this.isPlayerOutOfTime = true;
             getGraph().getNodes().forEach((id, node) -> node.getMeta().setAllowedToChangeColour(false));
-        }, this.timeInSeconds, TimeUnit.SECONDS);
+
+            if(!gameWon()) {
+                Game.getInstance().getEventHandler().trigger(new GameEndEvent("You lost"));
+            }
+        }, this.time, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public boolean gameWon() {
-        return (isValidColoured() && !isGraphFullyColoured());
+        return (isValidColoured() && isGraphFullyColoured());
     }
 
     @Subscribe

@@ -260,7 +260,7 @@ public class Node {
                     Meta.this.hintCircle.centerXProperty().setValue(x());
                     Meta.this.hintCircle.centerYProperty().setValue(y());
                     Meta.this.hintCircle.centerYProperty().setValue(y());
-                    Meta.this.hintCircle.radiusProperty().setValue(radius() * 1.2D);
+                    Meta.this.hintCircle.radiusProperty().setValue(radius() * 1.3D);
                     Meta.this.hintCircle.fillProperty().set(null);
                     Meta.this.hintCircle.setVisible(hintCircle.getFill() != null);
 

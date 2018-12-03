@@ -2,6 +2,9 @@ package edu.um.chromaster.gui;
 
 import edu.um.chromaster.ChromaticNumber;
 import edu.um.chromaster.Game;
+import edu.um.chromaster.event.EventListener;
+import edu.um.chromaster.event.Subscribe;
+import edu.um.chromaster.event.events.GameEndEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.modes.GameMode;
 import javafx.geometry.Pos;
@@ -9,18 +12,24 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-public class GameElement extends StackPane {
+public class GameElement extends StackPane implements EventListener {
 
     private BackgroundElement backgroundElement;
     private GraphElement graphElement;
     private ColourSelectorElement colourSelectorElement;
 
     private GameBar menuBar;
+    private GameEndScreen gameEndScreen = new GameEndScreen();
+    {
+        gameEndScreen.setVisible(false);
+    }
+
 
     public GameElement(Stage stage, Graph graph, GameMode gameMode) {
+        Game.getInstance().getEventHandler().registerListener(this);
         ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph.clone(), graph::setChromaticResults);
 
-        this.graphElement = new GraphElement(graph, GraphElement.RenderType.SPIRAL);
+        this.graphElement = new GraphElement(this, graph, GraphElement.RenderType.SPIRAL);
         this.graphElement.backgroundProperty().set(Background.EMPTY);
 
         this.menuBar = new GameBar(this.graphElement);
@@ -40,17 +49,23 @@ public class GameElement extends StackPane {
 
         //--- have to stay together
         gameMode.start();
-        this.backgroundElement = new BackgroundElement();
+        this.backgroundElement = new BackgroundElement(gameMode);
 
         //---
         this.getChildren().add(this.backgroundElement);
         this.getChildren().add(this.graphElement);
         this.getChildren().add(this.colourSelectorElement);
         this.getChildren().add(this.menuBar);
+        this.getChildren().add(this.gameEndScreen);
 
         StackPane.setAlignment(colourSelectorElement, Pos.TOP_CENTER);
         StackPane.setAlignment(menuBar, Pos.BOTTOM_CENTER);
 
+    }
+
+
+    public ColourSelectorElement getColourSelectorElement() {
+        return this.colourSelectorElement;
     }
 
     public void changeWindowSize(double width, double height) {
@@ -59,9 +74,16 @@ public class GameElement extends StackPane {
         this.colourSelectorElement.setMinSize(width, height * 0.1D);
         this.menuBar.setMinSize(width, height * 0.05D);
         if (backgroundElement != null) {
-            this.backgroundElement.setFitWidth(width);
-            this.backgroundElement.setFitHeight(height);
+            //this.backgroundElement.setFitWidth(width);
+            //this.backgroundElement.setFitHeight(height);
         }
         this.graphElement.applyLayout();
     }
+
+    @Subscribe
+    public void onGameEnd(GameEndEvent event) {
+        this.gameEndScreen.setText(event.getMessage());
+        this.gameEndScreen.setVisible(true);
+    }
+
 }

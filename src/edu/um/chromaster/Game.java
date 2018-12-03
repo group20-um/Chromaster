@@ -7,36 +7,43 @@ import edu.um.chromaster.gui.GameElement;
 import edu.um.chromaster.modes.FirstGameMode;
 import edu.um.chromaster.modes.GameMode;
 import edu.um.chromaster.modes.SecondGameMode;
+import edu.um.chromaster.modes.ThirdGameMode;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.stage.Stage;
 
 import java.util.Random;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 public class Game extends Application {
-
-    public final static Random random = new Random(1); //TODO same seed to ease debugging efforts
-
-    private final static EventHandler eventHandler = new EventHandler();
-    private static Game instance;
-
-    private GameMode gameMode = null;
-
     public static void main(String[] args) {
         launch(args);
     }
+
+    //----
+    public final static Random random = new Random(1); //TODO same seed to ease debugging efforts
+    private static Game instance;
+
+    //---
+    private ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(2);
+    private final EventHandler eventHandler = new EventHandler();
+    private GameMode gameMode = null;
 
     public static Game getInstance() {
         return instance;
     }
 
-    public static EventHandler getEventHandler() {
+    public EventHandler getEventHandler() {
         return eventHandler;
     }
 
     public GameMode getGameMode() {
         return gameMode;
+    }
+
+    public ScheduledThreadPoolExecutor getSchedule() {
+        return this.schedule;
     }
 
     @Override
@@ -46,13 +53,13 @@ public class Game extends Application {
         //---
 
         RandomGraph g = new RandomGraph();
-        g.setLIMIT(50);
+        g.setLIMIT(10);
         g.setPHard();
         g.setNada(true);
 
         System.out.println(g.getProbability());
         Graph graph = g.getGraph();
-        this.gameMode = new SecondGameMode(graph, 120);
+        this.gameMode = new ThirdGameMode(graph);
 
         GameElement graphGameElement = new GameElement(primaryStage, graph, gameMode);
         Scene scene = new Scene(graphGameElement, 1280, 720, true, SceneAntialiasing.BALANCED);

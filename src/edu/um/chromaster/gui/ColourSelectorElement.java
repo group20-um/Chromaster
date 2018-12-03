@@ -42,6 +42,9 @@ public class ColourSelectorElement extends ListView<Color> {
                         setBackground(new Background(new BackgroundFill(item, null, null)));
                         getProperties().put("active", true);
                     } else {
+                        setTextFill(null);
+                        setBackground(null);
+                        setText(null);
                         getProperties().put("active", false);
                     }
                 }
@@ -81,7 +84,7 @@ public class ColourSelectorElement extends ListView<Color> {
                         alert.showAndWait().ifPresent(buttonType -> {
                             if(buttonType.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
                                 Color newColour = colorPicker.getValue();
-                                Game.getEventHandler().trigger(new SelectColourEvent(newColour));
+                                Game.getInstance().getEventHandler().trigger(new SelectColourEvent(newColour));
                                 this.setStyle(String.format("-fx-border-width: 5; -fx-border-color: rgb(%.0f, %.0f, %.0f);", newColour.getRed() * 255, newColour.getGreen() * 255, newColour.getBlue() * 255));
                                 ColourSelectorElement.this.getItems().add(colorPicker.getValue());
                             }
@@ -90,7 +93,7 @@ public class ColourSelectorElement extends ListView<Color> {
 
                     });
                 } else {
-                    Game.getEventHandler().trigger(new SelectColourEvent(cell.getItem()));
+                    Game.getInstance().getEventHandler().trigger(new SelectColourEvent(cell.getItem()));
                     this.getSelectionModel().select(cell.getIndex());
                     this.setStyle(String.format("-fx-border-width: 5; -fx-border-color: rgb(%.0f, %.0f, %.0f);", cell.getItem().getRed() * 255, cell.getItem().getGreen() * 255, cell.getItem().getBlue() * 255));
                 }
