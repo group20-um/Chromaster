@@ -3,9 +3,7 @@ package edu.um.chromaster;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class HintManager {

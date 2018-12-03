@@ -7,12 +7,8 @@ import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.event.events.SelectColourEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
-import edu.um.chromaster.gui.ColorList;
-import javafx.scene.paint.Color;
 
-import java.util.Collections;
 import java.util.Stack;
-import java.util.stream.Collectors;
 
 public class ThirdGameMode extends GameMode {
 
@@ -50,7 +46,7 @@ public class ThirdGameMode extends GameMode {
 
     @Override
     public boolean gameWon() {
-        return isValidColoured() && getGraph().getNodes().values().stream().filter(e -> e.getValue() != -1).mapToInt(Node::getValue).count() == getGraph().getNodes().size();
+        return isValidColoured();
     }
 
     @Subscribe
@@ -82,9 +78,9 @@ public class ThirdGameMode extends GameMode {
                 });
             } else {
                 if (gameWon()) {
-                    Game.getInstance().getEventHandler().trigger(new GameEndEvent("ez pz"));
+                    Game.getInstance().getEventHandler().trigger(new GameEndEvent("ez pz", true));
                 } else {
-                    Game.getInstance().getEventHandler().trigger(new GameEndEvent("u suck"));
+                    Game.getInstance().getEventHandler().trigger(new GameEndEvent("u suck", false));
                 }
                 System.out.println("game end - third game mode");
             }

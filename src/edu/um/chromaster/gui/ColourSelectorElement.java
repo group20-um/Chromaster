@@ -12,8 +12,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import javax.swing.colorchooser.ColorSelectionModel;
-
 public class ColourSelectorElement extends ListView<Color> {
 
     public ColourSelectorElement(Stage stage) {

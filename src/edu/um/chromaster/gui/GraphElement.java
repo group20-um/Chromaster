@@ -13,8 +13,10 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Stack;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -41,8 +43,6 @@ public class GraphElement extends Pane {
         });
 
 
-        super.getStyleClass().add("graph-background");
-        super.setBackground(new Background(new BackgroundFill(ColorList.GRAPH_BACKGROUND, null, Insets.EMPTY)));
         graph.getEdges().forEach((id, edges) -> edges.forEach((to, e) -> {
             this.getChildren().addAll(e.getMeta().getGraphicElements());
         }));
@@ -73,8 +73,6 @@ public class GraphElement extends Pane {
     }
 
     public void render() {
-
-        Game.getInstance().getSchedule().schedule(GraphElement.this::requestLayout, (1000 / 60), TimeUnit.MILLISECONDS);
 
         // sort all nodes by #connect nodes descending
         Stack<Node> nodes = graph.getNodes().values().stream()

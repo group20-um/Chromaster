@@ -4,7 +4,9 @@ import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -105,6 +107,7 @@ public class ChromaticNumber {
 
         if(upper == lower) {
             exact(graph, upper);
+            System.out.printf("<Exact Test> Exact: %d", lower);
             return new Result(graph, upper, upper, upper, true);
         }
 
@@ -125,7 +128,7 @@ public class ChromaticNumber {
 
 
         final int exact = testValue+1;
-        System.out.println("<Exact Test> Exact: " + exact);
+        System.out.printf("<Exact Test> Exact: %d", exact);
         return new Result(result, exact, lower, upper, true);
     }
 

@@ -2,8 +2,11 @@ package edu.um.chromaster.graph;
 
 import edu.um.chromaster.ChromaticNumber;
 import edu.um.chromaster.graph.Node.Edge;
-import java.util.*;
-import java.util.stream.Collectors;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Graph implements Cloneable {
 

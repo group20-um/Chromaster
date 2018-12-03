@@ -1,16 +1,13 @@
 package edu.um.chromaster.graph;
 
-import edu.um.chromaster.Game;
 import edu.um.chromaster.gui.ColorList;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
@@ -69,17 +66,22 @@ public class Node {
 
         public Meta(Node node) {
             this.textValue = String.valueOf(node.getId());
+
+            this.outer.setFill(ColorList.NODE_OUTER_DEFAULT);
+            this.inner.setFill(ColorList.NODE_INNER_DEFAULT);
             this.text.setFill(ColorList.NODE_TEXT_DEFAULT);
 
             EnteredEvent enteredEvent = new EnteredEvent(node);
             inner.setOnMouseEntered(enteredEvent);
             outer.setOnMouseEntered(enteredEvent);
             text.setOnMouseEntered(enteredEvent);
+            hintCircle.setOnMouseEntered(enteredEvent);
 
             ExitedEvent exitedEvent = new ExitedEvent(node);
             inner.setOnMouseExited(exitedEvent);
             outer.setOnMouseExited(exitedEvent);
             text.setOnMouseExited(exitedEvent);
+            hintCircle.setOnMouseExited(exitedEvent);
 
             this.inner.getStyleClass().add("node");
             this.outer.getStyleClass().add("node_border");
@@ -97,28 +99,30 @@ public class Node {
 
             @Override
             public void handle(MouseEvent event) {
-                List<Node> connectedNodes = node.graph.getEdges(node.getId()).stream().map(Edge::getTo).collect(Collectors.toList());
-                connectedNodes.add(node);
-                node.graph.getEdges().values().forEach(map -> map.values().forEach(edge -> {
+                Platform.runLater(() -> {
+                    List<Node> connectedNodes = node.graph.getEdges(node.getId()).stream().map(Edge::getTo).collect(Collectors.toList());
+                    connectedNodes.add(node);
+                    node.graph.getEdges().values().forEach(map -> map.values().forEach(edge -> {
 
-                    if(!connectedNodes.contains(edge.getFrom())) {
-                        edge.getFrom().getMeta().hide();
-                    }
+                        if(!connectedNodes.contains(edge.getFrom())) {
+                            edge.getFrom().getMeta().hide();
+                        }
 
-                    if(!connectedNodes.contains(edge.getTo())) {
-                        edge.getTo().getMeta().hide();
-                    }
+                        if(!connectedNodes.contains(edge.getTo())) {
+                            edge.getTo().getMeta().hide();
+                        }
 
-                    edge.getMeta().hide();
+                        edge.getMeta().hide();
 
 
-                }));
+                    }));
 
-                node.graph.getEdges(node.getId()).forEach(e -> {
-                    e.getTo().getMeta().highlight(true);
-                    e.getMeta().line.strokeProperty().set(ColorList.EDGE_HOVER);
+                    node.graph.getEdges(node.getId()).forEach(e -> {
+                        e.getTo().getMeta().highlight(true);
+                        e.getMeta().line.strokeProperty().set(ColorList.EDGE_HOVER);
+                    });
+                    outer.setFill(ColorList.NODE_OUTER_DEFAULT);
                 });
-                outer.setFill(ColorList.NODE_OUTER_DEFAULT);
             }
         }
 
@@ -132,17 +136,19 @@ public class Node {
 
             @Override
             public void handle(MouseEvent event) {
-                node.graph.getEdges().values().forEach(map -> map.values().forEach(edge -> {
-                    edge.getTo().getMeta().unhide();
-                    edge.getFrom().getMeta().unhide();
-                    edge.getMeta().unhide();
-                }));
+                Platform.runLater(() -> {
+                    node.graph.getEdges().values().forEach(map -> map.values().forEach(edge -> {
+                        edge.getTo().getMeta().unhide();
+                        edge.getFrom().getMeta().unhide();
+                        edge.getMeta().unhide();
+                    }));
 
-                node.graph.getEdges(node.getId()).forEach(e -> {
-                    e.getTo().getMeta().highlight(false);
-                    e.getMeta().line.strokeProperty().set(ColorList.EDGE_DEFAULT);
+                    node.graph.getEdges(node.getId()).forEach(e -> {
+                        e.getTo().getMeta().highlight(false);
+                        e.getMeta().line.strokeProperty().set(ColorList.EDGE_DEFAULT);
+                    });
+                    outer.setFill(ColorList.NODE_OUTER_DEFAULT);
                 });
-                outer.setFill(ColorList.NODE_OUTER_DEFAULT);
             }
         }
 
@@ -178,8 +184,7 @@ public class Node {
         }
 
         public void highlight(boolean highlight) {
-            this.highlight = highlight;
-            updateCircles();
+            Meta.this.outer.fillProperty().setValue(highlight ? ColorList.NODE_HIGHLIGHTED : ColorList.NODE_OUTER_DEFAULT);
         }
 
         public boolean highlight() {
@@ -216,11 +221,18 @@ public class Node {
         }
 
         public void hint(Color color) {
-            if (color != null) {
-                hintCircle.visibleProperty().set(true);
-                hintCircle.fillProperty().set(color);
+            Runnable runnable = () -> {
+                if (color != null) {
+                    hintCircle.visibleProperty().set(true);
+                    hintCircle.fillProperty().set(color);
+                } else {
+                    hintCircle.visibleProperty().set(false);
+                }
+            };
+            if(Platform.isFxApplicationThread()) {
+                runnable.run();
             } else {
-                hintCircle.visibleProperty().set(false);
+                Platform.runLater(runnable);
             }
         }
 
@@ -240,33 +252,26 @@ public class Node {
         }
 
         private void updateCircles() {
-            Platform.runLater(() -> {
+            Runnable runnable = () -> {
                 Meta.this.outer.visibleProperty().setValue(visible());
                 Meta.this.inner.visibleProperty().setValue(visible());
                 Meta.this.text.visibleProperty().setValue(visible());
 
                 if(visible()) {
+                    Meta.this.hintCircle.centerXProperty().setValue(x());
+                    Meta.this.hintCircle.centerYProperty().setValue(y());
+                    Meta.this.hintCircle.centerYProperty().setValue(y());
+                    Meta.this.hintCircle.radiusProperty().setValue(radius() * 1.3D);
+                    Meta.this.hintCircle.fillProperty().set(Color.color(0, 0, 0, 0));
+                    Meta.this.hintCircle.setVisible(hintCircle.getFill() != null);
 
                     Meta.this.outer.centerXProperty().setValue(x());
                     Meta.this.outer.centerYProperty().setValue(y());
                     Meta.this.outer.radiusProperty().setValue(radius());
 
-                    if(highlight()) {
-                        Meta.this.outer.fillProperty().setValue(ColorList.NODE_HIGHLIGHTED);
-                    } else if(isAllowedToChangeColour()) {
-                        Meta.this.outer.fillProperty().set(ColorList.NODE_OUTER_DEFAULT);
-                    }
-
-                    Meta.this.hintCircle.centerXProperty().setValue(x());
-                    Meta.this.hintCircle.centerYProperty().setValue(y());
-                    Meta.this.hintCircle.centerYProperty().setValue(y());
-                    Meta.this.hintCircle.radiusProperty().setValue(radius() * 1.3D);
-                    Meta.this.hintCircle.fillProperty().set(null);
-                    Meta.this.hintCircle.setVisible(hintCircle.getFill() != null);
-
                     Meta.this.inner.centerXProperty().setValue(x());
                     Meta.this.inner.centerYProperty().setValue(y());
-                    Meta.this.inner.radiusProperty().setValue(radius() * 0.6);
+                    Meta.this.inner.radiusProperty().setValue(radius() * 0.6D);
 
                     Meta.this.text.textProperty().setValue(textValue);
                     Meta.this.text.xProperty().setValue(x() - (Meta.this.text.getFont().getSize() / 2) * (textValue.length() / 2));
@@ -274,12 +279,18 @@ public class Node {
                     Meta.this.text.textAlignmentProperty().set(TextAlignment.CENTER);
                     Meta.this.text.setTextAlignment(TextAlignment.CENTER);
                 }
+            };
 
-            });
+            if(Platform.isFxApplicationThread()) {
+                runnable.run();
+            } else {
+                Platform.runLater(runnable);
+            }
+
         }
 
         public Shape[] getGraphicElements() {
-            return new Shape[] {hintCircle, outer, inner, text};
+            return new Shape[] { hintCircle, outer, inner, text};
         }
     }
 

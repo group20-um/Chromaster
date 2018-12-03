@@ -22,7 +22,7 @@ public class Game extends Application {
     }
 
     //----
-    public final static Random random = new Random(1); //TODO same seed to ease debugging efforts
+    public final static Random random = new Random(); //TODO same seed to ease debugging efforts
     private static Game instance;
 
     //---
@@ -53,13 +53,13 @@ public class Game extends Application {
         //---
 
         RandomGraph g = new RandomGraph();
-        g.setLIMIT(10);
-        g.setPHard();
+        g.setLIMIT(30);
+        g.setPEasy();
         g.setNada(true);
 
         System.out.println(g.getProbability());
         Graph graph = g.getGraph();
-        this.gameMode = new ThirdGameMode(graph);
+        this.gameMode = new FirstGameMode(graph);
 
         GameElement graphGameElement = new GameElement(primaryStage, graph, gameMode);
         Scene scene = new Scene(graphGameElement, 1280, 720, true, SceneAntialiasing.BALANCED);

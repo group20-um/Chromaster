@@ -6,7 +6,7 @@ public class ColorList {
 
     public final static Color NODE_HIGHLIGHTED = Color.YELLOW;
     public final static Color NODE_OUTER_DEFAULT = Color.WHITE;
-    public final static Color NODE_INNER_DEFAULT = Color.LIGHTGRAY;
+    public final static Color NODE_INNER_DEFAULT = Color.BLACK;
 
     public final static Color EDGE_DEFAULT = Color.WHITESMOKE;
     public final static Color EDGE_HOVER = Color.ORANGE;

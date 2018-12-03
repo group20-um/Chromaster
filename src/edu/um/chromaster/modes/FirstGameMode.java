@@ -21,13 +21,7 @@ public class FirstGameMode extends GameMode {
 
     @Override
     public boolean gameWon() {
-
-        if(getGraph().getNodes().values().stream().anyMatch(e -> e.getValue() == -1)) {
-            return false;
-        }
-        System.out.println("isValidColoured? " + isValidColoured());
-        System.out.println("expected: " + getGraph().getChromaticResult().getExact() + " got: " + getGraph().getNodes().values().stream().filter(e -> e.getValue() != -1).mapToInt(Node::getValue).distinct().count());
-        return isValidColoured() && getGraph().getChromaticResult().getExact() == getGraph().getNodes().values().stream().filter(e -> e.getValue() != -1).mapToInt(Node::getValue).distinct().count();
+        return isValidColoured();
     }
 
     @Subscribe
@@ -38,7 +32,7 @@ public class FirstGameMode extends GameMode {
             event.getNode().setValue(this.getSelectedColour().hashCode());
 
             if(this.gameWon()) {
-                Game.getInstance().getEventHandler().trigger(new GameEndEvent("YOU! ARE! SO! SMART!"));
+                Game.getInstance().getEventHandler().trigger(new GameEndEvent("YOU! ARE! SO! SMART!", true));
                 System.out.println("GAME WON - First Game Mode");
             }
         }

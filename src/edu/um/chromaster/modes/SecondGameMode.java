@@ -46,7 +46,7 @@ public class SecondGameMode extends GameMode {
             getGraph().getNodes().forEach((id, node) -> node.getMeta().setAllowedToChangeColour(false));
 
             if(!gameWon()) {
-                Game.getInstance().getEventHandler().trigger(new GameEndEvent("You lost"));
+                Game.getInstance().getEventHandler().trigger(new GameEndEvent("You lost", false));
             }
         }, this.time, TimeUnit.MILLISECONDS);
     }

@@ -22,11 +22,16 @@ public abstract class GameMode implements EventListener {
     }
 
     public long getUsedColours() {
-        return this.graph.getNodes().values().stream().filter(e -> e.getValue() != -1).mapToInt(Node::getValue).count();
+        return this.graph.getNodes().values().stream().filter(e -> e.getValue() != -1).mapToInt(Node::getValue).distinct().count();
     }
 
     public boolean isValidColoured() {
-        return graph.getNodes().values().stream().noneMatch((node) -> graph.getEdges(node.getId()).stream().anyMatch(e -> e.getTo().getValue() == node.getValue() || node.getValue() == -1));
+        System.out.println("A +" + graph.getNodes().values().stream()
+                .noneMatch((node) -> graph.getEdges(node.getId()).stream().anyMatch(e -> e.getTo().getValue() == node.getValue() || node.getValue() == -1)));
+        System.out.println("B + " + (getUsedColours() == graph.getChromaticResult().getExact()));
+        return graph.getNodes().values().stream()
+                .noneMatch((node) -> graph.getEdges(node.getId()).stream().anyMatch(e -> e.getTo().getValue() == node.getValue() || node.getValue() == -1)) &&
+                getUsedColours() == graph.getChromaticResult().getExact();
     }
 
     public Color getSelectedColour() {

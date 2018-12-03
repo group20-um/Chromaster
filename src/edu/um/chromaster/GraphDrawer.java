@@ -3,10 +3,7 @@ package edu.um.chromaster;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 
-import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class GraphDrawer {
 

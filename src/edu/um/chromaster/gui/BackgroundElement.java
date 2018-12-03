@@ -4,14 +4,14 @@ import edu.um.chromaster.Game;
 import edu.um.chromaster.modes.GameMode;
 import edu.um.chromaster.modes.SecondGameMode;
 import javafx.application.Platform;
-import javafx.scene.Group;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 
 import java.util.concurrent.TimeUnit;
 
-public class BackgroundElement extends Group {
+public class BackgroundElement extends StackPane {
 
     private ImageView bottom = new ImageView("res/trianglify_red.png");
     private ImageView top = new ImageView("res/trianglify_green.png");
