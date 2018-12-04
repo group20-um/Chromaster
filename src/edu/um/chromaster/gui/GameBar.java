@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 public class GameBar extends HBox {
 
     private Map<Button, Double> timeConstraints = new LinkedHashMap<>();
-    public Set<GraphElement.HintTypes> _42list = new HashSet<>();
+    private Set<GraphElement.HintTypes> _42list = new HashSet<>();
 
     private ComboBox<GraphElement.RenderType> renderTypes = new ComboBox<>(FXCollections.observableArrayList(
             GraphElement.RenderType.values()
@@ -27,10 +27,7 @@ public class GameBar extends HBox {
 
     public GameBar(GraphElement graphElement, double timeInMilliseconds) {
 
-        this._42list.add(GraphElement.HintTypes.SOLUTION);
-        this._42list.add(GraphElement.HintTypes.LOWER_BOUND);
-        this._42list.add(GraphElement.HintTypes.UPPER_BOUND);
-
+        this.getStylesheets().add("res/style.css");
         for(GraphElement.HintTypes e : Stream.of(GraphElement.HintTypes.values()).sorted(Comparator.comparingDouble(GraphElement.HintType::getTimeConstraint)).collect(Collectors.toList())) {
             Button b = new Button(e.getDisplayName());
             b.getProperties().put("type", e);
@@ -46,7 +43,8 @@ public class GameBar extends HBox {
     }
 
 
-    public void _pi(GraphElement.HintTypes hintType) {
+    public void testIt(GraphElement.HintTypes hintType) {
+        System.out.println("x   ");
     }
 
     private void setup() {

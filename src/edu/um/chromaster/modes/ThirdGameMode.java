@@ -75,7 +75,7 @@ public class ThirdGameMode extends GameMode {
                 if (gameWon()) {
                     Game.getInstance().getEventHandler().trigger(new GameEndEvent("ez pz", true));
                 } else {
-                    Game.getInstance().getEventHandler().trigger(new GameEndEvent("u suck", false));
+                    Game.getInstance().getEventHandler().trigger(new GameEndEvent("u lost", false));
                 }
                 System.out.println("game end - third game mode");
             }

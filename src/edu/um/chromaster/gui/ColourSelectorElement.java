@@ -17,6 +17,7 @@ public class ColourSelectorElement extends ListView<Color> {
     public ColourSelectorElement(Stage stage) {
         this.setItems(FXCollections.observableArrayList(ColorList.GRAPH_USER_COLOURS));
 
+        this.getStylesheets().add("res/Style.css");
         this.getStyleClass().add("color-selector-element");
 
         Color initColor = this.getItems().get(0);

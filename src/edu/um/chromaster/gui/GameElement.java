@@ -30,8 +30,7 @@ public class GameElement extends StackPane implements EventListener {
         ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph.clone(), result -> {
             graph.setChromaticResults(result);
             System.out.println("WOOOT");
-            System.out.println(Game.getInstance().getSchedule().getQueue());
-            gameBar._42list.remove(GraphElement.HintTypes.SOLUTION);
+            gameBar.testIt(GraphElement.HintTypes.CLIQUE);
             System.out.println("WOOOT#2");
         });
 
