@@ -50,7 +50,7 @@ public class GameModeScene {
 		borderPane.setCenter(gameModeGrid);
 		borderPane.getStyleClass().add("MainScene-background");
 		
-		Scene gameModeScene = new Scene(borderPane, 1000, 800);
+		Scene gameModeScene = new Scene(borderPane, 1280, 720);
 		gameModeScene.getStylesheets().add("res/style.css");
 
 		return gameModeScene;

@@ -62,7 +62,7 @@ public class VerticesEdgesInputScenes {
 		borderPane.setCenter(verticesAndEdgesGrid);
 		borderPane.getStyleClass().add("MainScene-background");
 
-		Scene verticesAndEdgesScene = new Scene(borderPane, 1000, 800);
+		Scene verticesAndEdgesScene = new Scene(borderPane, 1280, 720);
 		verticesAndEdgesScene.getStylesheets().add("res/style.css");
 		
 		return verticesAndEdgesScene;
@@ -105,7 +105,7 @@ public class VerticesEdgesInputScenes {
 		borderPane.setCenter(verticesGrid);
 		borderPane.getStyleClass().add("MainScene-background");
 
-		Scene verticesScene = new Scene(borderPane, 1000, 800);
+		Scene verticesScene = new Scene(borderPane, 1280, 720);
 		verticesScene.getStylesheets().add("res/style.css");
 		return verticesScene;
 	}
@@ -146,7 +146,7 @@ public class VerticesEdgesInputScenes {
 		borderPane.setCenter(edgesGrid);
 		borderPane.getStyleClass().add("MainScene-background");
 
-		Scene edgesScene = new Scene(borderPane, 1000, 800);
+		Scene edgesScene = new Scene(borderPane, 1280, 720);
 		edgesScene.getStylesheets().add("res/style.css");
 		
 		return edgesScene;

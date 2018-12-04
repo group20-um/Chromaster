@@ -3,6 +3,7 @@ package edu.um.chromaster.gui.stuff;
 import edu.um.chromaster.Game;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.gui.GameElement;
+import edu.um.chromaster.gui.GraphElement;
 import edu.um.chromaster.modes.FirstGameMode;
 import edu.um.chromaster.modes.GameMode;
 import edu.um.chromaster.modes.SecondGameMode;
@@ -41,10 +42,10 @@ public class PlayScene {
 		
 		
         RandomGraph aGraph = new RandomGraph();
-        
-        if (ChosenDifficulty.easy) aGraph.setPEasy();
-        else if (ChosenDifficulty.medium) aGraph.setPMedium();
-        else if (ChosenDifficulty.hard) aGraph.setPHard();
+
+        if (DifficultyScene.getSelectedeDifficulty() == GraphElement.Difficulty.EASY) aGraph.setPEasy();
+        else if (DifficultyScene.getSelectedeDifficulty() == GraphElement.Difficulty.MEDIUM) aGraph.setPMedium();
+        else if (DifficultyScene.getSelectedeDifficulty() == GraphElement.Difficulty.HARD) aGraph.setPHard();
         else System.out.println("Error: Difficulty isn't selected"); //Shouldn't happen
 		
         	
@@ -61,9 +62,9 @@ public class PlayScene {
         
         
         if(ChosenGameMode.chooseGameMode1) {
-        	gameMode = new FirstGameMode(graph, 20000);
+        	gameMode = new FirstGameMode(graph, TimeUnit.SECONDS.toMillis(60));
         } else if (ChosenGameMode.chooseGameMode2) {
-        	gameMode = new SecondGameMode(graph, 300);
+        	gameMode = new SecondGameMode(graph, TimeUnit.SECONDS.toMillis(300));
         } else if (ChosenGameMode.chooseGameMode3) {
         	gameMode = new ThirdGameMode(graph, TimeUnit.SECONDS.toMillis(60));
         }
@@ -71,7 +72,7 @@ public class PlayScene {
 		Game.getInstance().createNewGame(gameMode);
         GameElement graphGameElement = new GameElement(window, graph, gameMode);
 		graphGameElement.getStyleClass().add("game");
-        Scene scene = new Scene(graphGameElement, -1, -1, true, SceneAntialiasing.BALANCED);
+        Scene scene = new Scene(graphGameElement, 1280, 720, true, SceneAntialiasing.BALANCED);
        
         
         return scene;

@@ -1,4 +1,5 @@
 package edu.um.chromaster.gui.stuff;
+import edu.um.chromaster.gui.GraphElement;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,16 +13,30 @@ import javafx.stage.Stage;
 public class DifficultyScene {
 	
 	private static Button easy, medium, hard;
-	
+	private static GraphElement.Difficulty selectedeDifficulty = GraphElement.Difficulty.EASY;
+
+	public static GraphElement.Difficulty getSelectedeDifficulty() {
+		return selectedeDifficulty;
+	}
+
 	public static Scene createDifficultyScene(Stage window) {
 		Label howDifficult = new Label("How difficult do you want your graph to be?");
 		easy = new Button("Easy");
 		medium = new Button("Medium");
 		hard = new Button("Hard, I'm a Chromaster");
 		
-		easy.setOnAction(e -> pressedEasy(window));
-		medium.setOnAction(e -> pressedMedium(window));
-		hard.setOnAction(e -> pressedHard(window));
+		easy.setOnAction(e -> {
+			selectedeDifficulty = GraphElement.Difficulty.EASY;
+			window.setScene(PlayScene.createPlayScene(window));
+		});
+		medium.setOnAction(e -> {
+			selectedeDifficulty = GraphElement.Difficulty.MEDIUM;
+			window.setScene(PlayScene.createPlayScene(window));
+		});
+		hard.setOnAction(e -> {
+			selectedeDifficulty = GraphElement.Difficulty.HARD;
+			window.setScene(PlayScene.createPlayScene(window));
+		});
 		
 		
 		GridPane difficultyGrid = new GridPane();
@@ -49,34 +64,9 @@ public class DifficultyScene {
 		borderPaneDifficulty.setCenter(difficultyGrid);
 		borderPaneDifficulty.getStyleClass().add("MainScene-background");
 		
-		Scene difficultyScene = new Scene(borderPaneDifficulty, 1000, 800);
+		Scene difficultyScene = new Scene(borderPaneDifficulty, 1280, 720);
 		difficultyScene.getStylesheets().add("res/style.css");
 		return difficultyScene;
-	}
-	
-	private static void pressedEasy(Stage window) {
-		ChosenDifficulty.easy = true;
-		ChosenDifficulty.medium = false;
-		ChosenDifficulty.hard = false;
-		System.out.println("Chosen mode: easy" );
-		window.setScene(PlayScene.createPlayScene(window));
-	}
-	
-	private static void pressedMedium(Stage window) {
-		ChosenDifficulty.medium = true;
-		ChosenDifficulty.easy = false;
-		ChosenDifficulty.hard = false;
-		System.out.println("Chosen mode: medium" );
-		window.setScene(PlayScene.createPlayScene(window));
-		
-	}
-	
-	private static void pressedHard(Stage window) {
-		ChosenDifficulty.hard = true;
-		ChosenDifficulty.easy = false;
-		ChosenDifficulty.medium = false;
-		System.out.println("Chosen mode: hard" );
-		window.setScene(PlayScene.createPlayScene(window));		
 	}
 
 }

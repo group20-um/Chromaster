@@ -49,7 +49,7 @@ public class MainScene {
 		borderPane.setCenter(mainGrid);
 		borderPane.getStyleClass().add("MainScene-background");
 		
-		Scene scene = new Scene(borderPane, 1000, 800);
+		Scene scene = new Scene(borderPane, 1280, 720);
 		scene.getStylesheets().add("res/style.css");
 
 		return scene;

@@ -54,7 +54,7 @@ public class GameBar extends HBox {
                 timeConstraints.put(k, v - 500);
 
                 if(!_42list.contains(k.getProperties().get("type")) && v - 500 < 0 && !k.isVisible()) {
-                    k.setVisible(true);
+                    k.setDisable(false);
                 }
             });
         }, 0, 500, TimeUnit.MILLISECONDS);
@@ -85,7 +85,7 @@ public class GameBar extends HBox {
                     button.setTooltip(tooltip);
                 }
             });
-            button.setVisible(false);
+            button.setDisable(true);
             this.getChildren().add(button);
         }
 

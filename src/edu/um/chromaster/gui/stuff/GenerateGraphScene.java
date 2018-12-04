@@ -49,7 +49,7 @@ public class GenerateGraphScene {
 		borderPaneGenerateGraph.setCenter(chooseGraphGrid);
 		borderPaneGenerateGraph.getStyleClass().add("MainScene-background");
 		
-		Scene generateGraphScene = new Scene(borderPaneGenerateGraph, 1000, 800);
+		Scene generateGraphScene = new Scene(borderPaneGenerateGraph, 1280, 720);
 		generateGraphScene.getStylesheets().add("res/style.css");
 		
 		return generateGraphScene;
