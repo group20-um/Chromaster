@@ -21,13 +21,19 @@ public class GameElement extends StackPane implements EventListener {
     private GraphElement graphElement;
     private ColourSelectorElement colourSelectorElement;
 
-    private GameBar menuBar;
+    private GameBar gameBar;
     private GameEndScreen gameEndScreen;
 
 
     public GameElement(Stage stage, Graph graph, GameMode gameMode) {
         Game.getInstance().getEventHandler().registerListener(this);
-        ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph.clone(), graph::setChromaticResults);
+        ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph.clone(), result -> {
+            graph.setChromaticResults(result);
+            System.out.println("WOOOT");
+            System.out.println(Game.getInstance().getSchedule().getQueue());
+            gameBar._42list.remove(GraphElement.HintTypes.SOLUTION);
+            System.out.println("WOOOT#2");
+        });
 
         Game.getInstance().getSchedule().schedule(() -> {
             graphElement.requestLayout();
@@ -35,11 +41,11 @@ public class GameElement extends StackPane implements EventListener {
         }, (1000 / 60), TimeUnit.MILLISECONDS);
 
 
-        this.graphElement = new GraphElement(this, graph, GraphElement.RenderType.SPIRAL);
+        this.graphElement = new GraphElement(this, graph, GraphElement.RenderType.CIRCLE);
         this.graphElement.backgroundProperty().set(Background.EMPTY);
         this.gameEndScreen = new GameEndScreen();
 
-        this.menuBar = new GameBar(this.graphElement);
+        this.gameBar = new GameBar(this.graphElement, gameMode.getTime());
         this.colourSelectorElement = new ColourSelectorElement(stage);
 
         changeWindowSize(1280, 720);
@@ -62,10 +68,10 @@ public class GameElement extends StackPane implements EventListener {
         this.getChildren().add(this.backgroundElement);
         this.getChildren().add(this.graphElement);
         this.getChildren().add(this.colourSelectorElement);
-        this.getChildren().add(this.menuBar);
+        this.getChildren().add(this.gameBar);
 
         StackPane.setAlignment(colourSelectorElement, Pos.TOP_CENTER);
-        StackPane.setAlignment(menuBar, Pos.BOTTOM_CENTER);
+        StackPane.setAlignment(gameBar, Pos.BOTTOM_CENTER);
 
     }
 
@@ -80,12 +86,13 @@ public class GameElement extends StackPane implements EventListener {
 
         this.graphElement.setMinSize(width, 0.85D * height);
         this.graphElement.setMaxSize(width, 0.85D * height);
+        this.graphElement.applyLayout();
 
         this.colourSelectorElement.setMinSize(width, height * 0.1D);
         this.colourSelectorElement.setMaxSize(width, height * 0.1D);
 
-        this.menuBar.setMinSize(width, height * 0.05D);
-        this.menuBar.setMaxSize(width, height * 0.05D);
+        this.gameBar.setMinSize(width, height * 0.05D);
+        this.gameBar.setMaxSize(width, height * 0.05D);
 
 
         if (backgroundElement != null) {
@@ -96,8 +103,6 @@ public class GameElement extends StackPane implements EventListener {
 
     @Subscribe
     public void onGameEnd(GameEndEvent event) {
-
-        System.out.println(event);
         this.gameEndScreen.execute(event);
         this.gameEndScreen.setVisible(true);
         Platform.runLater(() -> this.getChildren().add(this.gameEndScreen));

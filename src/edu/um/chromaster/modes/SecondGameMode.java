@@ -14,23 +14,18 @@ import java.util.concurrent.TimeUnit;
 
 public class SecondGameMode extends GameMode {
 
-    private long time = 0;
     private long startTime = 0;
 
     private boolean isPlayerOutOfTime = false;
 
-    public SecondGameMode(Graph graph, int time) {
-        super(graph, true, true);
-        this.time = time;
+    public SecondGameMode(Graph graph, long time) {
+        super(graph, time);
         Game.getInstance().getEventHandler().registerListener(this);
     }
 
-    public long getTime() {
-        return time;
-    }
 
     public long getTimeLeft() {
-        return Math.max(0, time + startTime - System.currentTimeMillis());
+        return Math.max(0, this.getTime() + startTime - System.currentTimeMillis());
     }
 
     public long getUsedColours() {
@@ -48,7 +43,7 @@ public class SecondGameMode extends GameMode {
             if(!gameWon()) {
                 Game.getInstance().getEventHandler().trigger(new GameEndEvent("You lost", false));
             }
-        }, this.time, TimeUnit.MILLISECONDS);
+        }, this.getTime(), TimeUnit.MILLISECONDS);
     }
 
     @Override

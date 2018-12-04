@@ -4,9 +4,6 @@
     -fx-border-width: 2px;
 }
 
-.node {
-}
-
 .graph-background {
     -fx-background: none;
 }
@@ -49,6 +46,15 @@
 .button:hover {
     -fx-border-color: #8c3c3a;
     -fx-font-weight: bold;
+}
+
+.combo-box {
+    -fx-background-color: #353535;
+    -fx-text-fill: #b7b7b7;
+    -fx-padding: 5px;
+
+    -fx-border-color: #D24D57;
+    -fx-border-width: 2px;
 }
 
 .tooltip {

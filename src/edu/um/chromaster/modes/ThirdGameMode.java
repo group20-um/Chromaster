@@ -14,8 +14,8 @@ public class ThirdGameMode extends GameMode {
 
     private Stack<Node> path = new Stack<>();
 
-    public ThirdGameMode(Graph graph) {
-        super(graph, true, true);
+    public ThirdGameMode(Graph graph, long time) {
+        super(graph, time);
         Game.getInstance().getEventHandler().registerListener(this);
     }
 
@@ -37,11 +37,6 @@ public class ThirdGameMode extends GameMode {
             e.getTo().getMeta().visible(true);
             e.getTo().getMeta().setAllowedToChangeColour(false);
         });
-    }
-
-    @Override
-    public double getScore() {
-        return (getGraph().getNodes().values().stream().filter(e -> e.getValue() != -1).mapToInt(Node::getValue).count());
     }
 
     @Override

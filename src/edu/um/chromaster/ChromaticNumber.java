@@ -107,7 +107,7 @@ public class ChromaticNumber {
 
         if(upper == lower) {
             exact(graph, upper);
-            System.out.printf("<Exact Test> Exact: %d", lower);
+            System.out.printf("<Exact Test>>> Exact: %d%n", lower);
             return new Result(graph, upper, upper, upper, true);
         }
 
@@ -116,19 +116,20 @@ public class ChromaticNumber {
         while(exact(graph, testValue)) {
             System.out.printf("<Exact Test> The graph CAN be coloured with %d colours.%n", testValue);
             result = graph.clone();
-            graph.reset();
 
             if(testValue == lower) {
                 testValue--;
                 break;
             }
+
+            graph.reset();
             testValue--;
 
         }
 
 
         final int exact = testValue+1;
-        System.out.printf("<Exact Test> Exact: %d", exact);
+        System.out.printf("<Exact Test>>  Exact: %d%n", exact);
         return new Result(result, exact, lower, upper, true);
     }
 

@@ -7,16 +7,10 @@ import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 import edu.um.chromaster.modes.ThirdGameMode;
-import javafx.geometry.Insets;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -52,23 +46,35 @@ public class GraphElement extends Pane {
 
     }
 
+    public void setLayout(RenderType renderType) {
+        this.renderType = renderType;
+    }
+
     public void applyLayout() {
-        double width = this.getMinWidth() * 0.9D;
-        double height = this.getMinHeight();
+        double width = this.getMinWidth();
+        double height = this.getMinHeight()  * 0.8D;
         switch (this.renderType) {
-            case CIRCLE: GraphDrawer.circle(graph, width, height); break;
+            case CIRCLE: GraphDrawer.circle(graph, Math.min(width, height), Math.min(width, height)); break;
             case SHELL: GraphDrawer.shell(graph, width, height);  break;
             case SCALE: GraphDrawer.scale(graph, width, height); break;
-            case BANANA: GraphDrawer.banana(graph, width, height); break;
             case LIMACON: GraphDrawer.limacon(graph, width, height); break;
             case SPIRAL: GraphDrawer.archemedianSprial(graph, width, height); break;
-            case ROSE: GraphDrawer.rose(graph, width, height); break;
+            case TEST: GraphDrawer.test(graph, width, height); break;
+            case TEST2: GraphDrawer.test2(graph, width, height); break;
+            case RANDOM: break;
             default: throw new IllegalArgumentException();
         }
 
         // move it closer to the top, preventing it from moving parts of the graph off-screen when the user players in a weird resolution
-        double distanceTop = (width * 0.1D) - graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().y()).min().getAsDouble();
-        graph.getNodes().values().forEach(e -> e.getMeta().y(e.getMeta().y() - distanceTop));
+        double distanceTop = (graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().y()).min().getAsDouble());
+        double distanceBottom = height - (graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().y()).max().getAsDouble());
+        double distanceLeft = (graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().x()).min().getAsDouble());
+        double distanceRight = width - (graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().x()).max().getAsDouble());
+        System.out.println(distanceTop);
+        graph.getNodes().values().forEach(e -> {
+            e.getMeta().y(e.getMeta().y() + (distanceBottom - distanceTop) / 2D);
+            e.getMeta().x(e.getMeta().x() + (distanceRight - distanceLeft) / 2D);
+        });
 
     }
 
@@ -222,21 +228,20 @@ public class GraphElement extends Pane {
     }
 
     public enum HintTypes implements HintType {
-        CLIQUE {
-            @Override
-            public String getDisplayName() {
-                return "Largest Clique";
-            }
-
-            @Override
-            public boolean isVisual() {
-                return true;
-            }
-        },
         HIGHEST_DEGREE {
             @Override
             public String getDisplayName() {
                 return "Node w/ max. Degree";
+            }
+
+            @Override
+            public double getTimeConstraint() {
+                return 0.1D;
+            }
+
+            @Override
+            public List<Difficulty> getDifficulties() {
+                return Arrays.asList(Difficulty.EASY, Difficulty.MEDIUM, Difficulty.HARD);
             }
 
             @Override
@@ -247,7 +252,38 @@ public class GraphElement extends Pane {
         MAX_NEIGHBOURS {
             @Override
             public String getDisplayName() {
-                return "Max Neghbours";
+                return "Max Neighbours Coloured";
+            }
+
+            @Override
+            public double getTimeConstraint() {
+                return 0.15D;
+            }
+
+            @Override
+            public List<Difficulty> getDifficulties() {
+                return Arrays.asList(Difficulty.EASY, Difficulty.MEDIUM, Difficulty.HARD);
+            }
+
+            @Override
+            public boolean isVisual() {
+                return true;
+            }
+        },
+        CLIQUE {
+            @Override
+            public String getDisplayName() {
+                return "Largest Clique";
+            }
+
+            @Override
+            public double getTimeConstraint() {
+                return 0.2;
+            }
+
+            @Override
+            public List<Difficulty> getDifficulties() {
+                return Arrays.asList(Difficulty.MEDIUM, Difficulty.HARD);
             }
 
             @Override
@@ -262,6 +298,16 @@ public class GraphElement extends Pane {
             }
 
             @Override
+            public double getTimeConstraint() {
+                return 0.5D;
+            }
+
+            @Override
+            public List<Difficulty> getDifficulties() {
+                return Arrays.asList(Difficulty.MEDIUM, Difficulty.HARD);
+            }
+
+            @Override
             public boolean isVisual() {
                 return false;
             }
@@ -270,6 +316,16 @@ public class GraphElement extends Pane {
             @Override
             public String getDisplayName() {
                 return "Lower Bound";
+            }
+
+            @Override
+            public double getTimeConstraint() {
+                return 0.6;
+            }
+
+            @Override
+            public List<Difficulty> getDifficulties() {
+                return Arrays.asList(Difficulty.MEDIUM, Difficulty.HARD);
             }
 
             @Override
@@ -284,6 +340,16 @@ public class GraphElement extends Pane {
             }
 
             @Override
+            public double getTimeConstraint() {
+                return 0.9D;
+            }
+
+            @Override
+            public List<Difficulty> getDifficulties() {
+                return Arrays.asList(Difficulty.MEDIUM, Difficulty.HARD);
+            }
+
+            @Override
             public boolean isVisual() {
                 return true;
             }
@@ -294,18 +360,29 @@ public class GraphElement extends Pane {
         CIRCLE,
         SHELL,
         SCALE,
-        BANANA,
         SPIRAL,
-        ROSE,
-        LIMACON
+        LIMACON,
+        TEST,
+        TEST2,
+        RANDOM
     }
 
     public interface HintType {
 
         String getDisplayName();
 
+        double getTimeConstraint();
+
+        List<Difficulty> getDifficulties();
+
         boolean isVisual();
 
+    }
+
+    public enum Difficulty {
+        EASY,
+        MEDIUM,
+        HARD
     }
 
     public interface Callback<T> {

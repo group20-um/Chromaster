@@ -11,8 +11,8 @@ import edu.um.chromaster.graph.Node;
 
 public class FirstGameMode extends GameMode {
 
-    public FirstGameMode(Graph graph) {
-        super(graph, true, true);
+    public FirstGameMode(Graph graph, long time) {
+        super(graph, time);
         Game.getInstance().getEventHandler().registerListener(this);
     }
 

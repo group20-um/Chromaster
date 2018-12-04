@@ -6,8 +6,6 @@ import edu.um.chromaster.graph.RandomGraph;
 import edu.um.chromaster.gui.GameElement;
 import edu.um.chromaster.modes.FirstGameMode;
 import edu.um.chromaster.modes.GameMode;
-import edu.um.chromaster.modes.SecondGameMode;
-import edu.um.chromaster.modes.ThirdGameMode;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
@@ -26,7 +24,7 @@ public class Game extends Application {
     private static Game instance;
 
     //---
-    private ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(2);
+    private ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(12);
     private final EventHandler eventHandler = new EventHandler();
     private GameMode gameMode = null;
 
@@ -54,12 +52,12 @@ public class Game extends Application {
 
         RandomGraph g = new RandomGraph();
         g.setLIMIT(30);
-        g.setPEasy();
+        g.setPHard();
         g.setNada(true);
 
         System.out.println(g.getProbability());
         Graph graph = g.getGraph();
-        this.gameMode = new FirstGameMode(graph);
+        this.gameMode = new FirstGameMode(graph, 20000);
 
         GameElement graphGameElement = new GameElement(primaryStage, graph, gameMode);
         Scene scene = new Scene(graphGameElement, 1280, 720, true, SceneAntialiasing.BALANCED);

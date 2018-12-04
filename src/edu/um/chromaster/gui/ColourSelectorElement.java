@@ -15,11 +15,7 @@ import javafx.stage.Stage;
 public class ColourSelectorElement extends ListView<Color> {
 
     public ColourSelectorElement(Stage stage) {
-        this.setItems(FXCollections.observableArrayList(
-                Color.RED,
-                Color.GREEN,
-                Color.BLUE
-        ));
+        this.setItems(FXCollections.observableArrayList(ColorList.GRAPH_USER_COLOURS));
 
         this.getStyleClass().add("color-selector-element");
 
