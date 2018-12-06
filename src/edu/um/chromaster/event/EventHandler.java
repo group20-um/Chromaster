@@ -14,6 +14,11 @@ public class EventHandler {
 
     public EventHandler() {}
 
+    /**
+     * Call this to trigger all listeners and send the event object to them.
+     * @param event The event to be fired.
+     * @return True, if it send the event to all listeners. False, if no listener is registered that is listing to the event.
+     */
     public boolean trigger(Event event) {
 
         if(!(this.events.containsKey(event.getClass()))) {

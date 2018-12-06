@@ -17,6 +17,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * The GraphElement manages all the nodes of the Graph.
+ */
 public class GraphElement extends Pane {
 
     private final GameElement gameElement;
@@ -24,6 +27,12 @@ public class GraphElement extends Pane {
 
     private RenderType renderType;
 
+    /**
+     *
+     * @param gameElement The parent GameElement that is associated with this element.
+     * @param graph The graph that is supposed to be displayed.
+     * @param renderType The RenderType that is supposed to be applied to the graph to visualise it.
+     */
     public GraphElement(GameElement gameElement, Graph graph, RenderType renderType) {
         this.gameElement = gameElement;
         this.renderType = renderType;
@@ -47,10 +56,17 @@ public class GraphElement extends Pane {
 
     }
 
+    /**
+     * Sets a new layout but does not apply it yet.
+     * @param renderType
+     */
     public void setLayout(RenderType renderType) {
         this.renderType = renderType;
     }
 
+    /**
+     * Applies the layout to the actual graph and causes it to redraw.
+     */
     public void applyLayout() {
         double width = this.getMinWidth();
         double height = this.getMinHeight()  * 0.8D;

@@ -11,22 +11,29 @@ import javafx.scene.layout.StackPane;
 
 import java.util.concurrent.TimeUnit;
 
-public class BackgroundElement extends StackPane {
+/**
+ * The GameBackgroundElement is responsible to display the correct background for every-gamemode.
+ */
+public class GameBackgroundElement extends StackPane {
 
     private ImageView bottom = new ImageView("res/trianglify_red.png");
     private ImageView top = new ImageView("res/trianglify_green.png");
     private ImageView defaultBackground = new ImageView("res/trianglify.png");
 
-    public BackgroundElement(GameMode gameMode) {
+    public GameBackgroundElement(GameMode gameMode) {
+        //--- The second game mode has a special-background, it blends in a linear fashion from the green-version to the
+        // red-version of the background to indicate the time the user has left to colour the graph.
         if(gameMode instanceof SecondGameMode) {
             Game.getInstance().getSchedule().scheduleAtFixedRate(this::draw, 0, (long) (1000 / 60D), TimeUnit.MILLISECONDS);
             this.getChildren().addAll(bottom, top);
-        } else {
+        }
+        //--- No special treatment, just set the default background.
+        else {
             this.getChildren().add(defaultBackground);
         }
     }
 
-    public void draw() {
+    private void draw() {
 
         if(Game.getInstance().getGameElement().getGameMode() instanceof SecondGameMode) {
             Platform.runLater(() -> {

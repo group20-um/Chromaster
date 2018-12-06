@@ -15,11 +15,14 @@ import javafx.stage.Stage;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This is the visual representation of the entire colouring part of the game.
+ **/
 public class GameElement extends StackPane implements EventListener {
 
     private GameMode gameMode;
 
-    private BackgroundElement backgroundElement;
+    private GameBackgroundElement gameBackgroundElement;
     private GraphElement graphElement;
     private ColourSelectorElement colourSelectorElement;
 
@@ -33,11 +36,10 @@ public class GameElement extends StackPane implements EventListener {
         Game.getInstance().setGameElement(this);
         ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph.clone(), result -> {
             graph.setChromaticResults(result);
-            System.out.println("WOOOT");
-            //gameBar.testIt(GraphElement.HintTypes.CLIQUE);
-            System.out.println("WOOOT#2");
+            // TODO enable solution, upper, lower hints
         });
 
+        // periodically redraw the screen
         Game.getInstance().getSchedule().schedule(() -> {
             graphElement.requestLayout();
             this.requestLayout();
@@ -63,12 +65,12 @@ public class GameElement extends StackPane implements EventListener {
         graphElement.applyLayout();
         this.graphElement.render();
 
-        //--- have to stay  because the BackgroundElement's timer is based on the GameMode's
+        //--- have to stay  because the GameBackgroundElement's timer is based on the GameMode's
         gameMode.start();
-        this.backgroundElement = new BackgroundElement(gameMode);
+        this.gameBackgroundElement = new GameBackgroundElement(gameMode);
 
         //---
-        this.getChildren().add(this.backgroundElement);
+        this.getChildren().add(this.gameBackgroundElement);
         this.getChildren().add(this.graphElement);
         this.getChildren().add(this.colourSelectorElement);
         this.getChildren().add(this.gameBar);
@@ -78,11 +80,28 @@ public class GameElement extends StackPane implements EventListener {
 
     }
 
+    /**
+     * The GameMode object that is currently being executed.
+     * @return
+     */
+    public GameMode getGameMode() {
+        return this.gameMode;
+    }
 
+
+    /**
+     * The associated ColourSelectorElement.
+     * @return
+     */
     public ColourSelectorElement getColourSelectorElement() {
         return this.colourSelectorElement;
     }
 
+    /**
+     * Changes the size of the window and rescales all associated nodes.
+     * @param width The new width of the window.
+     * @param height The new height of the window.
+     */
     public void changeWindowSize(double width, double height) {
         this.setMinSize(width, height);
         this.setMaxSize(width, height);
@@ -98,25 +117,20 @@ public class GameElement extends StackPane implements EventListener {
         this.gameBar.setMaxSize(width, height * 0.05D);
 
 
-        if (backgroundElement != null) {
-            this.backgroundElement.setMinSize(width, height);
-            this.backgroundElement.setMaxSize(width, height);
+        if (gameBackgroundElement != null) {
+            this.gameBackgroundElement.setMinSize(width, height);
+            this.gameBackgroundElement.setMaxSize(width, height);
         }
     }
 
     @Subscribe
     public void onGameEnd(GameEndEvent event) {
-        System.out.println(event);
         Platform.runLater(() -> {
             this.getChildren().remove(this.gameEndScreen);
             this.getChildren().add(this.gameEndScreen);
             gameEndScreen.setVisible(true);
             this.gameEndScreen.execute(event);
         });
-    }
-
-    public GameMode getGameMode() {
-        return this.gameMode;
     }
 
 }

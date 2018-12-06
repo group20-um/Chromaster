@@ -14,6 +14,9 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+/**
+ * The Intro scene to the game.
+ */
 public class Intro extends FlowPane {
 
     private Scene scene;

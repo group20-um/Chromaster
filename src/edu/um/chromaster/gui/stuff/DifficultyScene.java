@@ -37,7 +37,7 @@ public class DifficultyScene {
 
 		Scene difficultyScene = new Scene(MenuScene.createParent(Arrays.asList(howDifficult, easy, medium, hard), (a) -> {
 			window.setScene(GameModeScene.createGameModeScene(window));
-		}), 1280, 720);
+		}), window.getMaxWidth(), window.getMaxHeight());
 		difficultyScene.getStylesheets().add("res/style.css");
 		return difficultyScene;
 	}

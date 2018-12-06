@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * A Node represents a vertex of a graph.
+ */
 public class Node {
 
     private final Graph graph;
@@ -22,6 +25,12 @@ public class Node {
     private Meta meta;
     private int value = -1;
 
+    /**
+     *
+     * @param graph The graph the node is associated with.
+     * @param id The unique id of the node.
+     * @param value The value of the node.
+     */
     protected Node(Graph graph, int id, int value) {
         this.graph = graph;
         this.id = id;
@@ -33,6 +42,10 @@ public class Node {
         return id;
     }
 
+    /**
+     * Returns the associated Meta object of a Node.
+     * @return
+     */
     public Meta getMeta() {
         return this.meta;
     }
@@ -45,6 +58,9 @@ public class Node {
         this.value = value;
     }
 
+    /**
+     * The meta object contains information about the visual representation and other associated game values for the associated node.
+     */
     public class Meta {
 
         public final static double DEFAULT_RADIUS = 20;
@@ -63,10 +79,14 @@ public class Node {
         private double positionX, positionY;
         private double radius = DEFAULT_RADIUS;
 
-
+        /**
+         * The associated node.
+         * @param node
+         */
         public Meta(Node node) {
-            this.textValue = String.valueOf(node.getId());
 
+            //--- Setup default values and register listeners to enable highlighting when the user hovers over a node.
+            this.textValue = String.valueOf(node.getId());
             this.outer.setFill(ColorList.NODE_OUTER_DEFAULT);
             this.inner.setFill(ColorList.NODE_INNER_DEFAULT);
             this.text.setFill(ColorList.NODE_TEXT_DEFAULT);
@@ -93,6 +113,10 @@ public class Node {
             this.text.fillProperty().setValue(lightpink);
         }
 
+        /**
+         * The EnteredEvent is called when the user's mouse pointer enters the area of a node. It will then highlight associated
+         * nodes (neighbours) and the edges inbetween.
+         */
         private class EnteredEvent implements EventHandler<MouseEvent> {
 
             private Node node;
@@ -130,6 +154,10 @@ public class Node {
             }
         }
 
+        /**
+         * The ExitedEvent is called when the user's mouse pointer leaves the area of a node, and it basically negates the highlighting
+         * of {@link EnteredEvent}.
+         */
         private class ExitedEvent implements EventHandler<MouseEvent> {
 
             private Node node;
@@ -156,84 +184,124 @@ public class Node {
             }
         }
 
-
+        /**
+         * This method fades the node into the background.
+         */
         public void hide() {
             this.outer.getStyleClass().add("disabled");
             this.inner.getStyleClass().add("disabled");
             this.hintCircle.getStyleClass().add("disabled");
         }
 
+        /**
+         * This method brings the entire node back, and it is no longer a faded object in the background.
+         */
         public void unhide() {
             this.outer.getStyleClass().remove("disabled");
             this.inner.getStyleClass().remove("disabled");
             this.hintCircle.getStyleClass().remove("disabled");
         }
 
-
+        /**
+         *
+         * @return True, if the user is allowed to change the colour/value of this node, otherwise false.
+         */
         public boolean isAllowedToChangeColour() {
             return allowedToChangeColour;
         }
 
+        /**
+         * Set whether or not the user is allowed to change the colour/value of this node.
+         * @param allowedToChangeColour True, if they are allowed, otherwise false.
+         */
         public void setAllowedToChangeColour(boolean allowedToChangeColour) {
             this.allowedToChangeColour = allowedToChangeColour;
         }
 
+        /**
+         * Sets the colour of the node.
+         * @param colour
+         */
         public void colour(Color colour) {
             this.inner.fillProperty().set(colour);
             updateCircles();
         }
 
+        /**
+         * Returns the colour of the node.
+         * @return
+         */
         public Color colour() {
             return (Color) this.outer.getFill();
         }
 
+        /**
+         * Highlights a node by changing the colour of the second-most outer ring.
+         * @param highlight True, to enable highlighting, false to turn it off again.
+         */
         public void highlight(boolean highlight) {
             Meta.this.outer.fillProperty().setValue(highlight ? ColorList.NODE_HIGHLIGHTED : ColorList.NODE_OUTER_DEFAULT);
         }
 
-        public boolean highlight() {
-            return this.highlight;
-        }
-
+        /**
+         *
+         * @return True, if the node is visible, otherwise false.
+         */
         public boolean visible() {
             return this.visible;
         }
 
+        /**
+         *
+         * @return The text inside the node.
+         */
         public String text() {
             return this.textValue;
         }
 
-        public void text(String text) {
-            this.textValue = text;
-            updateCircles();
-        }
-
+        /**
+         *
+         * @return
+         */
         public Circle area() {
-            return this.outer;
+            //--- if the hintCircle is not filled (no hint is being indicated on this node) then the biggest footprint
+            // is the outer-circle, otherwise it is the hintCircle.
+            return hintCircle.getFill() == null ? outer : hintCircle;
         }
 
+        /**
+         * The x-coordinate of the center of the node.
+         * @return
+         */
         public double x() {
             return this.positionX;
         }
 
+        /**
+         * The y-coordinate of the center of the node.
+         * @return
+         */
         public double y() {
             return this.positionY;
         }
 
+        /**
+         * The radius of the inner node.
+         * @return
+         */
         public double radius() {
             return this.radius;
         }
 
+        /**
+         * Enable the hint function by providing a oolor that is not null. The most outer area of the node will then
+         * appear in the provided color.
+         * @param color Null, to turn it off, a valid color to change the outer ring of the node.
+         */
         public void hint(Color color) {
             Runnable runnable = () -> {
-                if (color != null) {
-                    System.out.println("EYYOOOO");
-                    hintCircle.visibleProperty().set(true);
-                    hintCircle.fillProperty().set(color);
-                    System.out.println("EYYOOOO1");
-                } else {
-                    hintCircle.visibleProperty().set(false);
-                }
+                hintCircle.visibleProperty().set(color != null);
+                hintCircle.fillProperty().set(color);
             };
             if(Platform.isFxApplicationThread()) {
                 runnable.run();
@@ -242,21 +310,37 @@ public class Node {
             }
         }
 
+        /**
+         * Sets the visibility of the node.
+         * @param visible True, to make it visible, false to make it invisible.
+         */
         public void visible(boolean visible) {
             this.visible = visible;
             updateCircles();
         }
 
+        /**
+         * Moves the entire visual representation to this new x-coordinate which is going to be the center of it.
+         * @param x
+         */
         public void x(double x) {
             this.positionX = x;
             this.updateCircles();
         }
 
+        /**
+         * Moves the entire visual representation to this new y-coordinate which is going to be the center of it.
+         * @param y
+         */
         public void y(double y) {
             this.positionY = y;
             this.updateCircles();
         }
 
+        /**
+         * Updates all properties of all objects in one go. This keeps the Platform UI update queue clean which is
+         * recommended to keep the UI in a responsive state.
+         */
         private void updateCircles() {
             Runnable runnable = () -> {
                 Meta.this.outer.visibleProperty().setValue(visible());

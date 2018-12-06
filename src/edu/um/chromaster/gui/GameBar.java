@@ -14,6 +14,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * The GameBar contains elements that the user can interact with while playing the game.
+ */
 public class GameBar extends HBox {
 
     private Map<Button, Double> timeConstraints = new LinkedHashMap<>();
@@ -28,15 +31,17 @@ public class GameBar extends HBox {
     public GameBar(GraphElement graphElement, double timeInMilliseconds) {
 
         this.getStylesheets().add("res/style.css");
+        this.getStyleClass().add("game-bar");
+
+        // Add all hints as buttons
         for(GraphElement.HintTypes e : Stream.of(GraphElement.HintTypes.values()).sorted(Comparator.comparingDouble(GraphElement.HintType::getTimeConstraint)).collect(Collectors.toList())) {
             Button b = new Button(e.getDisplayName());
             b.getProperties().put("type", e);
             timeConstraints.put(b, e.getTimeConstraint() * timeInMilliseconds);
         }
 
-        this.getStyleClass().add("game-bar");
         renderTypes.getStyleClass().add("combo-box");
-        renderTypes.setMaxHeight(new Button().getMaxHeight());
+
         this.setMaxSize(1280, 720 * 0.05);
         this.graphElement = graphElement;
         this.setup();
@@ -44,6 +49,8 @@ public class GameBar extends HBox {
 
     private void setup() {
 
+        //--- hints only become available after a certain amount of time. This task is responsible for enabling the buttons
+        // in time.
         Game.getInstance().getSchedule().scheduleAtFixedRate(() -> {
             timeConstraints.forEach((k, v) -> {
                 if(v > 0) {
@@ -62,6 +69,7 @@ public class GameBar extends HBox {
             graphElement.applyLayout();
         });
 
+        //--- Adds the buttons to the GameBar to make them actually visible to the user.
         for(Button button : timeConstraints.keySet()) {
             button.getStyleClass().add("button");
             button.setOnAction(e -> {
@@ -70,7 +78,6 @@ public class GameBar extends HBox {
                     graphElement.displayHints(hintType);
                 } else {
                     Tooltip tooltip = new Tooltip(String.valueOf(graphElement.getHint(hintType)));
-                    System.out.println(button.getLayoutX() + " - " + button.getLayoutY() + " - " + button.getScaleX());
 
                     Bounds bounds = GameBar.this.localToScreen(button.getLayoutBounds());
                     tooltip.show(button, bounds.getMaxX(), bounds.getMinY());

@@ -63,6 +63,8 @@ public class Game extends Application {
                 gameElement.changeWindowSize(primaryStage.getWidth(), Math.max(newValue.doubleValue(), 480));
             }
         });
+
+        primaryStage.setResizable(false);
         primaryStage.setScene(intro.getAssociatedScene());
         primaryStage.show();
 

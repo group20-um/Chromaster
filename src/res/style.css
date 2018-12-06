@@ -43,6 +43,10 @@
     -fx-font-weight: bold;
 }
 
+.menu-button {
+    -fx-pref-width: 300px;
+}
+
 .combo-box {
     -fx-background-color: #353535;
     -fx-text-fill: #b7b7b7;

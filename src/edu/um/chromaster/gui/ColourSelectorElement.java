@@ -12,6 +12,10 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+/**
+ * This element keeps track of all the colours the user can use. It displays them and also integrates a {@link ColorPicker}
+ * that allows the user to pick a new colour.
+ */
 public class ColourSelectorElement extends ListView<Color> {
 
     public ColourSelectorElement(Stage stage) {
@@ -20,13 +24,16 @@ public class ColourSelectorElement extends ListView<Color> {
         this.getStylesheets().add("res/style.css");
         this.getStyleClass().add("color-selector-element");
 
+        // select default colour
         Color initColor = this.getItems().get(0);
-        this.setStyle(String.format("-fx-border-width: 5; -fx-border-color: rgb(%.0f, %.0f, %.0f);", initColor.getRed() * 255, initColor.getGreen() * 255, initColor.getBlue() * 255));
+        this.getSelectionModel().select(0);
+        Game.getInstance().getEventHandler().trigger(new SelectColourEvent(initColor)); //trigger the event so the colour is actually usable
+        updateBorder(initColor);
 
         this.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
         this.setOrientation(Orientation.HORIZONTAL);
-        this.setMaxSize(1280, 720 * 0.05);
+        this.setPrefSize(1280, 720 * 0.05);
         this.setCellFactory(lv -> {
 
             ListCell<Color> cell = new ListCell<Color>() {
@@ -54,7 +61,8 @@ public class ColourSelectorElement extends ListView<Color> {
                     colorPicker.setId(ColorPicker.STYLE_CLASS_SPLIT_BUTTON);
                     colorPicker.setOnAction(e -> {
                         if(this.getItems().contains(colorPicker.getValue())) {
-                            Alert alert = new Alert(Alert.AlertType.WARNING, "You cannot create a colour that is already in your list.");
+                            Alert alert = new Alert(Alert.AlertType.WARNING,
+                                    "You cannot create a colour that is already in your list.");
                             alert.showAndWait();
                             event.consume();
                             colorPicker.setValue(null);
@@ -75,22 +83,26 @@ public class ColourSelectorElement extends ListView<Color> {
                             return;
                         }
 
+                        //--- Confirm the choice of the user.
                         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Do you want to add this colour to your list?");
                         alert.showAndWait().ifPresent(buttonType -> {
                             if(buttonType.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
                                 Color newColour = colorPicker.getValue();
                                 Game.getInstance().getEventHandler().trigger(new SelectColourEvent(newColour));
-                                this.setStyle(String.format("-fx-border-width: 5; -fx-border-color: rgb(%.0f, %.0f, %.0f);", newColour.getRed() * 255, newColour.getGreen() * 255, newColour.getBlue() * 255));
+                                updateBorder(newColour);
                                 ColourSelectorElement.this.getItems().add(colorPicker.getValue());
                             }
                         });
 
 
                     });
-                } else {
+                }
+                // The cell is not empty, so the user clicked on an existing colour. In this case we will send out an event
+                // and update the boroder of the element to indicate the selected element.
+                else {
                     Game.getInstance().getEventHandler().trigger(new SelectColourEvent(cell.getItem()));
                     this.getSelectionModel().select(cell.getIndex());
-                    this.setStyle(String.format("-fx-border-width: 5; -fx-border-color: rgb(%.0f, %.0f, %.0f);", cell.getItem().getRed() * 255, cell.getItem().getGreen() * 255, cell.getItem().getBlue() * 255));
+                    updateBorder(cell.getItem());
                 }
 
             });
@@ -98,6 +110,11 @@ public class ColourSelectorElement extends ListView<Color> {
             return cell;
 
         });
+    }
+
+    private void updateBorder(Color color) {
+        this.setStyle(String.format("-fx-border-width: 5; -fx-border-color: rgb(%.0f, %.0f, %.0f);", color.getRed() * 255D,
+                color.getGreen() * 255D, color.getBlue() * 255D));
     }
 
 }

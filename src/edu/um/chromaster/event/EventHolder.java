@@ -6,12 +6,18 @@ import java.lang.reflect.Method;
 /**
  * An EventHolder is a class to structure all registered events.
  */
-public class EventHolder implements Comparable<EventHolder> {
+public class EventHolder {
 
     private final EventListener listener;
     private final Method method;
     private final Subscribe subscribe;
 
+    /**
+     *
+     * @param listener The associated listener.
+     * @param method The associated method.
+     * @param subscribe The Subscribe annotation.
+     */
     EventHolder(EventListener listener, Method method, Subscribe subscribe) {
         this.listener = listener;
         this.method = method;
@@ -28,17 +34,4 @@ public class EventHolder implements Comparable<EventHolder> {
         }
     }
 
-    @Override
-    public int compareTo(EventHolder o) {
-
-        if(this.subscribe.priority().getPriority() < o.subscribe.priority().getPriority()) {
-            return 1;
-        } else if(this.subscribe.priority().getPriority() > o.subscribe.priority().getPriority()) {
-            return 0;
-        }
-
-
-        return 0;
-
-    }
 }

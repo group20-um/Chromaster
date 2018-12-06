@@ -22,7 +22,7 @@ public class GameModeScene {
 
 		return new Scene(MenuScene.createParent(Arrays.asList(intro, chooseGraph, button1GM, button2GM), (a) -> {
 				window.setScene(MainScene.createMainScene(window));
-		}), 1280, 720);
+		}), window.getWidth(), window.getHeight());
 	}
 	
 	public static void pressedButton1GM(Stage window) {

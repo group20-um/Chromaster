@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A graph class is a data structure that represents a graph.
+ */
 public class Graph implements Cloneable {
 
     private Map<Integer, Node> nodes = new HashMap<>();
@@ -123,22 +126,43 @@ public class Graph implements Cloneable {
         return this.edges.get(node);
     }
 
+    /**
+     * Returns a list of all associated edges.
+     * @param node The node the edges are supposed to be associated with.
+     * @return Never null, a list with all edges where the provided node is the source.
+     */
     public List<Edge> getEdges(int node) {
         return new ArrayList<>(this.getEdgeMap(node).values());
     }
 
+    /**
+     * All nodes of the map.
+     * @return Never null
+     */
     public Map<Integer, Node> getNodes() {
         return this.nodes;
     }
 
+    /**
+     * All edges of the map.
+     * @return Never null.
+     */
     public Map<Integer, Map<Integer, Edge>> getEdges() {
         return this.edges;
     }
 
+    /**
+     * The max. value that is used as a node id in this graph.
+     * @return
+     */
     public int getMaxNodeId() {
         return maxNodeId;
     }
 
+    /**
+     * The min. value that is used as a node id in this graph.
+     * @return
+     */
     public int getMinNodeId() {
         return minNodeId;
     }

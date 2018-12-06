@@ -6,6 +6,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.LinkedList;
 
+/**
+ * Manages all colours of the UI.
+ */
 public class ColorList {
 
     public final static Color NODE_HIGHLIGHTED = Color.rgb(255, 168, 103);

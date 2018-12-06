@@ -47,6 +47,9 @@ public class MenuScene {
             grid.setAlignment(Pos.CENTER);
 
             for(int i = 0; i < elements.size(); i++) {
+                if(elements.get(i) instanceof Button) {
+                    elements.get(i).getStyleClass().add("menu-button");
+                }
                 grid.add(elements.get(i), 2, i+1);
             }
 

@@ -16,13 +16,19 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+/**
+ * The GameEndScreen is presented to the user when they either won or lost.
+ */
 public class GameEndScreen extends BorderPane {
-
 
     public GameEndScreen() {
         this.setVisible(false);
     }
 
+    /**
+     * Called to turn it visible.
+     * @param event The associated event so the screen knows what it has to display depending on the outcome.
+     */
     public void execute(GameEndEvent event) {
         if (!event.isWin()) {
             ImageView w=new ImageView(new Image("res/wow.gif"));
