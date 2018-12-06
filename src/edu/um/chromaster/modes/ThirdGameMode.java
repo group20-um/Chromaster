@@ -17,7 +17,7 @@ public class ThirdGameMode extends GameMode {
     private Stack<Node> path = new Stack<>();
 
     public ThirdGameMode(Graph graph, long time) {
-        super(graph, time);
+        super(graph, time, false);
         Game.getInstance().getEventHandler().registerListener(this);
     }
 
@@ -46,7 +46,7 @@ public class ThirdGameMode extends GameMode {
 
     @Override
     public boolean gameWon() {
-        return isValidColoured();
+        return isValidColoured(true);
     }
 
     @Subscribe

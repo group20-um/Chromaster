@@ -19,11 +19,12 @@ public class SecondGameMode extends GameMode {
     private boolean isPlayerOutOfTime = false;
 
     public SecondGameMode(Graph graph, long time) {
-        super(graph, time);
+        super(graph, time, true);
         Game.getInstance().getEventHandler().registerListener(this);
     }
 
 
+    @Override
     public long getTimeLeft() {
         return Math.max(0, this.getTime() + startTime - System.currentTimeMillis());
     }
@@ -48,7 +49,7 @@ public class SecondGameMode extends GameMode {
 
     @Override
     public boolean gameWon() {
-        return (isValidColoured() && isGraphFullyColoured());
+        return isValidColoured(false);
     }
 
     @Subscribe
@@ -66,10 +67,6 @@ public class SecondGameMode extends GameMode {
     @Subscribe
     public void onSelectColour(SelectColourEvent event) {
         this.setSelectedColour(event.getColor());
-    }
-
-    private boolean isGraphFullyColoured() {
-        return this.getGraph().getNodes().values().stream().anyMatch(e -> e.getValue() != -1);
     }
 
 }

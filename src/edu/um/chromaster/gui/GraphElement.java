@@ -57,6 +57,14 @@ public class GraphElement extends Pane {
     }
 
     /**
+     * Returns the associated GameElement.
+     * @return
+     */
+    public GameElement getGameElement() {
+        return gameElement;
+    }
+
+    /**
      * Sets a new layout but does not apply it yet.
      * @param renderType
      */

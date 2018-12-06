@@ -1,12 +1,10 @@
 package edu.um.chromaster.gui;
 
 import edu.um.chromaster.Game;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.geometry.Bounds;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
 import java.util.*;
@@ -28,6 +26,8 @@ public class GameBar extends HBox {
 
     private GraphElement graphElement;
 
+    private Label timer = new Label();
+
     public GameBar(GraphElement graphElement, double timeInMilliseconds) {
 
         this.getStylesheets().add("res/style.css");
@@ -41,6 +41,7 @@ public class GameBar extends HBox {
         }
 
         renderTypes.getStyleClass().add("combo-box");
+
 
         this.setMaxSize(1280, 720 * 0.05);
         this.graphElement = graphElement;
@@ -59,6 +60,21 @@ public class GameBar extends HBox {
                     if (!_42list.contains(k.getProperties().get("type")) && v - 500 <= 0 && k.isDisabled()) {
                         k.setDisable(false);
                     }
+                }
+
+                if(graphElement.getGameElement().getGameMode().isDisplayingTime()) {
+                    Platform.runLater(() -> {
+                        long time = TimeUnit.MILLISECONDS.toSeconds(graphElement.getGameElement().getGameMode().getTimeLeft());
+
+                        int minutes = (int) (time / 60);
+                        int seconds = 0;
+
+                        if(time % 60 > 0) {
+                            seconds = (int) (time % 60);
+                        }
+
+                        this.timer.setText(String.format("%02d:%02d", minutes, seconds));
+                    });
                 }
             });
         }, 0, 500, TimeUnit.MILLISECONDS);
@@ -91,6 +107,11 @@ public class GameBar extends HBox {
             });
             button.setDisable(true);
             this.getChildren().add(button);
+        }
+
+
+        if(graphElement.getGameElement().getGameMode().isDisplayingTime()) {
+            this.getChildren().add(this.timer);
         }
 
     }

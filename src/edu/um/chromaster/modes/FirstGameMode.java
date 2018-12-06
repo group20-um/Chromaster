@@ -7,10 +7,13 @@ import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.event.events.SelectColourEvent;
 import edu.um.chromaster.graph.Graph;
 
+/**
+ * The first game-mode (aka. until the bitter end).
+ */
 public class FirstGameMode extends GameMode {
 
     public FirstGameMode(Graph graph, long time) {
-        super(graph, time);
+        super(graph, time, false);
         Game.getInstance().getEventHandler().registerListener(this);
     }
 
@@ -19,7 +22,7 @@ public class FirstGameMode extends GameMode {
 
     @Override
     public boolean gameWon() {
-        return isValidColoured();
+        return isValidColoured(true);
     }
 
     @Subscribe
