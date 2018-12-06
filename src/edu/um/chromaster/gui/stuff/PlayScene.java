@@ -1,6 +1,7 @@
 package edu.um.chromaster.gui.stuff;
 
 
+import edu.um.chromaster.RandomGraph;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.gui.GameElement;
 import edu.um.chromaster.gui.GraphElement;
@@ -8,13 +9,8 @@ import edu.um.chromaster.modes.FirstGameMode;
 import edu.um.chromaster.modes.GameMode;
 import edu.um.chromaster.modes.SecondGameMode;
 import edu.um.chromaster.modes.ThirdGameMode;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.util.concurrent.TimeUnit;
@@ -22,24 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 public class PlayScene {
 
-	Button back;
-	Label difficulty;
-	Label gameMode;
-
-
 	public static Scene createPlayScene(Stage window) {
-
-		BorderPane borderPane = new BorderPane();
-
-		HBox topBar = new HBox();
-		Button back = new Button("Go back");
-		back.setOnAction(e -> window.setScene(DifficultyScene.createDifficultyScene(window)));
-		Button rules = new Button("Rules");
-		rules.setOnAction(e -> RulesBox.display());
-		topBar.getChildren().addAll(back, rules);
-		topBar.setPadding(new Insets(2,2,2,2));
-		borderPane.setTop(topBar);
-
 
 		RandomGraph aGraph = new RandomGraph();
 

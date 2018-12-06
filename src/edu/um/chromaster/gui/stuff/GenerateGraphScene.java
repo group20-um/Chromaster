@@ -5,11 +5,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class GenerateGraphScene {
@@ -25,9 +23,6 @@ public class GenerateGraphScene {
 		verticesAndEdges.setOnAction(e -> pressedVerticesAndEdges(window));
 		vertices.setOnAction(e -> pressedVertices(window));
 		edges.setOnAction(e -> pressedEdges(window));
-
-		StackPane stackPane = new StackPane();
-		stackPane.setPickOnBounds(false);
 
 		GridPane chooseGraphGrid = new GridPane();
 		chooseGraphGrid.setPickOnBounds(true);
@@ -53,21 +48,8 @@ public class GenerateGraphScene {
 		BorderPane borderPaneGenerateGraph = new BorderPane();
 		borderPaneGenerateGraph.setTop(topBar);
 		borderPaneGenerateGraph.setCenter(chooseGraphGrid);
-		borderPaneGenerateGraph.getStyleClass().add("MainScene-background");
 
-		//---
-		stackPane.getChildren().add(new ImageView("res/menu_background.png"));
-		stackPane.getChildren().add(chooseGraphGrid);
-		//stackPane.getChildren().add(topBar);
-
-		StackPane.setAlignment(chooseGraphGrid, Pos.CENTER);
-		StackPane.setAlignment(topBar, Pos.TOP_CENTER);
-
-
-		Scene generateGraphScene = new Scene(stackPane, 1280, 720);
-		generateGraphScene.getStylesheets().add("res/style.css");
-		
-		return generateGraphScene;
+		return new Scene(MenuScene.createBasicParent(borderPaneGenerateGraph), 1280, 720);
 	}
 	
 	private static void pressedVerticesAndEdges(Stage window) {

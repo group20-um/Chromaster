@@ -25,7 +25,7 @@ public class Intro extends FlowPane {
     }
 
     public Scene getAssociatedScene() {
-        return scene;
+        return this.scene;
     }
 
     private void setup() {
@@ -65,7 +65,7 @@ public class Intro extends FlowPane {
         r2.setFont(f);
         flowPane.getChildren().addAll(empty, c, h, r1, o, m, a, s, t, e, r2);
 
-        ImageView iv = new ImageView(new Image("res/unicorn.gif", 1280, 720, false, false));
+        ImageView iv = new ImageView(new Image("res/unicorn.gif", 1280, 720, false, true));
         iv.setPreserveRatio(false);
         flowPane.getChildren().add(iv);
         flowPane.setBackground(new Background(new BackgroundFill(Color.rgb(0,0,36), CornerRadii.EMPTY, Insets.EMPTY)));

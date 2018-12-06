@@ -62,10 +62,7 @@ public class VerticesEdgesInputScenes {
 		borderPane.setCenter(verticesAndEdgesGrid);
 		borderPane.getStyleClass().add("MainScene-background");
 
-		Scene verticesAndEdgesScene = new Scene(borderPane, 1280, 720);
-		verticesAndEdgesScene.getStylesheets().add("res/style.css");
-		
-		return verticesAndEdgesScene;
+		return new Scene(MenuScene.createBasicParent(borderPane), 1280, 720);
 		
 	}
 	
@@ -105,9 +102,7 @@ public class VerticesEdgesInputScenes {
 		borderPane.setCenter(verticesGrid);
 		borderPane.getStyleClass().add("MainScene-background");
 
-		Scene verticesScene = new Scene(borderPane, 1280, 720);
-		verticesScene.getStylesheets().add("res/style.css");
-		return verticesScene;
+		return new Scene(MenuScene.createBasicParent(borderPane), 1280, 720);
 	}
 	
 	public static Scene createEdgesScene(Stage window) {
@@ -144,12 +139,8 @@ public class VerticesEdgesInputScenes {
 		BorderPane borderPane = new BorderPane();
 		borderPane.setTop(topBar);
 		borderPane.setCenter(edgesGrid);
-		borderPane.getStyleClass().add("MainScene-background");
 
-		Scene edgesScene = new Scene(borderPane, 1280, 720);
-		edgesScene.getStylesheets().add("res/style.css");
-		
-		return edgesScene;
+		return new Scene(MenuScene.createBasicParent(borderPane), 1280, 720);
 	}
 	
 	private static boolean verticesAndEdgesAreInt(TextField input1, TextField input2, Stage window) {

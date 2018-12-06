@@ -1,16 +1,11 @@
 package edu.um.chromaster.gui.stuff;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+
+import java.util.Arrays;
 
 public class GameModeScene {
 	
@@ -25,47 +20,9 @@ public class GameModeScene {
 		button1GM.setOnAction(e -> pressedButton1GM(window));
 		button2GM.setOnAction(e -> window.setScene(GenerateGraphScene.generateGraphScene(window)));
 
-		StackPane stackPane = new StackPane();
-		stackPane.setPickOnBounds(false);
-
-		GridPane gameModeGrid = new GridPane();
-		gameModeGrid.setHgap(10);
-		gameModeGrid.setVgap(10);
-		gameModeGrid.setPadding(new Insets(0, 10, 0, 10));
-
-		gameModeGrid.add(intro, 2, 2);
-		gameModeGrid.add(chooseGraph, 2, 3);
-		gameModeGrid.add(button1GM, 2, 4);
-		gameModeGrid.add(button2GM, 2, 5);
-		   
-		gameModeGrid.setAlignment(Pos.CENTER);
-		
-		HBox topBar = new HBox();
-		Button back = new Button("Go back");
-		back.setOnAction(e -> window.setScene(MainScene.createMainScene(window)));
-		Button rules = new Button("Rules");
-		rules.setOnAction(e -> RulesBox.display());
-		topBar.getChildren().addAll(back, rules);
-		topBar.setPadding(new Insets(2,2,2,2));
-		
-		BorderPane borderPane = new BorderPane();
-		borderPane.setTop(topBar);
-		borderPane.setCenter(gameModeGrid);
-
-		//---
-		stackPane.getChildren().add(new ImageView("res/menu_background.png"));
-		stackPane.getChildren().add(topBar);
-		stackPane.getChildren().add(gameModeGrid);
-
-
-		StackPane.setAlignment(gameModeGrid, Pos.CENTER);
-		StackPane.setAlignment(topBar, Pos.TOP_CENTER);
-
-
-		Scene gameModeScene = new Scene(stackPane, 1280, 720);
-		gameModeScene.getStylesheets().add("res/style.css");
-
-		return gameModeScene;
+		return new Scene(MenuScene.createParent(Arrays.asList(intro, chooseGraph, button1GM, button2GM), (a) -> {
+				window.setScene(MainScene.createMainScene(window));
+		}), 1280, 720);
 	}
 	
 	public static void pressedButton1GM(Stage window) {
