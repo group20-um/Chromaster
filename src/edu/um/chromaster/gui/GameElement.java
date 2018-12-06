@@ -17,6 +17,8 @@ import java.util.concurrent.TimeUnit;
 
 public class GameElement extends StackPane implements EventListener {
 
+    private GameMode gameMode;
+
     private BackgroundElement backgroundElement;
     private GraphElement graphElement;
     private ColourSelectorElement colourSelectorElement;
@@ -26,11 +28,13 @@ public class GameElement extends StackPane implements EventListener {
 
 
     public GameElement(Stage stage, Graph graph, GameMode gameMode) {
+        this.gameMode = gameMode;
         Game.getInstance().getEventHandler().registerListener(this);
+        Game.getInstance().setGameElement(this);
         ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph.clone(), result -> {
             graph.setChromaticResults(result);
             System.out.println("WOOOT");
-            gameBar.testIt(GraphElement.HintTypes.CLIQUE);
+            //gameBar.testIt(GraphElement.HintTypes.CLIQUE);
             System.out.println("WOOOT#2");
         });
 
@@ -59,7 +63,7 @@ public class GameElement extends StackPane implements EventListener {
         graphElement.applyLayout();
         this.graphElement.render();
 
-        //--- have to stay together
+        //--- have to stay  because the BackgroundElement's timer is based on the GameMode's
         gameMode.start();
         this.backgroundElement = new BackgroundElement(gameMode);
 
@@ -102,9 +106,17 @@ public class GameElement extends StackPane implements EventListener {
 
     @Subscribe
     public void onGameEnd(GameEndEvent event) {
-        this.gameEndScreen.execute(event);
-        this.gameEndScreen.setVisible(true);
-        Platform.runLater(() -> this.getChildren().add(this.gameEndScreen));
+        System.out.println(event);
+        Platform.runLater(() -> {
+            this.getChildren().remove(this.gameEndScreen);
+            this.getChildren().add(this.gameEndScreen);
+            gameEndScreen.setVisible(true);
+            this.gameEndScreen.execute(event);
+        });
+    }
+
+    public GameMode getGameMode() {
+        return this.gameMode;
     }
 
 }

@@ -112,7 +112,7 @@ public class ChromaticNumber {
         }
 
         int testValue = upper - 1;
-        Graph result = graph;
+        Graph result = graph.clone();
         while(exact(graph, testValue)) {
             System.out.printf("<Exact Test> The graph CAN be coloured with %d colours.%n", testValue);
             result = graph.clone();

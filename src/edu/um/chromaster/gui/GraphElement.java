@@ -29,6 +29,7 @@ public class GraphElement extends Pane {
         this.renderType = renderType;
         this.graph = graph;
 
+        System.out.println(graph.getNodes().size());
         this.setOnMouseClicked(event -> {
             Optional<Node> node = graph.getNodes().values().stream()
                     .filter(e -> e.getMeta().isAllowedToChangeColour() && e.getMeta().visible() && e.getMeta().area().contains(event.getX(), event.getY()))
@@ -70,7 +71,6 @@ public class GraphElement extends Pane {
         double distanceBottom = height - (graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().y()).max().getAsDouble());
         double distanceLeft = (graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().x()).min().getAsDouble());
         double distanceRight = width - (graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().x()).max().getAsDouble());
-        System.out.println(distanceTop);
         graph.getNodes().values().forEach(e -> {
             e.getMeta().y(e.getMeta().y() + (distanceBottom - distanceTop) / 2D);
             e.getMeta().x(e.getMeta().x() + (distanceRight - distanceLeft) / 2D);
@@ -101,7 +101,7 @@ public class GraphElement extends Pane {
         AtomicReference<ScheduledFuture<?>> scheduledFuture = new AtomicReference<>();
         scheduledFuture.set(Game.getInstance().getSchedule().scheduleAtFixedRate(() -> {
 
-            if(Game.getInstance().getGameMode() instanceof ThirdGameMode) {
+            if(Game.getInstance().getGameElement().getGameMode() instanceof ThirdGameMode) {
                 return;
             }
 

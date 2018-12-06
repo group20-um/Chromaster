@@ -28,9 +28,9 @@ public class BackgroundElement extends StackPane {
 
     public void draw() {
 
-        if(Game.getInstance().getGameMode() instanceof SecondGameMode) {
+        if(Game.getInstance().getGameElement().getGameMode() instanceof SecondGameMode) {
             Platform.runLater(() -> {
-                SecondGameMode gm = (SecondGameMode) Game.getInstance().getGameMode();
+                SecondGameMode gm = (SecondGameMode) Game.getInstance().getGameElement().getGameMode();
                 ColorAdjust colorAdjust = new ColorAdjust();
                 double r = ((double) gm.getTimeLeft() / (double) gm.getTime());
                 top.setBlendMode(BlendMode.OVERLAY);

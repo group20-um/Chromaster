@@ -7,7 +7,9 @@ import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.event.events.SelectColourEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
+import javafx.scene.paint.Color;
 
+import java.util.Collections;
 import java.util.Stack;
 
 public class ThirdGameMode extends GameMode {
@@ -29,8 +31,11 @@ public class ThirdGameMode extends GameMode {
         for(Node n : getGraph().getNodes().values()) {
             path.push(n);
         }
+        Collections.shuffle(path);
 
         Node node = path.peek();
+
+        node.getMeta().textColor(Color.ORANGE);
         node.getMeta().visible(true);
         node.getMeta().setAllowedToChangeColour(true);
         getGraph().getEdges(node.getId()).forEach(e -> {
@@ -51,12 +56,15 @@ public class ThirdGameMode extends GameMode {
 
         if(n.getMeta().isAllowedToChangeColour() && this.getSelectedColour() != null) {
 
+
+            n.getMeta().textColor(Color.WHITE);
             // we don't care if the user doesn't know the rules
             //boolean neighbourHasSelectedColour = getGraph().getEdges(n.getId()).stream().noneMatch(e -> e.getTo().getValue() == getSelectedColour().hashCode());
 
             event.getNode().getMeta().colour(getSelectedColour());
             event.getNode().setValue(getSelectedColour().hashCode());
             n.getMeta().setAllowedToChangeColour(false);
+            n.getMeta().highlight(false);
 
             path.pop();
 
@@ -64,6 +72,7 @@ public class ThirdGameMode extends GameMode {
 
             if (!path.isEmpty()) {
                 Node node = path.peek();
+                node.getMeta().textColor(Color.ORANGE);
 
                 node.getMeta().visible(true);
                 node.getMeta().setAllowedToChangeColour(true);

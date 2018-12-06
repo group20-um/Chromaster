@@ -50,5 +50,4 @@ public abstract class GameMode implements EventListener {
 
     public abstract boolean gameWon();
 
-
 }

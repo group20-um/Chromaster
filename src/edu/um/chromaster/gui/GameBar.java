@@ -42,19 +42,16 @@ public class GameBar extends HBox {
         this.setup();
     }
 
-
-    public void testIt(GraphElement.HintTypes hintType) {
-        System.out.println("x   ");
-    }
-
     private void setup() {
 
         Game.getInstance().getSchedule().scheduleAtFixedRate(() -> {
             timeConstraints.forEach((k, v) -> {
-                timeConstraints.put(k, v - 500);
+                if(v > 0) {
+                    timeConstraints.put(k, v - 500);
 
-                if(!_42list.contains(k.getProperties().get("type")) && v - 500 < 0 && !k.isVisible()) {
-                    k.setDisable(false);
+                    if (!_42list.contains(k.getProperties().get("type")) && v - 500 <= 0 && k.isDisabled()) {
+                        k.setDisable(false);
+                    }
                 }
             });
         }, 0, 500, TimeUnit.MILLISECONDS);

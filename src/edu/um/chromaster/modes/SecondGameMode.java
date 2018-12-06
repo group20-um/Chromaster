@@ -58,7 +58,7 @@ public class SecondGameMode extends GameMode {
             event.getNode().setValue(this.getSelectedColour().hashCode());
 
             if(gameWon()) {
-                System.out.println("YEAA - Second Game Mode");
+                Game.getInstance().getEventHandler().trigger(new GameEndEvent("You won", true));
             }
         }
     }

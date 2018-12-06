@@ -1,11 +1,6 @@
-.game {
-    -fx-font: normal bold 14 Langdon;
-    -fx-border-color: #353535;
-    -fx-border-width: 2px;
-}
-
-.graph-background {
-    -fx-background: none;
+.label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 30;
 }
 
 .node_border {

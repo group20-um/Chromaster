@@ -89,6 +89,10 @@ public class Node {
 
         }
 
+        public void textColor(Color lightpink) {
+            this.text.fillProperty().setValue(lightpink);
+        }
+
         private class EnteredEvent implements EventHandler<MouseEvent> {
 
             private Node node;
@@ -223,8 +227,10 @@ public class Node {
         public void hint(Color color) {
             Runnable runnable = () -> {
                 if (color != null) {
+                    System.out.println("EYYOOOO");
                     hintCircle.visibleProperty().set(true);
                     hintCircle.fillProperty().set(color);
+                    System.out.println("EYYOOOO1");
                 } else {
                     hintCircle.visibleProperty().set(false);
                 }
@@ -255,6 +261,7 @@ public class Node {
             Runnable runnable = () -> {
                 Meta.this.outer.visibleProperty().setValue(visible());
                 Meta.this.inner.visibleProperty().setValue(visible());
+                Meta.this.hintCircle.visibleProperty().setValue(visible());
                 Meta.this.text.visibleProperty().setValue(visible());
 
                 if(visible()) {

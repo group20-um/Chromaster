@@ -6,8 +6,6 @@ import edu.um.chromaster.event.events.GameEndEvent;
 import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.event.events.SelectColourEvent;
 import edu.um.chromaster.graph.Graph;
-import edu.um.chromaster.graph.Node;
-
 
 public class FirstGameMode extends GameMode {
 

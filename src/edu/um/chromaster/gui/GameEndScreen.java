@@ -2,48 +2,69 @@ package edu.um.chromaster.gui;
 
 import edu.um.chromaster.Game;
 import edu.um.chromaster.event.events.GameEndEvent;
-import javafx.application.Platform;
+import edu.um.chromaster.gui.stuff.MainScene;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 
-import java.util.concurrent.TimeUnit;
+public class GameEndScreen extends BorderPane {
 
-public class GameEndScreen extends StackPane {
-
-    private ImageView background = new ImageView("res/game_end.png");
-
-    private GameEndEvent gameEndEvent;
-    private Text text = new Text();
-
-    private long startTime;
-    private double transitionTime = TimeUnit.SECONDS.toMillis(3);
 
     public GameEndScreen() {
-        text.setFont(new Font("Times New Roman", 20));
-        StackPane.setAlignment(text, Pos.CENTER);
-        this.getChildren().addAll(background, text);
         this.setVisible(false);
     }
 
-    public void execute(GameEndEvent gameEndEvent) {
+    public void execute(GameEndEvent event) {
+        if (!event.isWin()) {
+            ImageView w=new ImageView(new Image("res/wow.gif"));
+            ImageView r=new ImageView(new Image("res/rainbow.gif"));
+
+            Label text=new Label(" You won! ");
+            text.setFont(new Font("Arial", 100));
+            text.setTextFill(Color.CORNFLOWERBLUE);
+
+            this.setCenter(text);
+            this.setTop(w);
+            this.setBottom(r);
+
+            setAlignment(text, Pos.CENTER);
+            setAlignment(w, Pos.CENTER);
+            setAlignment(r, Pos.BOTTOM_CENTER);
+
+        } else {
+            ImageView background = new ImageView("res/youTried.gif");
+            Button againButton = new Button("Play Again");
+            {
+                againButton.setBackground(new Background(new BackgroundFill(Color.SILVER, CornerRadii.EMPTY, Insets.EMPTY)));
+                againButton.setFont(new Font("Arial", 50));
+                againButton.setOnAction(e -> Game.getInstance().setScene(MainScene.createMainScene(Game.getInstance().getStage())));
+            }
+            Label text = new Label(" Game Over! ");
+            {
+                text.setFont(new Font("Arial", 100));
+                text.setTextFill(Color.CORNFLOWERBLUE);
+            }
+
+            this.setTop(text);
+            this.setCenter(againButton);
+            this.setBottom(background);
+
+            setAlignment(background, Pos.BOTTOM_CENTER);
+            setAlignment(text, Pos.TOP_CENTER);
+        }
+
+
+        this.setBackground(new Background(new BackgroundFill(Color.rgb(0,0,36), CornerRadii.EMPTY, Insets.EMPTY)));
         this.setVisible(true);
-
-        this.text.setText(gameEndEvent.getMessage());
-
-        this.startTime = System.currentTimeMillis();
-        Game.getInstance().getSchedule().scheduleAtFixedRate(() -> {
-            Platform.runLater(() -> {
-                final double opacity = Math.min((System.currentTimeMillis() - startTime) / transitionTime, 1);
-                text.opacityProperty().setValue(opacity);
-                background.setOpacity(opacity);
-
-                //background.setFitHeight(this.getLayoutBounds().getHeight() * opacity);
-                //background.setFitWidth(this.getLayoutBounds().getWidth() * opacity);
-            });
-        }, 0, (long) (1000 / 60D), TimeUnit.MILLISECONDS);
     }
 
 }
