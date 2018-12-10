@@ -52,7 +52,7 @@ public class GraphElement extends Pane {
             this.getChildren().addAll(node.getMeta().getGraphicElements());
         });
 
-            }
+    }
 
     /**
      * Returns the associated GameElement.
@@ -84,7 +84,7 @@ public class GraphElement extends Pane {
             case SPIRAL: GraphDrawer.archemedianSprial(graph, width, height); break;
             case TEST: GraphDrawer.test(graph, width, height); break;
             case TEST2: GraphDrawer.test2(graph, width, height); break;
-            case RANDOM: break;
+            case RANDOM: GraphDrawer.random(graph, width, height); break;
             default: throw new IllegalArgumentException();
         }
 

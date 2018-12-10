@@ -9,6 +9,13 @@ public class GraphDrawer {
 
     private GraphDrawer() {}
 
+    public static void random(Graph graph, double width, double height) {
+        graph.getNodes().forEach((id, node) -> {
+            node.getMeta().x(Game.random.nextDouble() * width);
+            node.getMeta().y(Game.random.nextDouble() * height);
+        });
+    }
+
     public static void circle(Graph graph,double width, double height){
         double angle = 2*Math.PI/graph.getNodes().size();
         graph.getNodes().forEach((id, node) -> {
@@ -43,30 +50,14 @@ public class GraphDrawer {
     }
 
     public static void scale(Graph graph, double width, double height) {
-        boolean change = true;
-        while (change) {
-            for (Node node : graph.getNodes().values()) {
-                Node.Meta m = node.getMeta();
-                m.x(m.x() * 0.9D);
-                m.y(m.y() * 0.9D);
 
-                change = !(m.x() > -width / 2 && m.x() < width / 2 && m.y() > -height / 2 && m.y() < height / 2);
-            }
-        }
+        double max_x = graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().x()).max().getAsDouble();
+        double max_y = graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().y()).max().getAsDouble();
 
-        graph.getNodes().forEach((k, node) -> {
-            node.getMeta().x(node.getMeta().x() + width / 2);
-            node.getMeta().y(node.getMeta().y() + height / 2);
+        graph.getNodes().values().forEach(e -> {
+            e.getMeta().x((e.getMeta().x() / max_x) * width);
+            e.getMeta().y((e.getMeta().y() / max_y) * height);
         });
-
-        /*{
-            if (m.x() * 1.2D > -width / 2D && m.x() * 1.2D < width / 2D) {
-                if (m.y() * 1.2 > -height / 2 && m.y() * 1.2 < height / 2) {
-                    m.x(m.x() * 1.2D);
-                    m.y(m.y() * 1.2D);
-                }
-            }
-        }*/
 
     }
 

@@ -61,7 +61,6 @@ public class GameElement extends StackPane implements EventListener {
             node.getMeta().y((Game.random.nextDouble() * graphElement.getHeight()) - graphElement.getHeight() / 2);
         });
 
-
         graphElement.applyLayout();
         this.graphElement.render();
 
