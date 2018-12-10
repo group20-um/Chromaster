@@ -30,7 +30,7 @@ public class GameEndScreen extends BorderPane {
      * @param event The associated event so the screen knows what it has to display depending on the outcome.
      */
     public void execute(GameEndEvent event) {
-        if (!event.isWin()) {
+        if (event.isWin()) {
             ImageView w=new ImageView(new Image("res/wow.gif"));
             ImageView r=new ImageView(new Image("res/rainbow.gif"));
 
