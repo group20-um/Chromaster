@@ -6,6 +6,7 @@ import edu.um.chromaster.event.events.GameEndEvent;
 import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.event.events.SelectColourEvent;
 import edu.um.chromaster.graph.Graph;
+import edu.um.chromaster.gui.ColorList;
 
 /**
  * The first game-mode (aka. until the bitter end).
@@ -29,6 +30,13 @@ public class FirstGameMode extends GameMode {
     public void onNodeClicked(NodeClickedEvent event) {
 
         if(this.getSelectedColour() != null) {
+
+            System.out.println(event.getNode().getMeta().colour() + " - " + this.getSelectedColour());
+            if(event.getNode().getMeta().colour().equals(this.getSelectedColour())) {
+                event.getNode().getMeta().colour(ColorList.NODE_INNER_DEFAULT);
+                return;
+            }
+
             event.getNode().getMeta().colour(this.getSelectedColour());
             event.getNode().setValue(this.getSelectedColour().hashCode());
 

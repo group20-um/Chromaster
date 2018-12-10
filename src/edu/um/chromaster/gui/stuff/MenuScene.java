@@ -27,20 +27,26 @@ public class MenuScene {
     public static StackPane createParent(List<Node> elements, GraphElement.Callback<String> callback) {
         BorderPane borderPane = new BorderPane();
 
-        if(callback != null) {
+        {
             HBox topBar = new HBox();
-            Button back = new Button("Go back");
-            back.setOnAction(e -> callback.modify(""));
-            Button rules = new Button("Rules");
-            rules.setOnAction(e -> RulesBox.display());
-            topBar.getChildren().addAll(back, rules);
-            topBar.setPadding(new Insets(2, 2, 2, 2));
+            if(callback != null) {
+                Button back = new Button("Go back");
+                back.setOnAction(e -> callback.modify(""));
+                back.getStyleClass().add("menu-button");
+                topBar.getChildren().add(back);
+            }
 
+            Button rules = new Button("Rules");
+            rules.getStyleClass().add("menu-button");
+            rules.setOnAction(e -> RulesBox.display());
+            topBar.getChildren().addAll(rules);
+            //topBar.setPadding(new Insets(10, 10, 10, 10));
             borderPane.setTop(topBar);
         }
 
         {
             GridPane grid = new GridPane();
+            grid.setMaxWidth(1280 * 0.623);
             grid.setHgap(10);
             grid.setVgap(10);
             grid.setPadding(new Insets(0, 10, 0, 10));

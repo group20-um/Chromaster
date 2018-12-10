@@ -43,7 +43,7 @@ public class Graph implements Cloneable {
     }
 
     /**
-     * Sets all {@link Node#id} values to -1.
+     * Sets all {@link Node#getId()} values to -1.
      */
     public void reset() {
         this.nodes.values().forEach(e -> e.setValue(-1));
@@ -77,6 +77,15 @@ public class Graph implements Cloneable {
         if(!(this.edges.containsKey(from))) {
             this.edges.put(from, new HashMap<>());
         }
+
+        if(this.getNode(from) == null) {
+            throw new IllegalArgumentException("The from node does not exist.");
+        }
+
+        if(this.getNode(to) == null) {
+            throw new IllegalArgumentException("The to node does not exist.");
+        }
+
         this.edges.get(from).put(to, new Edge(this.getNode(from), this.getNode(to)));
         if(bidirectional) {
             addEdge(to, from, false);
@@ -170,8 +179,22 @@ public class Graph implements Cloneable {
     @Override
     public Graph clone() {
         Graph clone = new Graph();
-        this.nodes.forEach((k, v) -> clone.addNode(k, v.getValue()));
-        this.edges.forEach((k, v) -> v.forEach((to, edge) -> clone.addEdge(edge.getFrom().getId(), edge.getTo().getId(), true)));
+        for (Map.Entry<Integer, Node> entry : this.nodes.entrySet()) {
+            Integer key = entry.getKey();
+            Node value = entry.getValue();
+            clone.addNode(key, value.getValue());
+        }
+        for (Map.Entry<Integer, Map<Integer, Edge>> entry : this.edges.entrySet()) {
+            Integer k = entry.getKey();
+            Map<Integer, Edge> v = entry.getValue();
+            for (Map.Entry<Integer, Edge> e : v.entrySet()) {
+                Integer to = e.getKey();
+                Edge edge = e.getValue();
+                System.out.println(edge.getFrom() + "<from");
+                System.out.println(edge.getTo() + "<to");
+                clone.addEdge(edge.getFrom().getId(), edge.getTo().getId(), true);
+            }
+        }
         return clone;
     }
 

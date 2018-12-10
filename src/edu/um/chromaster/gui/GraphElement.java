@@ -38,14 +38,12 @@ public class GraphElement extends Pane {
         this.renderType = renderType;
         this.graph = graph;
 
-        System.out.println(graph.getNodes().size());
         this.setOnMouseClicked(event -> {
             Optional<Node> node = graph.getNodes().values().stream()
                     .filter(e -> e.getMeta().isAllowedToChangeColour() && e.getMeta().visible() && e.getMeta().area().contains(event.getX(), event.getY()))
                     .findAny();
             node.ifPresent(e -> Game.getInstance().getEventHandler().trigger(new NodeClickedEvent(e)));
         });
-
 
         graph.getEdges().forEach((id, edges) -> edges.forEach((to, e) -> {
             this.getChildren().addAll(e.getMeta().getGraphicElements());
@@ -54,7 +52,7 @@ public class GraphElement extends Pane {
             this.getChildren().addAll(node.getMeta().getGraphicElements());
         });
 
-    }
+            }
 
     /**
      * Returns the associated GameElement.
@@ -91,7 +89,7 @@ public class GraphElement extends Pane {
         }
 
         // move it closer to the top, preventing it from moving parts of the graph off-screen when the user players in a weird resolution
-        double distanceTop = (graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().y()).min().getAsDouble());
+        double distanceTop = (graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().y()).min().getAsDouble()) - (gameElement.getColourSelectorElement().getHeight() * 2);
         double distanceBottom = height - (graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().y()).max().getAsDouble());
         double distanceLeft = (graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().x()).min().getAsDouble());
         double distanceRight = width - (graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().x()).max().getAsDouble());

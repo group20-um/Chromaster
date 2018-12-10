@@ -35,7 +35,7 @@ public class ThirdGameMode extends GameMode {
 
         Node node = path.peek();
 
-        node.getMeta().textColor(Color.ORANGE);
+        node.getMeta().hint(Color.ROYALBLUE); // TODO
         node.getMeta().visible(true);
         node.getMeta().setAllowedToChangeColour(true);
         getGraph().getEdges(node.getId()).forEach(e -> {
@@ -57,7 +57,7 @@ public class ThirdGameMode extends GameMode {
         if(n.getMeta().isAllowedToChangeColour() && this.getSelectedColour() != null) {
 
 
-            n.getMeta().textColor(Color.WHITE);
+            n.getMeta().hint(null); // TODO
             // we don't care if the user doesn't know the rules
             //boolean neighbourHasSelectedColour = getGraph().getEdges(n.getId()).stream().noneMatch(e -> e.getTo().getValue() == getSelectedColour().hashCode());
 
@@ -72,7 +72,7 @@ public class ThirdGameMode extends GameMode {
 
             if (!path.isEmpty()) {
                 Node node = path.peek();
-                node.getMeta().textColor(Color.ORANGE);
+                node.getMeta().hint(Color.ROYALBLUE); // TODO
 
                 node.getMeta().visible(true);
                 node.getMeta().setAllowedToChangeColour(true);

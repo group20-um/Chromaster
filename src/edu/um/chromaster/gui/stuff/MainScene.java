@@ -21,7 +21,7 @@ public class MainScene {
 		button2.setOnAction(e -> chosenGM2(window));
 		button3.setOnAction(e -> chosenGM3(window));
 
-		return new Scene(MenuScene.createParent(Arrays.asList(welcome, start, button1, button2, button3)), 1280, 720);
+		return new Scene(MenuScene.createParent(Arrays.asList(welcome, start, button1, button2, button3)), -1, -1);
 	}
 
 	private static void chosenGM1(Stage window) {

@@ -49,7 +49,7 @@ public class GenerateGraphScene {
 		borderPaneGenerateGraph.setTop(topBar);
 		borderPaneGenerateGraph.setCenter(chooseGraphGrid);
 
-		return new Scene(MenuScene.createBasicParent(borderPaneGenerateGraph), window.getWidth(), window.getHeight());
+		return new Scene(MenuScene.createBasicParent(borderPaneGenerateGraph), -1, -1);
 	}
 	
 	private static void pressedVerticesAndEdges(Stage window) {

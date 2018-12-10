@@ -102,7 +102,7 @@ public class RandomGraph {
         int cntEdges=0;
         for(int a=0; a<vertices; a++) {
             if (g.getEdges(a).size() == 0) {
-                int b = (int) (Game.random.nextDouble() * (numberVertices + 1));
+                int b = (int) (Game.random.nextDouble() * numberVertices); //fixed
                 if (a!=b) {
                 	g.addEdge(a, b, true);
                     cntEdges++;
@@ -134,7 +134,7 @@ public class RandomGraph {
         int cntEdges=0;
         for(int a=0; a<vertices; a++) {
             if (g.getEdges(a).size() == 0) {
-                int b = (int) (Game.random.nextDouble() * (numberVertices + 1));
+                int b = (int) (Game.random.nextDouble() * numberVertices); //fixed
                 if (a!=b) {
                 	g.addEdge(a, b, true);
                     cntEdges++;

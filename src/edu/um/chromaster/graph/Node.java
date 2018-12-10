@@ -8,8 +8,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 
 import java.util.List;
 import java.util.Map;
@@ -65,8 +63,6 @@ public class Node {
 
         public final static double DEFAULT_RADIUS = 20;
 
-        private String textValue;
-        private Text text = new Text();
         private Circle outer = new Circle();
         private Circle inner = new Circle();
         private Circle hintCircle = new Circle();
@@ -86,31 +82,23 @@ public class Node {
         public Meta(Node node) {
 
             //--- Setup default values and register listeners to enable highlighting when the user hovers over a node.
-            this.textValue = String.valueOf(node.getId());
             this.outer.setFill(ColorList.NODE_OUTER_DEFAULT);
             this.inner.setFill(ColorList.NODE_INNER_DEFAULT);
-            this.text.setFill(ColorList.NODE_TEXT_DEFAULT);
 
             EnteredEvent enteredEvent = new EnteredEvent(node);
             inner.setOnMouseEntered(enteredEvent);
             outer.setOnMouseEntered(enteredEvent);
-            text.setOnMouseEntered(enteredEvent);
             hintCircle.setOnMouseEntered(enteredEvent);
 
             ExitedEvent exitedEvent = new ExitedEvent(node);
             inner.setOnMouseExited(exitedEvent);
             outer.setOnMouseExited(exitedEvent);
-            text.setOnMouseExited(exitedEvent);
             hintCircle.setOnMouseExited(exitedEvent);
 
             this.inner.getStyleClass().add("node");
             this.outer.getStyleClass().add("node_border");
             updateCircles();
 
-        }
-
-        public void textColor(Color lightpink) {
-            this.text.fillProperty().setValue(lightpink);
         }
 
         /**
@@ -232,7 +220,7 @@ public class Node {
          * @return
          */
         public Color colour() {
-            return (Color) this.outer.getFill();
+            return (Color) this.inner.getFill();
         }
 
         /**
@@ -252,21 +240,11 @@ public class Node {
         }
 
         /**
-         *
-         * @return The text inside the node.
-         */
-        public String text() {
-            return this.textValue;
-        }
-
-        /**
-         *
+         * The area of the node.
          * @return
          */
         public Circle area() {
-            //--- if the hintCircle is not filled (no hint is being indicated on this node) then the biggest footprint
-            // is the outer-circle, otherwise it is the hintCircle.
-            return hintCircle.getFill() == null ? outer : hintCircle;
+            return outer;
         }
 
         /**
@@ -300,7 +278,8 @@ public class Node {
          */
         public void hint(Color color) {
             Runnable runnable = () -> {
-                hintCircle.visibleProperty().set(color != null);
+                hintCircle.visibleProperty().setValue(color != null);
+                hintCircle.strokeProperty().set(color);
                 hintCircle.fillProperty().set(color);
             };
             if(Platform.isFxApplicationThread()) {
@@ -346,7 +325,6 @@ public class Node {
                 Meta.this.outer.visibleProperty().setValue(visible());
                 Meta.this.inner.visibleProperty().setValue(visible());
                 Meta.this.hintCircle.visibleProperty().setValue(visible());
-                Meta.this.text.visibleProperty().setValue(visible());
 
                 if(visible()) {
                     Meta.this.hintCircle.centerXProperty().setValue(x());
@@ -364,11 +342,6 @@ public class Node {
                     Meta.this.inner.centerYProperty().setValue(y());
                     Meta.this.inner.radiusProperty().setValue(radius() * 0.6D);
 
-                    Meta.this.text.textProperty().setValue(textValue);
-                    Meta.this.text.xProperty().setValue(x() - (Meta.this.text.getFont().getSize() / 2) * (textValue.length() / 2));
-                    Meta.this.text.yProperty().setValue(y() + (Meta.this.text.getFont().getSize() / 4));
-                    Meta.this.text.textAlignmentProperty().set(TextAlignment.CENTER);
-                    Meta.this.text.setTextAlignment(TextAlignment.CENTER);
                 }
             };
 
@@ -381,7 +354,7 @@ public class Node {
         }
 
         public Shape[] getGraphicElements() {
-            return new Shape[] { hintCircle, outer, inner, text};
+            return new Shape[] { hintCircle, outer, inner};
         }
     }
 
@@ -438,10 +411,6 @@ public class Node {
 
             public void unhide() {
                 this.line.getStyleClass().remove("disabled");
-            }
-
-            public boolean visible() {
-                return this.line.isVisible();
             }
 
             public Shape[] getGraphicElements() {

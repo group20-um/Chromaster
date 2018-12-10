@@ -5,6 +5,7 @@ import edu.um.chromaster.gui.GameElement;
 import edu.um.chromaster.gui.Intro;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.util.Random;
@@ -16,7 +17,15 @@ public class Game extends Application {
     }
 
     //----
-    public final static Random random = new Random(); //TODO same seed to ease debugging efforts
+    /**
+     * Testing Seeds:
+     *  - 1544349015604 -> Caused the Graph#clone() bug
+     */
+    private static long seed = System.currentTimeMillis();
+    {
+        System.out.printf("Random seed %d%n", seed);
+    }
+    public final static Random random = new Random(seed); //TODO same seed to ease debugging efforts
     private static Game instance;
 
     //---
@@ -45,12 +54,12 @@ public class Game extends Application {
     public void start(Stage primaryStage) {
         instance = this;
         this.stage = primaryStage;
-
-
+        stage.getIcons().add(new Image("res/icon.jpg"));
+        
         Intro intro = new Intro();
         intro.getStylesheets().add("res/style.css");
-        primaryStage.setMinWidth(680);
-        primaryStage.setMinHeight(480);
+        primaryStage.setMinWidth(1280);
+        primaryStage.setMinHeight(720);
         // TODO sample mouse-click to node
         primaryStage.setTitle("Chromaster");
         primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
