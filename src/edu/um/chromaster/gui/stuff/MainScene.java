@@ -1,5 +1,6 @@
 package edu.um.chromaster.gui.stuff;
 
+import edu.um.chromaster.Game;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -10,6 +11,8 @@ import java.util.Arrays;
 public class MainScene {
 
 	public static Scene createMainScene(Stage window) {
+
+		Game.getInstance().getEventHandler().clear(); // reset event handler fully
 
 		Button button1 = new Button("To the bitter end");
 		Button button2 = new Button("Best upper bound in a fixed time frame");

@@ -1,5 +1,6 @@
 package edu.um.chromaster.gui.stuff;
 
+import edu.um.chromaster.Game;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -17,21 +18,21 @@ public class GameModeScene {
 		Button button1GM = new Button("Play with a random graph");
 		Button button2GM = new Button("Generate my own graph");
 		
-		button1GM.setOnAction(e -> pressedButton1GM(window));
-		button2GM.setOnAction(e -> window.setScene(GenerateGraphScene.generateGraphScene(window)));
+		button1GM.setOnAction(e -> pressedButton1GM());
+		button2GM.setOnAction(e -> Game.getInstance().getStage().setScene(GenerateGraphScene.generateGraphScene(window)));
 
 		return new Scene(MenuScene.createParent(Arrays.asList(intro, chooseGraph, button1GM, button2GM), (a) -> {
-				window.setScene(MainScene.createMainScene(window));
+				window.setScene(MainScene.createMainScene(Game.getInstance().getStage()));
 		}), window.getWidth(), window.getHeight());
 	}
 	
-	public static void pressedButton1GM(Stage window) {
+	public static void pressedButton1GM() {
 		ChosenVerticesOrEdges.random = true;
 		ChosenVerticesOrEdges.vertices = false;
 		ChosenVerticesOrEdges.verticesAndEdges = false;
 		ChosenVerticesOrEdges.edges = false;
 		System.out.println("The player is playing with a random graph");
-		window.setScene(DifficultyScene.createDifficultyScene(window));
+		Game.getInstance().getStage().setScene(DifficultyScene.createDifficultyScene(Game.getInstance().getStage()));
 		
 	}
 

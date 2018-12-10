@@ -14,6 +14,11 @@ public class EventHandler {
 
     public EventHandler() {}
 
+    public void clear() {
+        this.eventListeners.clear();
+        this.events.clear();
+    }
+
     /**
      * Call this to trigger all listeners and send the event object to them.
      * @param event The event to be fired.
