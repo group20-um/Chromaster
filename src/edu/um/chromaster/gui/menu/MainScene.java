@@ -18,7 +18,7 @@ public class MainScene {
 		Button button2 = new Button("Best upper bound in a fixed time frame");
 		Button button3 = new Button("Random order");
 		Label welcome = new Label("Welcome to Chromaster!");
-		Label start = new Label("Chose your game mode");
+		Label start = new Label("Choose your game mode");
 
 		button1.setOnAction(e -> chosenGM1(window));
 		button2.setOnAction(e -> chosenGM2(window));
