@@ -1,4 +1,4 @@
-package edu.um.chromaster.gui.menu;
+package edu.um.chromaster.gui;
 
 import edu.um.chromaster.gui.game.GraphElement;
 import edu.um.chromaster.gui.menu.boxes.RulesBox;
@@ -41,7 +41,6 @@ public class MenuScene {
             rules.getStyleClass().add("menu-button");
             rules.setOnAction(e -> RulesBox.display());
             topBar.getChildren().addAll(rules);
-            //topBar.setPadding(new Insets(10, 10, 10, 10));
             borderPane.setTop(topBar);
         }
 

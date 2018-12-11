@@ -1,5 +1,6 @@
 package edu.um.chromaster.gui.menu;
 
+import edu.um.chromaster.gui.MenuScene;
 import edu.um.chromaster.gui.menu.boxes.RulesBox;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -50,7 +51,7 @@ public class GenerateGraphScene {
 		borderPaneGenerateGraph.setTop(topBar);
 		borderPaneGenerateGraph.setCenter(chooseGraphGrid);
 
-		return new Scene(MenuScene.createBasicParent(borderPaneGenerateGraph), -1, -1);
+		return new Scene(MenuScene.createBasicParent(borderPaneGenerateGraph), 1280, 720);
 	}
 	
 	private static void pressedVerticesAndEdges(Stage window) {

@@ -1,4 +1,5 @@
 package edu.um.chromaster.gui.menu;
+import edu.um.chromaster.gui.MenuScene;
 import edu.um.chromaster.gui.game.GraphElement;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -37,7 +38,7 @@ public class DifficultyScene {
 
 		Scene difficultyScene = new Scene(MenuScene.createParent(Arrays.asList(howDifficult, easy, medium, hard), (a) -> {
 			window.setScene(GameModeScene.createGameModeScene(window));
-		}), -1, -1);
+		}), 1280, 720);
 		difficultyScene.getStylesheets().add("res/style.css");
 		return difficultyScene;
 	}

@@ -20,8 +20,9 @@ public class Game extends Application {
     /**
      * Testing Seeds:
      *  - 1544349015604 -> Caused the Graph#clone() bug
+     *  - 1544528910389 -> Caused the butterfly bug
      */
-    private static long seed = System.currentTimeMillis();
+    private static long seed = 1544535103722L;
     {
         System.out.printf("Random seed %d%n", seed);
     }
@@ -73,7 +74,12 @@ public class Game extends Application {
             }
         });
 
-        primaryStage.setResizable(true);
+        primaryStage.setOnCloseRequest(e -> {
+            schedule.shutdownNow();
+            primaryStage.close();
+            System.exit(0);
+        });
+        primaryStage.setResizable(false);
         primaryStage.setScene(intro.getAssociatedScene());
         primaryStage.show();
 

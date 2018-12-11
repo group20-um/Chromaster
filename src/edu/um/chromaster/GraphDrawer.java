@@ -4,6 +4,7 @@ import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class GraphDrawer {
 
@@ -11,16 +12,25 @@ public class GraphDrawer {
 
     public static void random(Graph graph, double width, double height) {
         graph.getNodes().forEach((id, node) -> {
-            node.getMeta().x(Game.random.nextDouble() * width);
-            node.getMeta().y(Game.random.nextDouble() * height);
+            final AtomicReference<Double> x = new AtomicReference<>(Game.random.nextDouble() * width);
+            final AtomicReference<Double> y = new AtomicReference<>(Game.random.nextDouble() * height);
+            while (graph.getNodes().values().stream().anyMatch(e -> e.getMeta().area().intersects(x.get() + Node.Meta.DEFAULT_RADIUS * 2, y.get() + Node.Meta.DEFAULT_RADIUS * 2, Node.Meta.DEFAULT_RADIUS * 4, Node.Meta.DEFAULT_RADIUS * 4))) {
+                x.set(Game.random.nextDouble() * width);
+                y.set(Game.random.nextDouble() * height);
+            }
+
+            node.getMeta().x(x.get());
+            node.getMeta().y(y.get());
+
         });
     }
 
     public static void circle(Graph graph,double width, double height){
         double angle = 2*Math.PI/graph.getNodes().size();
+        double r = Math.min(width, height)/2D;
         graph.getNodes().forEach((id, node) -> {
-            node.getMeta().x(width/2 + ((width-200)/2)*Math.cos(id*angle));
-            node.getMeta().y(height/2 + ((height-100)/2)*Math.sin(id*angle));
+            node.getMeta().x(width*4/3 + (r*Math.cos(id*angle) -  r/2));
+            node.getMeta().y(height/2 + (r*Math.sin(id*angle)));
         });
     }
 
@@ -32,7 +42,7 @@ public class GraphDrawer {
         });
     }
 
-    public static void archemedianSprial(Graph graph,double width, double height){
+    public static void archemedianSpiral(Graph graph, double width, double height){
         double angle = 4*Math.PI/graph.getNodes().size();
         graph.getNodes().forEach((id, node) -> {
             node.getMeta().x(width/2 + (((width-200)/2) - ((width-200)/2) * id/graph.getNodes().size())*Math.cos(id*angle));
@@ -40,13 +50,28 @@ public class GraphDrawer {
         });
     }
 
-    public static void limacon(Graph graph,double width, double height){
-        double angle = 2*Math.PI/graph.getNodes().size();
-        double r = width / 5D;
+    public static void butterfly(Graph graph, double width, double height){
         graph.getNodes().forEach((id, node) -> {
-            node.getMeta().x(width/2 + r*Math.sin(5*angle)*Math.cos(id*angle));
-            node.getMeta().y(height/2 + r*Math.sin(5*angle)*Math.sin(id*angle));
+            double theta = id*(2*Math.PI/graph.getNodes().size());
+            double r = (1-Math.cos(theta)*Math.sin(3*theta)) * 250;
+            double x = Math.cos(theta)*r;
+            double y = Math.sin(theta)*r;
+            node.getMeta().x(width/2 + x);
+            node.getMeta().y(height/2D + y);
         });
+        scale(graph, width, height);
+    }
+
+    public static void valentineCurve(Graph graph, double width, double height){
+        graph.getNodes().forEach((id, node) -> {
+            double theta = id*(2*Math.PI/graph.getNodes().size());
+            double r = (4+Math.cos(6*theta)) * 50;
+            double x = Math.cos(theta)*r;
+            double y = Math.sin(theta)*r;
+            node.getMeta().x(width/2 + x);
+            node.getMeta().y(height/2D + y);
+        });
+        scale(graph, width, height);
     }
 
     public static void scale(Graph graph, double width, double height) {
@@ -55,8 +80,9 @@ public class GraphDrawer {
         double max_y = graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().y()).max().getAsDouble();
 
         graph.getNodes().values().forEach(e -> {
-            e.getMeta().x((e.getMeta().x() / max_x) * width);
-            e.getMeta().y((e.getMeta().y() / max_y) * height);
+            System.out.println(((width * 0.1D) + (e.getMeta().x() / max_x) * width * 0.9D));
+            e.getMeta().x((e.getMeta().x() / max_x) * width * 0.9D);
+            e.getMeta().y((e.getMeta().y() / max_y) * height * 0.9D);
         });
 
     }

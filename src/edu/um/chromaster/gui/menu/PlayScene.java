@@ -56,7 +56,7 @@ public class PlayScene {
 		}
 
 		GameElement graphGameElement = new GameElement(window, graph, gameMode);
-		return new Scene(graphGameElement, -1, -1, true, SceneAntialiasing.BALANCED);
+		return new Scene(graphGameElement, 1280, 720, true, SceneAntialiasing.BALANCED);
 
 
 	}

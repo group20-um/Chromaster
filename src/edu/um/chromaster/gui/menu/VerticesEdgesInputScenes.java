@@ -1,5 +1,6 @@
 package edu.um.chromaster.gui.menu;
 
+import edu.um.chromaster.gui.MenuScene;
 import edu.um.chromaster.gui.menu.boxes.AlertBox;
 import edu.um.chromaster.gui.menu.boxes.RulesBox;
 import javafx.geometry.Insets;
@@ -64,7 +65,7 @@ public class VerticesEdgesInputScenes {
 		borderPane.setCenter(verticesAndEdgesGrid);
 		borderPane.getStyleClass().add("MainScene-background");
 
-		return new Scene(MenuScene.createBasicParent(borderPane), window.getWidth(), window.getHeight());
+		return new Scene(MenuScene.createBasicParent(borderPane), 1280, 720);
 		
 	}
 	
@@ -104,7 +105,7 @@ public class VerticesEdgesInputScenes {
 		borderPane.setCenter(verticesGrid);
 		borderPane.getStyleClass().add("MainScene-background");
 
-		return new Scene(MenuScene.createBasicParent(borderPane), window.getWidth(), window.getHeight());
+		return new Scene(MenuScene.createBasicParent(borderPane), 1280, 720);
 	}
 	
 	public static Scene createEdgesScene(Stage window) {
@@ -142,7 +143,7 @@ public class VerticesEdgesInputScenes {
 		borderPane.setTop(topBar);
 		borderPane.setCenter(edgesGrid);
 
-		return new Scene(MenuScene.createBasicParent(borderPane), window.getWidth(), window.getHeight());
+		return new Scene(MenuScene.createBasicParent(borderPane), 1280, 720);
 	}
 	
 	private static boolean verticesAndEdgesAreInt(TextField input1, TextField input2, Stage window) {

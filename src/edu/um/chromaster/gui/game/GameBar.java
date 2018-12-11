@@ -18,12 +18,6 @@ import java.util.stream.Stream;
 public class GameBar extends HBox {
 
     private Map<Button, Double> timeConstraints = new LinkedHashMap<>();
-    private Set<GraphElement.HintTypes> _42list = new HashSet<>();
-    {
-        _42list.add(GraphElement.HintTypes.LOWER_BOUND);
-        _42list.add(GraphElement.HintTypes.UPPER_BOUND);
-        _42list.add(GraphElement.HintTypes.SOLUTION);
-    }
 
     private ComboBox<GraphElement.RenderType> renderTypes = new ComboBox<>(FXCollections.observableArrayList(
             GraphElement.RenderType.values()
@@ -53,10 +47,6 @@ public class GameBar extends HBox {
         this.setup();
     }
 
-    public synchronized void r(GraphElement.HintTypes type) {
-        this._42list.remove(type);
-    }
-
     private void setup() {
 
         //--- hints only become available after a certain amount of time. This task is responsible for enabling the buttons
@@ -66,7 +56,7 @@ public class GameBar extends HBox {
                 if(v > 0) {
                     timeConstraints.put(k, v - 500);
 
-                    if (!_42list.contains(k.getProperties().get("type")) && v - 500 <= 0 && k.isDisabled()) {
+                    if (v - 500 <= 0 && k.isDisabled()) {
                         k.setDisable(false);
                     }
                 }

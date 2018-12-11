@@ -3,6 +3,7 @@ package edu.um.chromaster.gui.menu;
 import edu.um.chromaster.Game;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.ReadGraph;
+import edu.um.chromaster.gui.MenuScene;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -47,7 +48,7 @@ public class ReadGraphScene {
 
         return new Scene(MenuScene.createParent(Arrays.asList(label, enter), (a) -> {
             window.setScene(MainScene.createMainScene(Game.getInstance().getStage()));
-        }), window.getWidth(), window.getHeight());
+        }), 1280, 720);
 
     }
 

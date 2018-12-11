@@ -75,28 +75,24 @@ public class GraphElement extends Pane {
      * Applies the layout to the actual graph and causes it to redraw.
      */
     public void applyLayout() {
-        double width = this.getMinWidth();
-        double height = this.getMinHeight()  * 0.8D;
+        double width = this.getMinWidth() * 0.75D;
+        double height = this.getMinHeight()  * 0.75D;
         switch (this.renderType) {
             case CIRCLE: GraphDrawer.circle(graph, Math.min(width, height), Math.min(width, height)); break;
             case SHELL: GraphDrawer.shell(graph, width, height);  break;
             case SCALE: GraphDrawer.scale(graph, width, height); break;
-            case LIMACON: GraphDrawer.limacon(graph, width, height); break;
-            case SPIRAL: GraphDrawer.archemedianSprial(graph, width, height); break;
+            case BUTTERFLY: GraphDrawer.butterfly(graph, width, height); break;
+            case SPIRAL: GraphDrawer.archemedianSpiral(graph, width, height); break;
+            case VALENTINE: GraphDrawer.valentineCurve(graph,width,height);break;
             case TEST: GraphDrawer.test(graph, width, height); break;
             case TEST2: GraphDrawer.test2(graph, width, height); break;
             case RANDOM: GraphDrawer.random(graph, width, height); break;
             default: throw new IllegalArgumentException();
         }
 
-        // move it closer to the top, preventing it from moving parts of the graph off-screen when the user players in a weird resolution
-        double distanceTop = (graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().y()).min().getAsDouble()) - (gameElement.getColourSelectorElement().getHeight() * 2);
-        double distanceBottom = height - (graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().y()).max().getAsDouble());
-        double distanceLeft = (graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().x()).min().getAsDouble());
-        double distanceRight = width - (graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().x()).max().getAsDouble());
         graph.getNodes().values().forEach(e -> {
-            e.getMeta().y(e.getMeta().y() + (distanceBottom - distanceTop) / 2D);
-            e.getMeta().x(e.getMeta().x() + (distanceRight - distanceLeft) / 2D);
+            e.getMeta().x(e.getMeta().x() + width * 0.125D);
+            e.getMeta().y(e.getMeta().y() + height * 0.125D);
         });
 
     }
@@ -108,10 +104,6 @@ public class GraphElement extends Pane {
                 .sorted((o1, o2) -> {
                     int a = graph.getEdges(o1.getId()).size();
                     int b = graph.getEdges(o2.getId()).size();
-
-                    if(a == 0 && b == 0) {
-                        return Integer.compare(-o1.getId(), o2.getId());
-                    }
 
                     return Integer.compare(a, b);
                 })
@@ -241,6 +233,7 @@ public class GraphElement extends Pane {
         switch (hintType) {
             case UPPER_BOUND: return graph.getChromaticResult().getUpper();
             case LOWER_BOUND: return graph.getChromaticResult().getLower();
+            case CHROMATIC_NUMBER: return graph.getChromaticResult().getExact();
         }
 
         throw new IllegalStateException();
@@ -314,27 +307,6 @@ public class GraphElement extends Pane {
                 return true;
             }
         },
-        UPPER_BOUND {
-            @Override
-            public String getDisplayName() {
-                return "Upper Bound";
-            }
-
-            @Override
-            public double getTimeConstraint() {
-                return 0.5D;
-            }
-
-            @Override
-            public List<Difficulty> getDifficulties() {
-                return Arrays.asList(Difficulty.MEDIUM, Difficulty.HARD);
-            }
-
-            @Override
-            public boolean isVisual() {
-                return false;
-            }
-        },
         LOWER_BOUND {
             @Override
             public String getDisplayName() {
@@ -356,6 +328,48 @@ public class GraphElement extends Pane {
                 return false;
             }
         },
+        UPPER_BOUND {
+            @Override
+            public String getDisplayName() {
+                return "Upper Bound";
+            }
+
+            @Override
+            public double getTimeConstraint() {
+                return 0.5D;
+            }
+
+            @Override
+            public List<Difficulty> getDifficulties() {
+                return Arrays.asList(Difficulty.MEDIUM, Difficulty.HARD);
+            }
+
+            @Override
+            public boolean isVisual() {
+                return false;
+            }
+        },
+        CHROMATIC_NUMBER {
+            @Override
+            public String getDisplayName() {
+                return "Chromatic Number";
+            }
+
+            @Override
+            public double getTimeConstraint() {
+                return 0.9;
+            }
+
+            @Override
+            public List<Difficulty> getDifficulties() {
+                return Arrays.asList(Difficulty.MEDIUM, Difficulty.HARD);
+            }
+
+            @Override
+            public boolean isVisual() {
+                return false;
+            }
+        },
         SOLUTION {
             @Override
             public String getDisplayName() {
@@ -364,7 +378,7 @@ public class GraphElement extends Pane {
 
             @Override
             public double getTimeConstraint() {
-                return 0.9D;
+                return 0.95D;
             }
 
             @Override
@@ -384,7 +398,8 @@ public class GraphElement extends Pane {
         SHELL,
         SCALE,
         SPIRAL,
-        LIMACON,
+        BUTTERFLY,
+        VALENTINE,
         TEST,
         TEST2,
         RANDOM

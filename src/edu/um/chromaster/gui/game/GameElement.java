@@ -34,13 +34,7 @@ public class GameElement extends StackPane implements EventListener {
         this.gameMode = gameMode;
         Game.getInstance().getEventHandler().registerListener(this);
         Game.getInstance().setGameElement(this);
-        ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph.clone(), result -> {
-            graph.setChromaticResults(result);
-            gameBar.r(GraphElement.HintTypes.LOWER_BOUND);
-            gameBar.r(GraphElement.HintTypes.UPPER_BOUND);
-            gameBar.r(GraphElement.HintTypes.SOLUTION);
-            // TODO enable solution, upper, lower hints
-        });
+        ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph.clone(), graph::setChromaticResults);
 
         // periodically redraw the screen
         Game.getInstance().getSchedule().schedule(() -> {
