@@ -80,7 +80,6 @@ public class GraphDrawer {
         double max_y = graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().y()).max().getAsDouble();
 
         graph.getNodes().values().forEach(e -> {
-            System.out.println(((width * 0.1D) + (e.getMeta().x() / max_x) * width * 0.9D));
             e.getMeta().x((e.getMeta().x() / max_x) * width * 0.9D);
             e.getMeta().y((e.getMeta().y() / max_y) * height * 0.9D);
         });
@@ -103,8 +102,6 @@ public class GraphDrawer {
         });
 
         for (int i = 0; i < iterations; i++) {
-
-            System.out.println("iteration: " + i);
 
             // calculate repulsive force
             for (Node v : graph.getNodes().values()) {
@@ -188,8 +185,6 @@ public class GraphDrawer {
 
         }
 
-
-        System.out.println(t);
     }
 
     public static void test2(Graph graph, double width, double height) {

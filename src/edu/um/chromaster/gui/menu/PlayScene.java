@@ -47,12 +47,22 @@ public class PlayScene {
 		GameMode gameMode = null;
 
 
+		// game length
+		long duration = 20;
+		if(DifficultyScene.getSelectedeDifficulty() == GraphElement.Difficulty.MEDIUM) {
+			duration = 12;
+		} else if(DifficultyScene.getSelectedeDifficulty() == GraphElement.Difficulty.HARD) {
+			duration = 6;
+		}
+		duration *= graph.getNodes().size();
+		System.out.printf("Game Length %ds%n", duration);
+
 		if(ChosenGameMode.chooseGameMode1) {
-			gameMode = new FirstGameMode(graph, TimeUnit.SECONDS.toMillis(60));
+			gameMode = new FirstGameMode(graph, TimeUnit.SECONDS.toMillis(duration));
 		} else if (ChosenGameMode.chooseGameMode2) {
-			gameMode = new SecondGameMode(graph, TimeUnit.SECONDS.toMillis(10));
+			gameMode = new SecondGameMode(graph, TimeUnit.SECONDS.toMillis(duration));
 		} else if (ChosenGameMode.chooseGameMode3) {
-			gameMode = new ThirdGameMode(graph, TimeUnit.SECONDS.toMillis(60));
+			gameMode = new ThirdGameMode(graph, TimeUnit.SECONDS.toMillis(duration));
 		}
 
 		GameElement graphGameElement = new GameElement(window, graph, gameMode);

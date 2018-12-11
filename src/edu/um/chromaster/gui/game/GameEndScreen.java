@@ -30,6 +30,12 @@ public class GameEndScreen extends BorderPane {
      * @param event The associated event so the screen knows what it has to display depending on the outcome.
      */
     public void execute(GameEndEvent event) {
+
+        Button againButton = new Button("Play Again");
+        againButton.setBackground(new Background(new BackgroundFill(Color.SILVER, CornerRadii.EMPTY, Insets.EMPTY)));
+        againButton.setFont(new Font("Arial", 50));
+        againButton.setOnAction(e -> Game.getInstance().setScene(MainScene.createMainScene(Game.getInstance().getStage())));
+
         if (event.isWin()) {
             ImageView w=new ImageView(new Image("res/wow.gif"));
             ImageView r=new ImageView(new Image("res/rainbow.gif"));
@@ -48,12 +54,6 @@ public class GameEndScreen extends BorderPane {
 
         } else {
             ImageView background = new ImageView("res/youTried.gif");
-            Button againButton = new Button("Play Again");
-            {
-                againButton.setBackground(new Background(new BackgroundFill(Color.SILVER, CornerRadii.EMPTY, Insets.EMPTY)));
-                againButton.setFont(new Font("Arial", 50));
-                againButton.setOnAction(e -> Game.getInstance().setScene(MainScene.createMainScene(Game.getInstance().getStage())));
-            }
             Label text = new Label(" Game Over! ");
             {
                 text.setFont(new Font("Arial", 100));
@@ -61,14 +61,13 @@ public class GameEndScreen extends BorderPane {
             }
 
             this.setTop(text);
-            this.setCenter(againButton);
             this.setBottom(background);
 
             setAlignment(background, Pos.BOTTOM_CENTER);
             setAlignment(text, Pos.TOP_CENTER);
         }
 
-
+        this.setCenter(againButton);
         this.setBackground(new Background(new BackgroundFill(Color.rgb(0,0,36), CornerRadii.EMPTY, Insets.EMPTY)));
         this.setVisible(true);
     }

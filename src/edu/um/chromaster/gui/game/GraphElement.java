@@ -109,8 +109,8 @@ public class GraphElement extends Pane {
                 })
                 .collect(Collectors.toCollection(Stack::new));
 
-        final long MAX_TIME_TO_DRAW = 1;
-        final long MAX_TIME_STEP = 1; //(MAX_TIME_TO_DRAW / graph.getNodes().size())
+        final long MAX_TIME_TO_DRAW = 5000;
+        final long MAX_TIME_STEP = (MAX_TIME_TO_DRAW / graph.getNodes().size());
 
         Stack<Node> priorityNodes = new Stack<>();
         AtomicReference<ScheduledFuture<?>> scheduledFuture = new AtomicReference<>();

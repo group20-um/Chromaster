@@ -43,7 +43,7 @@ public class GameElement extends StackPane implements EventListener {
         }, (1000 / 60), TimeUnit.MILLISECONDS);
 
 
-        this.graphElement = new GraphElement(this, graph, GraphElement.RenderType.CIRCLE);
+        this.graphElement = new GraphElement(this, graph, GraphElement.RenderType.VALENTINE);
         this.graphElement.backgroundProperty().set(Background.EMPTY);
         this.gameEndScreen = new GameEndScreen();
 
