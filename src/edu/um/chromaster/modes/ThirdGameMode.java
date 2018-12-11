@@ -7,6 +7,7 @@ import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.event.events.SelectColourEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
+import edu.um.chromaster.gui.menu.boxes.WarningBox;
 import javafx.scene.paint.Color;
 
 import java.util.Collections;
@@ -57,38 +58,39 @@ public class ThirdGameMode extends GameMode {
         if(n.getMeta().isAllowedToChangeColour() && this.getSelectedColour() != null) {
 
 
-            n.getMeta().hint(null); // TODO
-            // we don't care if the user doesn't know the rules
-            //boolean neighbourHasSelectedColour = getGraph().getEdges(n.getId()).stream().noneMatch(e -> e.getTo().getValue() == getSelectedColour().hashCode());
-
-            event.getNode().getMeta().colour(getSelectedColour());
-            event.getNode().setValue(getSelectedColour().hashCode());
-            n.getMeta().setAllowedToChangeColour(false);
-            n.getMeta().highlight(false);
-
-            path.pop();
-
-            getGraph().getEdges(n.getId()).stream().filter(e -> e.getTo().getValue() == -1).forEach(e -> e.getTo().getMeta().visible(false));
-
-            if (!path.isEmpty()) {
-                Node node = path.peek();
-                node.getMeta().hint(Color.ROYALBLUE); // TODO
-
-                node.getMeta().visible(true);
-                node.getMeta().setAllowedToChangeColour(true);
-                getGraph().getEdges(node.getId()).forEach(e -> {
-                    e.getTo().getMeta().visible(true);
-                    e.getTo().getMeta().setAllowedToChangeColour(false);
-                });
+            if(hasNeighbourColour(event.getNode(), this.getSelectedColour())) {
+                WarningBox.display();
             } else {
-                if (gameWon()) {
-                    Game.getInstance().getEventHandler().trigger(new GameEndEvent("ez pz", true));
-                } else {
-                    Game.getInstance().getEventHandler().trigger(new GameEndEvent("u lost", false));
-                }
-                System.out.println("game end - third game mode");
-            }
+                n.getMeta().hint(null); // TODO
+                //boolean neighbourHasSelectedColour = getGraph().getEdges(n.getId()).stream().noneMatch(e -> e.getTo().getValue() == getSelectedColour().hashCode());
+                event.getNode().getMeta().colour(getSelectedColour());
+                event.getNode().setValue(getSelectedColour().hashCode());
+                n.getMeta().setAllowedToChangeColour(false);
+                n.getMeta().highlight(false);
 
+                path.pop();
+
+                getGraph().getEdges(n.getId()).stream().filter(e -> e.getTo().getValue() == -1).forEach(e -> e.getTo().getMeta().visible(false));
+
+                if (!path.isEmpty()) {
+                    Node node = path.peek();
+                    node.getMeta().hint(Color.ROYALBLUE); // TODO
+
+                    node.getMeta().visible(true);
+                    node.getMeta().setAllowedToChangeColour(true);
+                    getGraph().getEdges(node.getId()).forEach(e -> {
+                        e.getTo().getMeta().visible(true);
+                        e.getTo().getMeta().setAllowedToChangeColour(false);
+                    });
+                } else {
+                    if (gameWon()) {
+                        Game.getInstance().getEventHandler().trigger(new GameEndEvent("ez pz", true));
+                    } else {
+                        Game.getInstance().getEventHandler().trigger(new GameEndEvent("u lost", false));
+                    }
+                    System.out.println("game end - third game mode");
+                }
+            }
         }
 
     }

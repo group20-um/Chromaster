@@ -1,4 +1,4 @@
-package edu.um.chromaster.gui;
+package edu.um.chromaster.gui.game;
 
 import edu.um.chromaster.Game;
 import edu.um.chromaster.modes.GameMode;

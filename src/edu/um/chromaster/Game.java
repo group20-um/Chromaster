@@ -1,7 +1,7 @@
 package edu.um.chromaster;
 
 import edu.um.chromaster.event.EventHandler;
-import edu.um.chromaster.gui.GameElement;
+import edu.um.chromaster.gui.game.GameElement;
 import edu.um.chromaster.gui.Intro;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -73,7 +73,7 @@ public class Game extends Application {
             }
         });
 
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(true);
         primaryStage.setScene(intro.getAssociatedScene());
         primaryStage.show();
 

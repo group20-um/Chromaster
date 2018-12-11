@@ -1,4 +1,4 @@
-package edu.um.chromaster.gui.stuff;
+package edu.um.chromaster.gui.menu.boxes;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

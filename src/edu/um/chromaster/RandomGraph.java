@@ -1,7 +1,7 @@
 package edu.um.chromaster;
 
 import edu.um.chromaster.graph.Graph;
-import edu.um.chromaster.gui.stuff.VerticesEdgesInputScenes;
+import edu.um.chromaster.gui.menu.VerticesEdgesInputScenes;
 
 public class RandomGraph {
 

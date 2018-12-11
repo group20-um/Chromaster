@@ -1,9 +1,17 @@
 package edu.um.chromaster.modes;
 
+import edu.um.chromaster.Game;
 import edu.um.chromaster.event.EventListener;
+import edu.um.chromaster.event.events.GameEndEvent;
+import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
+import edu.um.chromaster.gui.ColorList;
+import edu.um.chromaster.gui.game.GameBar;
+import edu.um.chromaster.gui.menu.boxes.WarningBox;
 import javafx.scene.paint.Color;
+
+import java.util.List;
 
 /**
  * The overall GameMode class that manages some of the GameMode aspects.
@@ -38,7 +46,7 @@ public abstract class GameMode implements EventListener {
     }
 
     /**
-     * Whether or not {@link edu.um.chromaster.gui.GameBar} should show a timer displaying the value of {@link GameMode#getTime()}.
+     * Whether or not {@link GameBar} should show a timer displaying the value of {@link GameMode#getTime()}.
      * @return The time value in milliseconds.
      */
     public boolean isDisplayingTime() {
@@ -68,6 +76,19 @@ public abstract class GameMode implements EventListener {
         }
 
         return status;
+    }
+
+    protected boolean hasNeighbourColour(Node node, Color color) {
+        List<Node.Edge> neighbours= graph.getEdges(node.getId());
+        boolean sameColour=false;
+        for(int i=0; i<neighbours.size();i++){
+            if(neighbours.get(i).getTo().getValue() != -1){
+                if(neighbours.get(i).getTo().getValue() == color.hashCode()){
+                    sameColour=true;
+                }
+            }
+        }
+        return sameColour;
     }
 
     /**
@@ -107,6 +128,30 @@ public abstract class GameMode implements EventListener {
 
     public long getTimeLeft() {
         return this.getTime();
+    }
+
+    protected void defaultNodeClickHandler(NodeClickedEvent event) {
+        if(this.getSelectedColour() != null && event.getNode().getMeta().isAllowedToChangeColour()) {
+
+            // uncolour node
+            if(event.getNode().getMeta().colour().equals(this.getSelectedColour())) {
+                event.getNode().getMeta().colour(ColorList.NODE_INNER_DEFAULT);
+                return;
+            }
+
+            // change colour
+            if(hasNeighbourColour(event.getNode(), this.getSelectedColour())) {
+                WarningBox.display();
+            } else {
+                event.getNode().getMeta().colour(this.getSelectedColour());
+                event.getNode().setValue(this.getSelectedColour().hashCode());
+            }
+
+
+            if(gameWon()) {
+                Game.getInstance().getEventHandler().trigger(new GameEndEvent("You won", true));
+            }
+        }
     }
 
 }

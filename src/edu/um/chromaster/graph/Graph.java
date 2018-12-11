@@ -3,10 +3,7 @@ package edu.um.chromaster.graph;
 import edu.um.chromaster.ChromaticNumber;
 import edu.um.chromaster.graph.Node.Edge;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A graph class is a data structure that represents a graph.
@@ -179,22 +176,8 @@ public class Graph implements Cloneable {
     @Override
     public Graph clone() {
         Graph clone = new Graph();
-        for (Map.Entry<Integer, Node> entry : this.nodes.entrySet()) {
-            Integer key = entry.getKey();
-            Node value = entry.getValue();
-            clone.addNode(key, value.getValue());
-        }
-        for (Map.Entry<Integer, Map<Integer, Edge>> entry : this.edges.entrySet()) {
-            Integer k = entry.getKey();
-            Map<Integer, Edge> v = entry.getValue();
-            for (Map.Entry<Integer, Edge> e : v.entrySet()) {
-                Integer to = e.getKey();
-                Edge edge = e.getValue();
-                System.out.println(edge.getFrom() + "<from");
-                System.out.println(edge.getTo() + "<to");
-                clone.addEdge(edge.getFrom().getId(), edge.getTo().getId(), true);
-            }
-        }
+        this.nodes.forEach((key, value) -> clone.addNode(key, value.getValue()));
+        this.edges.forEach((key, v) -> v.forEach((to, edge) -> clone.addEdge(edge.getFrom().getId(), edge.getTo().getId(), true)));
         return clone;
     }
 

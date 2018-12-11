@@ -1,8 +1,8 @@
-package edu.um.chromaster.gui;
+package edu.um.chromaster.gui.game;
 
 import edu.um.chromaster.Game;
 import edu.um.chromaster.event.events.GameEndEvent;
-import edu.um.chromaster.gui.stuff.MainScene;
+import edu.um.chromaster.gui.menu.MainScene;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;

@@ -1,6 +1,7 @@
-package edu.um.chromaster.gui.stuff;
+package edu.um.chromaster.gui.menu;
 
-import edu.um.chromaster.gui.GraphElement;
+import edu.um.chromaster.gui.game.GraphElement;
+import edu.um.chromaster.gui.menu.boxes.RulesBox;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;

@@ -1,5 +1,7 @@
-package edu.um.chromaster.gui.stuff;
+package edu.um.chromaster.gui.menu;
 
+import edu.um.chromaster.gui.menu.boxes.AlertBox;
+import edu.um.chromaster.gui.menu.boxes.RulesBox;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;

@@ -54,14 +54,7 @@ public class SecondGameMode extends GameMode {
 
     @Subscribe
     public void onNodeClicked(NodeClickedEvent event) {
-        if(this.getSelectedColour() != null && event.getNode().getMeta().isAllowedToChangeColour()) {
-            event.getNode().getMeta().colour(this.getSelectedColour());
-            event.getNode().setValue(this.getSelectedColour().hashCode());
-
-            if(gameWon()) {
-                Game.getInstance().getEventHandler().trigger(new GameEndEvent("You won", true));
-            }
-        }
+        defaultNodeClickHandler(event);
     }
 
     @Subscribe

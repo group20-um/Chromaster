@@ -1,4 +1,4 @@
-package edu.um.chromaster.gui.stuff;
+package edu.um.chromaster.gui.menu;
 
 import edu.um.chromaster.Game;
 import javafx.scene.Scene;

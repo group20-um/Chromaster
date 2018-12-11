@@ -1,4 +1,4 @@
-package edu.um.chromaster.gui;
+package edu.um.chromaster.gui.game;
 
 import edu.um.chromaster.ChromaticNumber;
 import edu.um.chromaster.Game;
@@ -36,6 +36,9 @@ public class GameElement extends StackPane implements EventListener {
         Game.getInstance().setGameElement(this);
         ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph.clone(), result -> {
             graph.setChromaticResults(result);
+            gameBar.r(GraphElement.HintTypes.LOWER_BOUND);
+            gameBar.r(GraphElement.HintTypes.UPPER_BOUND);
+            gameBar.r(GraphElement.HintTypes.SOLUTION);
             // TODO enable solution, upper, lower hints
         });
 

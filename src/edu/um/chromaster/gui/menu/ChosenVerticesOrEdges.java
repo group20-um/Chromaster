@@ -1,4 +1,4 @@
-package edu.um.chromaster.gui.stuff;
+package edu.um.chromaster.gui.menu;
 
 public class ChosenVerticesOrEdges {
 	
@@ -6,6 +6,7 @@ public class ChosenVerticesOrEdges {
 	public static boolean vertices;
 	public static boolean edges;
 	public static boolean verticesAndEdges;
+	public static boolean readIn;
 	
 	public ChosenVerticesOrEdges() {
 	}

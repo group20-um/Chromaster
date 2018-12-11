@@ -1,4 +1,4 @@
-package edu.um.chromaster.gui;
+package edu.um.chromaster.gui.game;
 
 import edu.um.chromaster.Game;
 import edu.um.chromaster.GraphDrawer;
@@ -6,6 +6,7 @@ import edu.um.chromaster.HintManager;
 import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
+import edu.um.chromaster.gui.ColorList;
 import edu.um.chromaster.modes.ThirdGameMode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;

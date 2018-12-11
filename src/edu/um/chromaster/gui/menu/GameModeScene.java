@@ -1,4 +1,4 @@
-package edu.um.chromaster.gui.stuff;
+package edu.um.chromaster.gui.menu;
 
 import edu.um.chromaster.Game;
 import javafx.scene.Scene;
@@ -17,11 +17,13 @@ public class GameModeScene {
 		Label chooseGraph = new Label("Do you want to play with a random graph or do you want to generate it yourself?");
 		Button button1GM = new Button("Play with a random graph");
 		Button button2GM = new Button("Generate my own graph");
+		Button button3GM = new Button("Readd in Graph from File");
 		
 		button1GM.setOnAction(e -> pressedButton1GM());
 		button2GM.setOnAction(e -> Game.getInstance().getStage().setScene(GenerateGraphScene.generateGraphScene(window)));
+		button3GM.setOnAction(event -> window.setScene(ReadGraphScene.createReadGraphScene(window)));
 
-		return new Scene(MenuScene.createParent(Arrays.asList(intro, chooseGraph, button1GM, button2GM), (a) -> {
+		return new Scene(MenuScene.createParent(Arrays.asList(intro, chooseGraph, button1GM, button2GM, button3GM), (a) -> {
 				window.setScene(MainScene.createMainScene(Game.getInstance().getStage()));
 		}), window.getWidth(), window.getHeight());
 	}

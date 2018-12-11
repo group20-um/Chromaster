@@ -1,4 +1,4 @@
-package edu.um.chromaster.gui;
+package edu.um.chromaster.gui.game;
 
 import edu.um.chromaster.Game;
 import javafx.application.Platform;
@@ -19,6 +19,11 @@ public class GameBar extends HBox {
 
     private Map<Button, Double> timeConstraints = new LinkedHashMap<>();
     private Set<GraphElement.HintTypes> _42list = new HashSet<>();
+    {
+        _42list.add(GraphElement.HintTypes.LOWER_BOUND);
+        _42list.add(GraphElement.HintTypes.UPPER_BOUND);
+        _42list.add(GraphElement.HintTypes.SOLUTION);
+    }
 
     private ComboBox<GraphElement.RenderType> renderTypes = new ComboBox<>(FXCollections.observableArrayList(
             GraphElement.RenderType.values()
@@ -46,6 +51,10 @@ public class GameBar extends HBox {
         this.setMaxSize(1280, 720 * 0.05);
         this.graphElement = graphElement;
         this.setup();
+    }
+
+    public synchronized void r(GraphElement.HintTypes type) {
+        this._42list.remove(type);
     }
 
     private void setup() {

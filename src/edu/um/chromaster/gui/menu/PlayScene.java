@@ -1,10 +1,10 @@
-package edu.um.chromaster.gui.stuff;
+package edu.um.chromaster.gui.menu;
 
 
 import edu.um.chromaster.RandomGraph;
 import edu.um.chromaster.graph.Graph;
-import edu.um.chromaster.gui.GameElement;
-import edu.um.chromaster.gui.GraphElement;
+import edu.um.chromaster.gui.game.GameElement;
+import edu.um.chromaster.gui.game.GraphElement;
 import edu.um.chromaster.modes.FirstGameMode;
 import edu.um.chromaster.modes.GameMode;
 import edu.um.chromaster.modes.SecondGameMode;
@@ -33,10 +33,17 @@ public class PlayScene {
 		else if (ChosenVerticesOrEdges.verticesAndEdges) aGraph.setBoth(true);
 		else if (ChosenVerticesOrEdges.edges) aGraph.setEdges(true);
 		else if (ChosenVerticesOrEdges.random) aGraph.setNada(true);
+		else if(ChosenVerticesOrEdges.readIn) aGraph.setEdges(false);
 		else System.out.println("Error: The way the graph is generated isn't selected"); //Shouldn't happen
 
 		aGraph.setLIMIT(30);
-		Graph graph = aGraph.getGraph();
+		Graph graph;
+		if(ChosenVerticesOrEdges.verticesAndEdges||ChosenVerticesOrEdges.vertices||ChosenVerticesOrEdges.edges||ChosenVerticesOrEdges.random){
+			graph = aGraph.getGraph();
+		}
+		else{
+			graph=ReadGraphScene.getGraph();
+		}
 		GameMode gameMode = null;
 
 

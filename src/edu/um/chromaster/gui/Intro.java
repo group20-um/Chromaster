@@ -1,7 +1,7 @@
 package edu.um.chromaster.gui;
 
 import edu.um.chromaster.Game;
-import edu.um.chromaster.gui.stuff.MainScene;
+import edu.um.chromaster.gui.menu.MainScene;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;

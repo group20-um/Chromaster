@@ -1,7 +1,8 @@
-package edu.um.chromaster.gui;
+package edu.um.chromaster.gui.game;
 
 import edu.um.chromaster.Game;
 import edu.um.chromaster.event.events.SelectColourEvent;
+import edu.um.chromaster.gui.ColorList;
 import javafx.collections.FXCollections;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
