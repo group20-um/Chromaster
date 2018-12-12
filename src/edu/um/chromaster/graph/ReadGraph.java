@@ -1,7 +1,8 @@
 package edu.um.chromaster.graph;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 class ColEdge
 {
@@ -16,12 +17,11 @@ public class ReadGraph
 
     public final static String COMMENT = "//";
 
-    public static Graph read( String path )
+    public static Result read( String path )
     {
         if( path.length() < 1 )
         {
-            System.out.println("Error! No filename specified.");
-            System.exit(0);
+            return new Result(null, "Error! No filename specified.", true);
         }
 
         String inputfile = path;
@@ -104,8 +104,7 @@ public class ReadGraph
         catch (IOException ex)
         {
             // catch possible io errors from readLine()
-            System.out.println("Error! Problem reading file "+inputfile);
-            System.exit(0);
+            return new Result(null, "Error! Problem reading file "+inputfile, true);
         }
 
         for( int x=1; x<=n; x++ )
@@ -136,8 +135,32 @@ public class ReadGraph
             graph.addEdge(e[i].u-1, e[i].v-1, true);
         }
 
-        return graph;
+        return new Result(graph, null, false);
 
+    }
+
+    public static class Result {
+        private Graph graph;
+        private String message;
+        private boolean error;
+
+        public Result(Graph graph, String message, boolean error) {
+            this.graph = graph;
+            this.message = message;
+            this.error = error;
+        }
+
+        public Graph getGraph() {
+            return graph;
+        }
+
+        public boolean isError() {
+            return error;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 
 }

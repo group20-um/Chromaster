@@ -55,6 +55,10 @@ public class GraphElement extends Pane {
 
     }
 
+    public RenderType getRenderType() {
+        return renderType;
+    }
+
     /**
      * Returns the associated GameElement.
      * @return
@@ -315,7 +319,7 @@ public class GraphElement extends Pane {
 
             @Override
             public double getTimeConstraint() {
-                return 0.05D;
+                return 0.049999D;
             }
 
             @Override

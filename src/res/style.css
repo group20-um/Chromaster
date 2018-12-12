@@ -47,17 +47,42 @@
     -fx-pref-width: 300px;
 }
 
+
 .combo-box {
     -fx-background-color: #353535;
+    -fx-highlight-fill: #b7b7b7;
     -fx-text-fill: #b7b7b7;
-    -fx-padding: 5px;
-
-    -fx-border-color: #D24D57;
     -fx-border-width: 2px;
+    -fx-border-color: #D24D57;
+}
+
+.combo-box:hover {
+    -fx-border-color: #8c3c3a;
+    -fx-font-weight: bold;
+}
+
+.combo-box .list-cell
+{
+    -fx-background-color: #353535;
+    -fx-text-fill: #b7b7b7;
+}
+
+.combo-box-popup .list-view
+{
+    -fx-border-color: #D24D57;
+    -fx-background-color: #353535;
+}
+
+.combo-box-popup .list-view .list-cell
+{
+    -fx-padding: 4 0 4 5;
+
+    /* No alternate highlighting */
+    -fx-background-color: #353535;
 }
 
 .tooltip {
-    -fx-font: normal bold 28 Langdon;
+    -fx-font: normal bold 16 Langdon;
     -fx-base: #AE3522;
     -fx-text-fill: orange;
 }

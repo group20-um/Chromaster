@@ -16,26 +16,33 @@ import java.util.Arrays;
 
 public class ReadGraphScene {
 
-    private static String path;
     private static Graph graph;
 
     public static Scene createReadGraphScene(Stage window){
 
         Label label=new Label("Enter path of your file here!");
 
-        FileChooser fileChooser = new FileChooser();
-        File file = fileChooser.showOpenDialog(window);
+        while(true) {
+            FileChooser fileChooser = new FileChooser();
+            File file = fileChooser.showOpenDialog(window);
 
-        if(file == null || !file.isFile()) {
-            label.setText("The selected entity is not a file.");
+            while (file == null || !file.isFile()) {
+                label.setText("The selected entity is not a file.");
+                file = fileChooser.showOpenDialog(window);
+            }
+
+
+            ReadGraph.Result r = ReadGraph.read(file.getAbsolutePath());
+            label.setText(r.getMessage());
+
+            if(!(r.isError())) {
+                graph = r.getGraph();
+                break;
+            }
         }
 
         Button enter=new Button("Let's go!");
-
         enter.setOnAction(event -> {
-
-            path = file.getAbsolutePath();
-            graph= ReadGraph.read(path);
             ChosenVerticesOrEdges.random = false;
             ChosenVerticesOrEdges.vertices = false;
             ChosenVerticesOrEdges.verticesAndEdges = false;
@@ -43,7 +50,6 @@ public class ReadGraphScene {
             ChosenVerticesOrEdges.readIn = true;
             System.out.println("The player is playing with a Graph read in from a File");
             window.setScene(PlayScene.createPlayScene(window));
-
         });
 
         return new Scene(MenuScene.createParent(Arrays.asList(label, enter), (a) -> {

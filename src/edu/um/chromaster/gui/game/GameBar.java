@@ -44,9 +44,8 @@ public class GameBar extends HBox {
         }
 
         renderTypes.getStyleClass().add("combo-box");
+        renderTypes.getSelectionModel().select(graphElement.getRenderType());
 
-
-        this.setMaxSize(1280, 720 * 0.05);
         this.graphElement = graphElement;
         this.setup();
     }
