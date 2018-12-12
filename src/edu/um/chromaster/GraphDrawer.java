@@ -14,7 +14,9 @@ public class GraphDrawer {
         graph.getNodes().forEach((id, node) -> {
             final AtomicReference<Double> x = new AtomicReference<>(Game.random.nextDouble() * width);
             final AtomicReference<Double> y = new AtomicReference<>(Game.random.nextDouble() * height);
-            while (graph.getNodes().values().stream().anyMatch(e -> e.getMeta().area().intersects(x.get() + Node.Meta.DEFAULT_RADIUS * 2, y.get() + Node.Meta.DEFAULT_RADIUS * 2, Node.Meta.DEFAULT_RADIUS * 4, Node.Meta.DEFAULT_RADIUS * 4))) {
+            x.set(Game.random.nextDouble() * width);
+            y.set(Game.random.nextDouble() * height);
+            while (graph.getNodes().values().stream().anyMatch(e -> Math.sqrt(Math.pow(x.get() - e.getMeta().x(), 2) + Math.pow(y.get() - e.getMeta().y(), 2)) < Node.Meta.DEFAULT_RADIUS * 2)) {
                 x.set(Game.random.nextDouble() * width);
                 y.set(Game.random.nextDouble() * height);
             }

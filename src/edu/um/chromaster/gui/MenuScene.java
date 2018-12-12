@@ -45,10 +45,9 @@ public class MenuScene {
         }
 
         {
-            GridPane grid = new GridPane();
-            grid.setMaxWidth(1280 * 0.623);
-            grid.setHgap(10);
-            grid.setVgap(10);
+            VBox grid = new VBox(15);
+            //grid.setHgap(10);
+            //grid.setVgap(10);
             grid.setPadding(new Insets(0, 10, 0, 10));
             grid.setAlignment(Pos.CENTER);
 
@@ -56,7 +55,7 @@ public class MenuScene {
                 if(elements.get(i) instanceof Button) {
                     elements.get(i).getStyleClass().add("menu-button");
                 }
-                grid.add(elements.get(i), 2, i+1);
+                grid.getChildren().add(elements.get(i));
             }
 
             borderPane.setCenter(grid);

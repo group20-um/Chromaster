@@ -44,7 +44,7 @@ public class SecondGameMode extends GameMode {
         future.set(Game.getInstance().getSchedule().scheduleAtFixedRate(() -> {
             if(getTimeLeft() <= 0) {
 
-                while (future == null);
+                while (future.get() == null);
                 future.get().cancel(false);
 
                 getGraph().getNodes().forEach((id, node) -> node.getMeta().setAllowedToChangeColour(false));
