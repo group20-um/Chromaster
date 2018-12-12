@@ -6,10 +6,22 @@ import edu.um.chromaster.graph.Node;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * The Graphdrawer class will enable us to choose different representations of the graph
+ */
 public class GraphDrawer {
 
     private GraphDrawer() {}
 
+    /**
+     * The random method changes the coordinates of the nodes.
+     * This is done by changing the values of the node's meta class
+     * The method will take random values within the screen dimensions and checks if it does not intersect with
+     * another node if it does it will change the values until it finds a suiting position
+     * @param graph graph that should get displayed
+     * @param width width of the screen
+     * @param height height of the screen
+     */
     public static void random(Graph graph, double width, double height) {
         graph.getNodes().forEach((id, node) -> {
             final AtomicReference<Double> x = new AtomicReference<>(Game.random.nextDouble() * width);
@@ -27,6 +39,17 @@ public class GraphDrawer {
         });
     }
 
+    /**
+     * The circle method changes the coordinates of the node in such way that
+     * they are aligned in a circle
+     * The method simply generates a proportional angle for the nodes and takes
+     * a radius and then multiplies the radius where the points should be on
+     * and then takes the mathematical formula to apply this idea
+     * This is done by changing the values of the node's meta class
+     * @param graph graph that should get displayed
+     * @param width width of the screen
+     * @param height height of the screen
+     */
     public static void circle(Graph graph,double width, double height){
         double angle = 2*Math.PI/graph.getNodes().size();
         double r = Math.min(width, height)/2D;
@@ -36,6 +59,17 @@ public class GraphDrawer {
         });
     }
 
+    /**
+     * The shell method changes the coordinates of the node in such way that
+     * they are aligned in a shell
+     * The method simply generates a proportional angle for the nodes and takes
+     * a radius and then multiplies the radius (which becomes smaller) where the points should be on
+     * and then takes the mathematical formula to apply this idea
+     * This is done by changing the values of the node's meta class
+     * @param graph graph that should get displayed
+     * @param width width of the screen
+     * @param height height of the screen
+     */
     public static void shell(Graph graph,double width, double height){
         double angle = 2*Math.PI/graph.getNodes().size();
         graph.getNodes().forEach((id, node) -> {
@@ -44,6 +78,17 @@ public class GraphDrawer {
         });
     }
 
+    /**
+     * The archemedianSpiral method changes the coordinates of the node in such way that
+     * they are aligned in a archemedianSpiral (this method is similar to the shell method)
+     * The method simply generates a proportional angle for the nodes and takes
+     * a radius and then multiplies the radius (which becomes smaller) where the points should be on
+     * and then takes the mathematical formula to apply this idea
+     * This is done by changing the values of the node's meta class
+     * @param graph graph that should get displayed
+     * @param width width of the screen
+     * @param height height of the screen
+     */
     public static void archemedianSpiral(Graph graph, double width, double height){
         double angle = 4*Math.PI/graph.getNodes().size();
         graph.getNodes().forEach((id, node) -> {
@@ -52,6 +97,16 @@ public class GraphDrawer {
         });
     }
 
+    /**
+     * The butterfly method changes the coordinates of the node in such way that
+     * they are aligned in a butterfly
+     * The method uses the polar form of the function and changes it to cartesian coordinates
+     * and putting it into the node's coordinates
+     * This is done by changing the values of the node's meta class
+     * @param graph graph that should get displayed
+     * @param width width of the screen
+     * @param height height of the screen
+     */
     public static void butterfly(Graph graph, double width, double height){
         graph.getNodes().forEach((id, node) -> {
             double theta = id*(2*Math.PI/graph.getNodes().size());
@@ -64,6 +119,16 @@ public class GraphDrawer {
         scale(graph, width, height);
     }
 
+    /**
+     * The valentineCurve method changes the coordinates of the node in such way that
+     * they are aligned in a starshaped form (by using the specific equation we used)
+     * The method uses the polar form of the function and changes it to cartesian coordinates
+     * and putting it into the node's coordinates
+     * This is done by changing the values of the node's meta class
+     * @param graph graph that should get displayed
+     * @param width width of the screen
+     * @param height height of the screen
+     */
     public static void valentineCurve(Graph graph, double width, double height){
         graph.getNodes().forEach((id, node) -> {
             double theta = id*(2*Math.PI/graph.getNodes().size());
@@ -76,6 +141,14 @@ public class GraphDrawer {
         scale(graph, width, height);
     }
 
+    /**
+     * The scale method changes the coordinates of the node in such way that
+     * they are just scaled by a specific factor
+     * This is done by changing the values of the node's meta class
+     * @param graph graph that should get displayed
+     * @param width width of the screen
+     * @param height height of the screen
+     */
     public static void scale(Graph graph, double width, double height) {
 
         double max_x = graph.getNodes().values().stream().mapToDouble(e -> e.getMeta().x()).max().getAsDouble();
