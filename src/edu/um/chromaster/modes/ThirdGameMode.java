@@ -7,6 +7,7 @@ import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.event.events.SelectColourEvent;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
+import edu.um.chromaster.gui.game.GraphElement;
 import edu.um.chromaster.gui.menu.boxes.WarningBox;
 import javafx.scene.paint.Color;
 
@@ -17,8 +18,8 @@ public class ThirdGameMode extends GameMode {
 
     private Stack<Node> path = new Stack<>();
 
-    public ThirdGameMode(Graph graph, long time) {
-        super(graph, time, false);
+    public ThirdGameMode(Graph graph, GraphElement.Difficulty difficulty, long time) {
+        super(graph, difficulty, time, false);
         Game.getInstance().getEventHandler().registerListener(this);
     }
 

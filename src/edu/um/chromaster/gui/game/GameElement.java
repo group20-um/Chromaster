@@ -29,12 +29,19 @@ public class GameElement extends StackPane implements EventListener {
     private GameBar gameBar;
     private GameEndScreen gameEndScreen;
 
-
     public GameElement(Stage stage, Graph graph, GameMode gameMode) {
         this.gameMode = gameMode;
         Game.getInstance().getEventHandler().registerListener(this);
         Game.getInstance().setGameElement(this);
         ChromaticNumber.computeAsync(ChromaticNumber.Type.EXACT, graph.clone(), graph::setChromaticResults);
+        ChromaticNumber.computeAsync(ChromaticNumber.Type.LOWER, graph.clone(), e -> {
+            ChromaticNumber.Result r = graph.getChromaticResult();
+            graph.setChromaticResults(new ChromaticNumber.Result(r.getSolution(), r.getExact(), e.getLower(), r.getUpper(), r.isReady()));
+        });
+        ChromaticNumber.computeAsync(ChromaticNumber.Type.UPPER, graph.clone(), e -> {
+            ChromaticNumber.Result r = graph.getChromaticResult();
+            graph.setChromaticResults(new ChromaticNumber.Result(r.getSolution(), r.getExact(), r.getLower(), e.getUpper(), r.isReady()));
+        });
 
         // periodically redraw the screen
         Game.getInstance().getSchedule().schedule(() -> {

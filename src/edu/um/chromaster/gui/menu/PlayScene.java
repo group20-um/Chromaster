@@ -58,11 +58,11 @@ public class PlayScene {
 		System.out.printf("Game Length %ds%n", duration);
 
 		if(ChosenGameMode.chooseGameMode1) {
-			gameMode = new FirstGameMode(graph, TimeUnit.SECONDS.toMillis(duration));
+			gameMode = new FirstGameMode(graph, DifficultyScene.getSelectedeDifficulty(), TimeUnit.SECONDS.toMillis(duration));
 		} else if (ChosenGameMode.chooseGameMode2) {
-			gameMode = new SecondGameMode(graph, TimeUnit.SECONDS.toMillis(duration));
+			gameMode = new SecondGameMode(graph, DifficultyScene.getSelectedeDifficulty(), TimeUnit.SECONDS.toMillis(duration));
 		} else if (ChosenGameMode.chooseGameMode3) {
-			gameMode = new ThirdGameMode(graph, TimeUnit.SECONDS.toMillis(duration));
+			gameMode = new ThirdGameMode(graph, DifficultyScene.getSelectedeDifficulty(), TimeUnit.SECONDS.toMillis(duration));
 		}
 
 		GameElement graphGameElement = new GameElement(window, graph, gameMode);

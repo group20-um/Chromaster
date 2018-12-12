@@ -8,6 +8,7 @@ import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.graph.Node;
 import edu.um.chromaster.gui.ColorList;
 import edu.um.chromaster.gui.game.GameBar;
+import edu.um.chromaster.gui.game.GraphElement;
 import edu.um.chromaster.gui.menu.boxes.WarningBox;
 import javafx.scene.paint.Color;
 
@@ -21,6 +22,7 @@ public abstract class GameMode implements EventListener {
     private Graph graph;
     private Color selectedColour = null;
 
+    private GraphElement.Difficulty difficulty;
     private long time;
 
     private boolean displayTimer;
@@ -30,8 +32,9 @@ public abstract class GameMode implements EventListener {
      * @param graph The graph that is going to be used in this game-mode.
      * @param time Usage of this value depends on each game mode. It needs to be specified in milli-seconds.
      */
-    public GameMode(Graph graph, long time, boolean displayTimer) {
+    public GameMode(Graph graph, GraphElement.Difficulty difficulty, long time, boolean displayTimer) {
         this.graph = graph;
+        this.difficulty = difficulty;
         this.time  = time;
         this.displayTimer = displayTimer;
         graph.reset();
@@ -43,6 +46,10 @@ public abstract class GameMode implements EventListener {
      */
     public long getTime() {
         return time;
+    }
+
+    public GraphElement.Difficulty getDifficulty() {
+        return difficulty;
     }
 
     /**

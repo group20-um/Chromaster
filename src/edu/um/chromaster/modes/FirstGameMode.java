@@ -5,14 +5,15 @@ import edu.um.chromaster.event.Subscribe;
 import edu.um.chromaster.event.events.NodeClickedEvent;
 import edu.um.chromaster.event.events.SelectColourEvent;
 import edu.um.chromaster.graph.Graph;
+import edu.um.chromaster.gui.game.GraphElement;
 
 /**
  * The first game-mode (aka. until the bitter end).
  */
 public class FirstGameMode extends GameMode {
 
-    public FirstGameMode(Graph graph, long time) {
-        super(graph, time, false);
+    public FirstGameMode(Graph graph, GraphElement.Difficulty difficulty, long time) {
+        super(graph, difficulty, time, false);
         Game.getInstance().getEventHandler().registerListener(this);
     }
 

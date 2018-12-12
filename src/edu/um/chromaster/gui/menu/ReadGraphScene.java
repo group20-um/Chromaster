@@ -26,7 +26,7 @@ public class ReadGraphScene {
         FileChooser fileChooser = new FileChooser();
         File file = fileChooser.showOpenDialog(window);
 
-        if(!file.isFile()) {
+        if(file == null || !file.isFile()) {
             label.setText("The selected entity is not a file.");
         }
 

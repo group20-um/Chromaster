@@ -31,10 +31,9 @@ public class ChromaticNumber {
         EXACT_EXPERIMENTAL
     }
 
-    public static void  computeAsync(Type type, Graph graph, Consumer<Result> consumer) {
+    public static void computeAsync(Type type, Graph graph, Consumer<Result> consumer) {
         CompletableFuture.supplyAsync(() -> compute(type, graph, false), schedule).thenAccept(consumer);
     }
-
 
     public static Result compute(Type type, Graph graph, boolean runTimeBound) {
         graph.reset();

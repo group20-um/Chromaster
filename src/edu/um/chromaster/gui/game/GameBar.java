@@ -3,11 +3,14 @@ package edu.um.chromaster.gui.game;
 import edu.um.chromaster.Game;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.geometry.Bounds;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,7 +27,6 @@ public class GameBar extends HBox {
     ));
 
     private GraphElement graphElement;
-
     private Label timer = new Label();
 
     public GameBar(GraphElement graphElement, double timeInMilliseconds) {
@@ -34,9 +36,11 @@ public class GameBar extends HBox {
 
         // Add all hints as buttons
         for(GraphElement.HintTypes e : Stream.of(GraphElement.HintTypes.values()).sorted(Comparator.comparingDouble(GraphElement.HintType::getTimeConstraint)).collect(Collectors.toList())) {
-            Button b = new Button(e.getDisplayName());
-            b.getProperties().put("type", e);
-            timeConstraints.put(b, e.getTimeConstraint() * timeInMilliseconds);
+            if(e.getDifficulties().contains(graphElement.getGameElement().getGameMode().getDifficulty())) {
+                Button b = new Button(e.getDisplayName());
+                b.getProperties().put("type", e);
+                timeConstraints.put(b, e.getTimeConstraint() * timeInMilliseconds);
+            }
         }
 
         renderTypes.getStyleClass().add("combo-box");
@@ -68,10 +72,19 @@ public class GameBar extends HBox {
                         int minutes = (int) (time / 60);
                         int seconds = 0;
 
+                        Color color = Color.WHITE;
+
                         if(time % 60 > 0) {
                             seconds = (int) (time % 60);
+                        } else {
+                            color = Color.RED;
                         }
 
+                        if(time <= 10) {
+                            color = time % 2 == 0 ? Color.RED : Color.ORANGE;
+                        }
+
+                        this.timer.setTextFill(color);
                         this.timer.setText(String.format("%02d:%02d", minutes, seconds));
                     });
                 }
@@ -94,13 +107,12 @@ public class GameBar extends HBox {
                 } else {
                     Tooltip tooltip = new Tooltip(String.valueOf(graphElement.getHint(hintType)));
 
-                    Bounds bounds = GameBar.this.localToScreen(button.getLayoutBounds());
-                    tooltip.show(button, bounds.getMaxX(), bounds.getMinY());
-                    tooltip.setContentDisplay(ContentDisplay.TOP);
+                    tooltip.setContentDisplay(ContentDisplay.CENTER);
                     tooltip.getStyleClass().add("tooltip");
                     tooltip.setAutoHide(true);
-                    tooltip.setAutoFix(true);
                     tooltip.setHideOnEscape(true);
+                    Stage s = Game.getInstance().getStage();
+                    tooltip.show(button, s.getX() + (s.getWidth() * 0.95), s.getY() + s.getHeight() * 0.875);
                     button.setTooltip(tooltip);
                 }
             });

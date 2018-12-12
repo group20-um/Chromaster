@@ -30,7 +30,7 @@ public class Game extends Application {
     private static Game instance;
 
     //---
-    private ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(12);
+    private ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(4);
     private final EventHandler eventHandler = new EventHandler();
     private GameElement gameElement = null;
     private Stage stage;
