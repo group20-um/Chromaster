@@ -1,5 +1,6 @@
 package edu.um.chromaster.gui.menu;
 
+import edu.um.chromaster.Game;
 import edu.um.chromaster.gui.MenuScene;
 import edu.um.chromaster.gui.menu.boxes.RulesBox;
 import javafx.geometry.Insets;
@@ -58,7 +59,7 @@ public class GenerateGraphScene {
 		borderPaneGenerateGraph.setTop(topBar);
 		borderPaneGenerateGraph.setCenter(chooseGraphGrid);
 
-		return new Scene(MenuScene.createBasicParent(borderPaneGenerateGraph), 1280, 720);
+		return new Scene(MenuScene.createBasicParent(borderPaneGenerateGraph), Game.RESOLUTION_WIDTH, Game.RESOLUTION_HEIGHT);
 	}
 	
 	private static void pressedVerticesAndEdges(Stage window) {

@@ -57,7 +57,7 @@ public class GameElement extends StackPane implements EventListener {
         this.gameBar = new GameBar(this.graphElement, gameMode.getTime());
         this.colourSelectorElement = new ColourSelectorElement(stage);
 
-        changeWindowSize(1280, 720);
+        changeWindowSize(Game.RESOLUTION_WIDTH, Game.RESOLUTION_HEIGHT);
 
         // distribute graph nodes randomly
         graph.getNodes().forEach((id, node) -> {

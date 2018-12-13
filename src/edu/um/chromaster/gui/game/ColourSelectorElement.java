@@ -34,7 +34,7 @@ public class ColourSelectorElement extends ListView<Color> {
         this.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
         this.setOrientation(Orientation.HORIZONTAL);
-        this.setPrefSize(1280, 720 * 0.05);
+        this.setPrefSize(Game.RESOLUTION_WIDTH, Game.RESOLUTION_HEIGHT * 0.05);
         this.setCellFactory(lv -> {
 
             ListCell<Color> cell = new ListCell<Color>() {

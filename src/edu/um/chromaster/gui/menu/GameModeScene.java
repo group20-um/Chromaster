@@ -29,7 +29,7 @@ public class GameModeScene {
 
 		return new Scene(MenuScene.createParent(Arrays.asList(intro, chooseGraph, button1GM, button2GM, button3GM), (a) -> {
 				window.setScene(MainScene.createMainScene(Game.getInstance().getStage()));
-		}), 1280, 720);
+		}), Game.RESOLUTION_WIDTH, Game.RESOLUTION_HEIGHT);
 	}
 
 	/**

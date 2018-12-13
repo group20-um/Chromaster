@@ -1,6 +1,7 @@
 package edu.um.chromaster.gui.menu;
 
 
+import edu.um.chromaster.Game;
 import edu.um.chromaster.RandomGraph;
 import edu.um.chromaster.graph.Graph;
 import edu.um.chromaster.gui.game.GameElement;
@@ -72,7 +73,7 @@ public class PlayScene {
 		}
 
 		GameElement graphGameElement = new GameElement(window, graph, gameMode);
-		return new Scene(graphGameElement, 1280, 720, true, SceneAntialiasing.BALANCED);
+		return new Scene(graphGameElement, Game.RESOLUTION_WIDTH, Game.RESOLUTION_HEIGHT, true, SceneAntialiasing.BALANCED);
 
 
 	}

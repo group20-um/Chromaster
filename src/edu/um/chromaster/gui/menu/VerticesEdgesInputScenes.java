@@ -1,5 +1,6 @@
 package edu.um.chromaster.gui.menu;
 
+import edu.um.chromaster.Game;
 import edu.um.chromaster.gui.MenuScene;
 import edu.um.chromaster.gui.menu.boxes.AlertBox;
 import edu.um.chromaster.gui.menu.boxes.RulesBox;
@@ -69,7 +70,7 @@ public class VerticesEdgesInputScenes {
 		borderPane.setCenter(verticesAndEdgesGrid);
 		borderPane.getStyleClass().add("MainScene-background");
 
-		return new Scene(MenuScene.createBasicParent(borderPane), 1280, 720);
+		return new Scene(MenuScene.createBasicParent(borderPane), Game.RESOLUTION_WIDTH, Game.RESOLUTION_HEIGHT);
 		
 	}
 
@@ -114,7 +115,7 @@ public class VerticesEdgesInputScenes {
 		borderPane.setCenter(verticesGrid);
 		borderPane.getStyleClass().add("MainScene-background");
 
-		return new Scene(MenuScene.createBasicParent(borderPane), 1280, 720);
+		return new Scene(MenuScene.createBasicParent(borderPane), Game.RESOLUTION_WIDTH, Game.RESOLUTION_HEIGHT);
 	}
 
 	/**
@@ -157,7 +158,7 @@ public class VerticesEdgesInputScenes {
 		borderPane.setTop(topBar);
 		borderPane.setCenter(edgesGrid);
 
-		return new Scene(MenuScene.createBasicParent(borderPane), 1280, 720);
+		return new Scene(MenuScene.createBasicParent(borderPane), Game.RESOLUTION_WIDTH, Game.RESOLUTION_HEIGHT);
 	}
 
 	/**

@@ -58,7 +58,7 @@ public class ReadGraphScene {
 
         return new Scene(MenuScene.createParent(Arrays.asList(label, enter), (a) -> {
             window.setScene(MainScene.createMainScene(Game.getInstance().getStage()));
-        }), 1280, 720);
+        }), Game.RESOLUTION_WIDTH, Game.RESOLUTION_HEIGHT);
 
     }
 
