@@ -14,6 +14,10 @@ import java.io.File;
 import java.util.Random;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
+/**
+ * The Game class is the main class and coordinates a lot of the game's features. Providing relevant pieces of information
+ * to all parts of the game.
+ */
 public class Game extends Application {
     public static void main(String[] args) {
         launch(args);
@@ -32,16 +36,23 @@ public class Game extends Application {
     public final static Random random = new Random(seed); //TODO same seed to ease debugging efforts
     private static Game instance;
 
-    //---
+    //--- The scheduler is used across the board to run tasks async to make the UX as smooth as possible.
     private ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(4);
+
+    //--- The event handler is responsible for the event-driven parts of the system.
     private final EventHandler eventHandler = new EventHandler();
+
+    //--- The game element holds the current game screen (graph etc...)
     private GameElement gameElement = null;
     private Stage stage;
 
     private static Media sound=new Media(new File("src/res/Music.mp3").toURI().toString());
     private static MediaPlayer player=new MediaPlayer(sound);
 
-
+    /**
+     * The instance of the Game class (singleton pattern).
+     * @return The game instance.
+     */
     public static Game getInstance() {
         return instance;
     }
@@ -76,8 +87,9 @@ public class Game extends Application {
         intro.getStylesheets().add("res/style.css");
         primaryStage.setMinWidth(1280);
         primaryStage.setMinHeight(720);
-        // TODO sample mouse-click to node
         primaryStage.setTitle("Chromaster");
+
+        // resize all elements properly if the user changes the size of the window.
         primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
             if(gameElement != null) {
                 gameElement.changeWindowSize(Math.max(newValue.doubleValue(), 680), primaryStage.getHeight());
@@ -89,11 +101,14 @@ public class Game extends Application {
             }
         });
 
+        // shutdown the JVM and scheduler
         primaryStage.setOnCloseRequest(e -> {
             schedule.shutdownNow();
             primaryStage.close();
             System.exit(0);
         });
+
+        //---
         primaryStage.setResizable(false);
         primaryStage.setScene(intro.getAssociatedScene());
         Intro.playMusic();

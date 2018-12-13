@@ -10,6 +10,11 @@ class ColEdge
     int v;
 }
 
+
+/**
+ * Class that reads in a graph from a file
+ * Based on the class Steven gave us for block 1.1
+ */
 public class ReadGraph
 {
 
@@ -124,18 +129,17 @@ public class ReadGraph
 
         //! INSERT YOUR CODE HERE!
 
-        Graph graph=new Graph();
+        Graph graph=new Graph(); //create graph object of our Graph class
 
-        for(int i=0; i<n; i++){
+        for(int i=0; i<n; i++){ //add all vertices to graph
             graph.addNode(i, -1);
         }
 
-        for(int i=0; i<m;i++){
-
+        for(int i=0; i<m;i++){ //add edge to graph
             graph.addEdge(e[i].u-1, e[i].v-1, true);
         }
 
-        return new Result(graph, null, false);
+        return new Result(graph, null, false);  //returns graph
 
     }
 

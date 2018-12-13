@@ -15,15 +15,24 @@ import java.util.stream.Collectors;
 
 public class ChromaticNumber {
 
-    private static ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(6);
+    private static ScheduledThreadPoolExecutor schedule = new ScheduledThreadPoolExecutor(4);
 
+    /**
+     * If this flag is set to true then this class will print useful messages that help the developer to debug
+     * issues, if required.
+     */
     public static boolean DEBUG_FLAG = true;
 
-    //---
-    private final static long TIME_LIMIT_EXACT = TimeUnit.SECONDS.toNanos(60);
-    private final static long TIME_LIMIT_LOWER = TimeUnit.SECONDS.toNanos(10);
-    private final static long TIME_LIMIT_UPPER = TimeUnit.SECONDS.toNanos(10);
+    /**
+     * The time limits for the different modes.
+     */
+    public final static long TIME_LIMIT_EXACT = TimeUnit.SECONDS.toNanos(60);
+    public final static long TIME_LIMIT_LOWER = TimeUnit.SECONDS.toNanos(10);
+    public final static long TIME_LIMIT_UPPER = TimeUnit.SECONDS.toNanos(10);
 
+    /**
+     * The different types of information somebody can request from this class for any given graph.
+     */
     public enum Type {
         UPPER,
         LOWER,
@@ -65,19 +74,26 @@ public class ChromaticNumber {
     //---
 
     /**
-     * Runs the
-     * @param graph
-     * @return
+     * Runs the exact tests in a time-limited fashion, this means that the method is guaranteed to finish after {@link ChromaticNumber#TIME_LIMIT_EXACT}.
+     * It does not always yield a finished computation, if it finishes earlier then it will return earlier.
+     * @param graph The graph to run the computation on.
+     * @return Never null, the result.
      */
     private static Result limitedTimeExactTest(Graph graph) {
         return timeBoundMethodExecution(new MethodRunnable() {
             @Override
             public void run() {
-                this.setResult(exactParallelled(graph, true));
+                this.setResult(exactTest(graph, true));
             }
         }, TIME_LIMIT_EXACT);
     }
 
+    /**
+     * Runs the lower-bound tests in a time-limited fashion, this means that the method is guaranteed to finish after {@link ChromaticNumber#TIME_LIMIT_LOWER}.
+     * It does not always yield a finished computation, if it finishes earlier then it will return earlier.
+     * @param graph The graph to run the computation on.
+     * @return Never null, the result.
+     */
     private static Result limitedTimeLowerBound(Graph graph) {
         Result result = timeBoundMethodExecution(new MethodRunnable() {
             @Override
@@ -94,11 +110,12 @@ public class ChromaticNumber {
         return result;
     }
 
-    private static int basicLowerBound(Graph graph) {
-        int tmp = graph.getEdges().entrySet().stream().mapToInt(e -> e.getValue().size()).min().getAsInt();
-        return (tmp == 1) ? 2 : tmp;
-    }
-
+    /**
+     * Runs the upper-bound tests in a time-limited fashion, this means that the method is guaranteed to finish after {@link ChromaticNumber#TIME_LIMIT_UPPER}.
+     * It does not always yield a finished computation, if it finishes earlier then it will return earlier.
+     * @param graph The graph to run the computation on.
+     * @return Never null, the result.
+     */
     private static Result limitedTimeUpper(Graph graph) {
         Result result = timeBoundMethodExecution(new MethodRunnable() {
             @Override
@@ -113,6 +130,19 @@ public class ChromaticNumber {
         }
         return result;
     }
+
+    /**
+     * The basic lower bound checks returns the least amount of connections that can be found in the graph. If the least-amount
+     * is only 1 then it will return 2, because there will be at least 2 nodes which means they require at least 2 different
+     * colours.
+     * @param graph The graph to perform the computation on.
+     * @return The lower bound.
+     */
+    private static int basicLowerBound(Graph graph) {
+        int tmp = graph.getEdges().entrySet().stream().mapToInt(e -> e.getValue().size()).min().getAsInt();
+        return (tmp == 1) ? 2 : tmp;
+    }
+
 
     // --- EXACT_EXPERIMENTAL SECTION ---
     private static Result exactTest(Graph graph, boolean runTimeBound) {
@@ -151,7 +181,21 @@ public class ChromaticNumber {
         return new Result(result, exact, lower, upper, true);
     }
 
-
+    /**
+     * This code is experimental and still has a couple of problems with race-conditions therefore it is currently not
+     * usable in an non-experimental environment. - This code uses the property of our current exact chromatic number test,
+     * we always start at the upper-bound and work our way down to the lower-bound. This means that we actually only need
+     * the upper-bound to start any meaningful tests, so we only compute the upper-bound and then start both the exact-tests
+     * and lower-bound at the same time.
+     *  - If the lower-bound is greater finishes, and it is equal to the upper bound -> then we are done and just cancel the current
+     *  test and return the upper/lower bound because they are the exact chromatic number.
+     *  - If the lower-bound is less then the current value we test then we at last know now when to stop.
+     * This is beneficial because the lower-bound takes up a significant amount of computational time, even though it
+     * does not yield any information that is crucial to running the exact tests.
+     * @param graph The graph to perform the computation on.
+     * @param runTimeBound Whether or not to time limit the execution of the upper & lower bound.
+     * @return Never null, the results of the computations.
+     */
     private static Result exactParallelled(Graph graph, boolean runTimeBound) {
         //--- the upper bound that we either find by running our upper-bound algorithm
         final AtomicInteger upper = new AtomicInteger(runTimeBound ? limitedTimeUpper(graph).getUpper() : upperBound(graph));
@@ -270,12 +314,17 @@ public class ChromaticNumber {
     }
 
     private static boolean exact(Graph graph, int colours) {
-        return exact(graph, colours, graph.getNode(graph.getMinNodeId()), 0, 0);
+        return exact(graph, colours, graph.getNode(graph.getMinNodeId()));
     }
 
-    private static boolean exact(Graph graph, int color_nb, Node node, int level, int maxl) {
-        maxl = Math.max(maxl, level);
-
+    /**
+     * Runs to check if the graph can be coloured with a certain amount of colours.
+     * @param graph The graph it has to check.
+     * @param color_nb The amount of colours.
+     * @param node The node it starts at.
+     * @return Whether or not it can be coloured in the given amount of colours.
+     */
+    private static boolean exact(Graph graph, int color_nb, Node node) {
         //--- Are all nodes coloured? If so, we are done.
         if(graph.getNodes().values().stream().noneMatch(e -> e.getValue() == -1)) {
             return true;
@@ -287,7 +336,7 @@ public class ChromaticNumber {
                 node.setValue(c);
 
                 Node next = graph.getNextAvailableNode(node);
-                if(next == null || exact(graph, color_nb, next, level + 1, maxl)) {
+                if(next == null || exact(graph, color_nb, next)) {
                     return true;
                 }
 
@@ -298,19 +347,41 @@ public class ChromaticNumber {
         return false;
     }
 
+    /**
+     * Check if any of the nodes neighbour already use that colour.
+     * @param graph The graph the node belongs to.
+     * @param node The node we have to check.
+     * @param colour The colour we want to use to colour this node.
+     * @return True, if the colour can be used, otherwise false.
+     */
     private static boolean exactIsColourAvailable(Graph graph, Node node, int colour) {
         return graph.getEdges(node.getId()).stream().noneMatch(e -> e.getTo().getValue() == colour);
     }
 
     // --- UPPER BOUND SECTION ---
-    private static int upperBound(Graph graph) {
-        return upperBoundIterative(graph);
-    }
 
+    /**
+     * Returns (the maximum amount of edges + 1) of a node in the graph.
+     * @param graph The graph to perform the computation on.
+     * @return The upper bound for the given graph.
+     */
     private static int simpleUpperBound(Graph graph) {
         return graph.getEdges().values().stream().mapToInt(Map::size).max().getAsInt() + 1;
     }
 
+    /**
+     * Runs and returns {@link ChromaticNumber#upperBoundIterative(Graph)}.
+     */
+    private static int upperBound(Graph graph) {
+        return upperBoundIterative(graph);
+    }
+
+    /**
+     * Colours the graph with the greedy-algorithm. - It simply goes to every node and at every node it checks
+     * if it can just reuse a colour to colour the node, or if it has to create a new colour.
+     * @param graph The graph to perform the computation on.
+     * @return The upper bound, the amount of colours used to colour the graph.
+     */
     private static int upperBoundIterative(Graph graph) {
         //--- Build unvisited map ordered by degree of nodes descending
         Stack<Node> unvisited = graph.getNodes().values().stream()
@@ -360,9 +431,22 @@ public class ChromaticNumber {
 
     //--- LOWER BOUND --
 
+    /**
+     * Calls and returns {@link ChromaticNumber#bronKerbosch(Graph, List, List, List)}.
+     */
     private static int lowerBound(Graph graph) {
         return bronKerbosch(graph, new ArrayList<>(), new ArrayList<>(graph.getNodes().values()), new ArrayList<>());
     }
+
+    /**
+     * The method runs through the graph and gives back a list with all the cliques
+     * within the graph
+     * @param graph the considered graph
+     * @param _R set of current Nodes in the clique
+     * @param _P set of candidate Nodes
+     * @param _X set of excluded Nodes
+     * @return The size of the biggest clique in the given graph.
+     **/
     private static int bronKerbosch(Graph graph, List<Node> _R, List<Node> _P, List<Node> _X) {
         int max = Integer.MIN_VALUE;
         if(_P.isEmpty() && _X.isEmpty()) {
@@ -394,7 +478,15 @@ public class ChromaticNumber {
     }
 
     //--- Utility
-    public static Result timeBoundMethodExecution(MethodRunnable runnable, final long timeInMilliseconds) {
+
+    /**
+     * Runs a method in a time-bound fashion. - If the method finishes be fore being done then it just returns normally,
+     * otherwise if it runs beyond its target time it will get cancelled.
+     * @param runnable The method to run.
+     * @param timeInMilliseconds The max execution time.
+     * @return The result of running the method.
+     */
+    private static Result timeBoundMethodExecution(MethodRunnable runnable, final long timeInMilliseconds) {
         Thread thread = new Thread(runnable);
         thread.start();
         long time = System.nanoTime();
