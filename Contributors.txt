@@ -1,0 +1,12 @@
+Algorithms for lower and upper bound (previous block): Jan, Fred, Stijn
+Algorithm Chromatic number: Jan
+Graph visualization: Fred, Jan, Stijn
+Graph displaying/Game Scene: Jan
+Generating a random graph: Aiyana, Camille
+Reading in own graph: Aiyana
+Event system: Jan
+Game modes: Jan, Fred, Stijn
+Hints: Jan, Fred, Stijn
+Gui: Camille, Aiyana
+Presentation: Jan-Felix, Aiyana, Camille
+Gantt Chart: Jan-Felix
