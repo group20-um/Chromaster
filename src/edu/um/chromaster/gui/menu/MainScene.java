@@ -11,6 +11,12 @@ import java.util.Arrays;
 
 public class MainScene {
 
+	/**
+	 * Creates the first scene in which the user selects the game mode
+	 * The choice is saved as boolean parameters in the ChosenGameMode class
+	 * @param window, the main stage
+	 * @return the created scene
+	 */
 	public static Scene createMainScene(Stage window) {
 
 		Game.getInstance().getEventHandler().clear(); // reset event handler fully

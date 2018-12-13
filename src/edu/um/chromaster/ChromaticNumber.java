@@ -65,7 +65,7 @@ public class ChromaticNumber {
     //---
 
     /**
-     * Runs the  
+     * Runs the
      * @param graph
      * @return
      */

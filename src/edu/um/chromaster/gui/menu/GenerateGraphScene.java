@@ -13,7 +13,14 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class GenerateGraphScene {
-	
+
+	/**
+	 * Creates the scene that opens if the user wants to generate his own graph
+	 * The user can choose if he wants to select the number of edges, vertices or both
+	 * The choice is saved as boolean parameters in the ChosenVerticesOrEdges class
+	 * @param window, the base stage
+	 * @return scene, the created difficulty scene
+	 */
 	public static Scene generateGraphScene(Stage window) {
 		
 		Label VorE = new Label("Do you want to choose the number of vertices, the number of edges or both?");

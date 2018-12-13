@@ -8,12 +8,18 @@ import javafx.stage.Stage;
 
 import java.util.Arrays;
 
+/**
+ * Creates the scene in which the user selects his preferred difficulty
+ * The choice is saved as enum parameters in the GraphElement class
+ * @param window, the base stage
+ * @return scene, the created difficulty scene
+ */
 public class DifficultyScene {
 	
 	private static Button easy, medium, hard;
 	private static GraphElement.Difficulty selectedeDifficulty = GraphElement.Difficulty.EASY;
 
-	public static GraphElement.Difficulty getSelectedeDifficulty() {
+	public static GraphElement.Difficulty getSelectedDifficulty() {
 		return selectedeDifficulty;
 	}
 

@@ -17,6 +17,11 @@ public class ReadGraphScene {
 
     private static Graph graph;
 
+    /**
+     * Creates the scene in which the user enters a file
+     * @param window
+     * @return the created scene
+     */
     public static Scene createReadGraphScene(Stage window){
 
         Label label=new Label("Enter path of your file here!");

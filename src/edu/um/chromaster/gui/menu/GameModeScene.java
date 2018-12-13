@@ -10,8 +10,11 @@ import javafx.stage.Stage;
 import java.util.Arrays;
 
 public class GameModeScene {
-	
-	
+
+	/**
+	 * Creates the scene in which the user chooses if he wants to play with a random graph, generate his own graph or import a graph from a file
+	 * @return scene, the created scene
+	 */
 	public static Scene createGameModeScene(Stage window) {
 		
 		Label intro = new Label("Good choice! ;) ");
@@ -28,7 +31,11 @@ public class GameModeScene {
 				window.setScene(MainScene.createMainScene(Game.getInstance().getStage()));
 		}), 1280, 720);
 	}
-	
+
+	/**
+	 * If the user chooses to play with a random graph
+	 * The choice is saved in the boolean parameters of the ChosenVerticesOrEdges class
+	 */
 	public static void pressedButton1GM() {
 		ChosenVerticesOrEdges.random = true;
 		ChosenVerticesOrEdges.vertices = false;

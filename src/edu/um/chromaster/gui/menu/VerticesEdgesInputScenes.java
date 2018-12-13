@@ -18,8 +18,12 @@ public class VerticesEdgesInputScenes {
 	
 	public static int numberOfVertices;
 	public static int numberOfEdges;
-	
-	
+
+	/**
+	 * Creates the scene in which the user selects the number of vertices and edges
+	 * @param window, the base stage
+	 * @return the created scene
+	 */
 	public static Scene createVerticesAndEdgesScene(Stage window) {
 		
 		GridPane verticesAndEdgesGrid = new GridPane();
@@ -68,7 +72,12 @@ public class VerticesEdgesInputScenes {
 		return new Scene(MenuScene.createBasicParent(borderPane), 1280, 720);
 		
 	}
-	
+
+	/**
+	 * Creates the scene in which the user selects the number of vertices
+	 * @param window, the base stage
+	 * @return the created scene
+	 */
 	public static Scene createVerticesScene(Stage window) {
 		GridPane verticesGrid = new GridPane();
 		verticesGrid.setPadding(new Insets(0, 10, 0, 10));
@@ -107,7 +116,12 @@ public class VerticesEdgesInputScenes {
 
 		return new Scene(MenuScene.createBasicParent(borderPane), 1280, 720);
 	}
-	
+
+	/**
+	 * Creates the scene in which the user selects the number of edges
+	 * @param window, the base stage
+	 * @return the created scene
+	 */
 	public static Scene createEdgesScene(Stage window) {
 		GridPane edgesGrid = new GridPane();
 		edgesGrid.setPadding(new Insets(0, 10, 0, 10));
@@ -145,7 +159,14 @@ public class VerticesEdgesInputScenes {
 
 		return new Scene(MenuScene.createBasicParent(borderPane), 1280, 720);
 	}
-	
+
+	/**
+	 * Saves the entered number of vertices in the numberOfVertices variable and the entered number of edges in the numberOfEdges variable
+	 * @param window, the base stage
+	 * @param input1, the entered number of vertices
+	 * @param input2, the entered number of edges
+	 * @throws NumberFormatException if the user enters something else than an integer
+	 */
 	private static boolean verticesAndEdgesAreInt(TextField input1, TextField input2, Stage window) {
 		
 		try {
@@ -162,7 +183,13 @@ public class VerticesEdgesInputScenes {
 			return false;
 		}
 	}
-	
+
+	/**
+	 * Saves the entered number of vertices in the numberOfVertices variable
+	 * @param window, the base stage
+	 * @param input1, the entered number of vertices
+	 * @throws NumberFormatException if the user enters something else than an integer
+	 */
 	private static boolean verticesIsInt(TextField input1, Stage window) {
 		
 		try {
@@ -178,7 +205,13 @@ public class VerticesEdgesInputScenes {
 			return false;
 		}
 	}
-	
+
+	/**
+	 * Saves the entered number of edges in the numberOfEdges variable
+	 * @param window, the base stage
+	 * @param input1, the entered number of edges
+	 * @throws NumberFormatException if the user enters something else than an integer
+	 */
 	private static boolean edgesIsInt(TextField input1, Stage window) {
 		
 		try {
