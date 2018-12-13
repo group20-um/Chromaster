@@ -23,8 +23,8 @@ public class Game extends Application {
         launch(args);
     }
 
-    public final static int RESOLUTION_WIDTH = 1920;
-    public final static int RESOLUTION_HEIGHT = 1080;
+    public final static int RESOLUTION_WIDTH = 1280;
+    public final static int RESOLUTION_HEIGHT = 720;
 
 
     //----
@@ -37,7 +37,7 @@ public class Game extends Application {
     {
         System.out.printf("Random seed %d%n", seed);
     }
-    public final static Random random = new Random(1544535103722L); //TODO same seed to ease debugging efforts
+    public final static Random random = new Random(seed); //TODO same seed to ease debugging efforts
     private static Game instance;
 
     //--- The scheduler is used across the board to run tasks async to make the UX as smooth as possible.

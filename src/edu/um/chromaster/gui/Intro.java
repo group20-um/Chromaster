@@ -83,11 +83,11 @@ public class Intro extends FlowPane {
         flowPane.getChildren().add(iv);
         flowPane.setBackground(new Background(new BackgroundFill(Color.rgb(0,0,36), CornerRadii.EMPTY, Insets.EMPTY)));
         flowPane.setOnMouseClicked(event -> {
-            System.out.println("test#1");
             Game.getInstance().setScene(MainScene.createMainScene(Game.getInstance().getStage()));
             Game.playMusic();
             Intro.stopMusic();
         });
+
     }
 
     public static void playMusic(){
