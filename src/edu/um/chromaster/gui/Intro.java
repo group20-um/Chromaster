@@ -11,8 +11,12 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+
+import java.io.File;
 
 /**
  * The Intro scene to the game.
@@ -21,6 +25,10 @@ public class Intro extends FlowPane {
 
     private Scene scene;
     private FlowPane flowPane = new FlowPane();
+
+    //private static Media sound=new Media(new File("src/res/Cat.mp3").toURI().toString());
+    private static Media sound=new Media(new File("src/res/MasterSong.m4a").toURI().toString());
+    private static MediaPlayer player=new MediaPlayer(sound);
 
     public Intro() {
         this.setup();
@@ -43,6 +51,8 @@ public class Intro extends FlowPane {
         Label t = new Label("T");
         Label e = new Label("E");
         Label r2 = new Label("R");
+
+        playMusic();
 
         Font f= new Font("Arial", 100);
         empty.setFont(f);
@@ -75,7 +85,17 @@ public class Intro extends FlowPane {
         flowPane.setOnMouseClicked(event -> {
             System.out.println("test#1");
             Game.getInstance().setScene(MainScene.createMainScene(Game.getInstance().getStage()));
+            Game.playMusic();
+            Intro.stopMusic();
         });
+    }
+
+    public static void playMusic(){
+        player.play();
+    }
+
+    public static void stopMusic(){
+        player.stop();
     }
 
 }

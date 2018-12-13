@@ -319,12 +319,12 @@ public class GraphElement extends Pane {
 
             @Override
             public double getTimeConstraint() {
-                return 0.049999D;
+                return 0.49999D;
             }
 
             @Override
             public List<Difficulty> getDifficulties() {
-                return Arrays.asList(Difficulty.EASY, Difficulty.MEDIUM, Difficulty.HARD);
+                return Arrays.asList(Difficulty.MEDIUM, Difficulty.HARD);
             }
 
             @Override

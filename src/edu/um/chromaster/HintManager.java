@@ -10,10 +10,6 @@ public class HintManager {
 
     private HintManager() {}
 
-    public static int chromaticNumber(Graph graph) {
-        return graph.getChromaticResult().getExact();
-    }
-
     public static Node highestDegree(Graph graph) {
         return graph.getNode(graph.getEdges().entrySet().stream().max(Comparator.comparingInt(o -> o.getValue().size())).get().getKey());
     }

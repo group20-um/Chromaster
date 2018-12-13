@@ -1,13 +1,16 @@
 package edu.um.chromaster;
 
 import edu.um.chromaster.event.EventHandler;
-import edu.um.chromaster.gui.game.GameElement;
 import edu.um.chromaster.gui.Intro;
+import edu.um.chromaster.gui.game.GameElement;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.util.Random;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -35,6 +38,10 @@ public class Game extends Application {
     private GameElement gameElement = null;
     private Stage stage;
 
+    private static Media sound=new Media(new File("src/res/Music.mp3").toURI().toString());
+    private static MediaPlayer player=new MediaPlayer(sound);
+
+
     public static Game getInstance() {
         return instance;
     }
@@ -49,6 +56,14 @@ public class Game extends Application {
 
     public ScheduledThreadPoolExecutor getSchedule() {
         return this.schedule;
+    }
+
+    public static void playMusic(){
+        player.play();
+    }
+
+    public static void stopMusic(){
+        player.stop();
     }
 
     @Override
@@ -81,6 +96,7 @@ public class Game extends Application {
         });
         primaryStage.setResizable(false);
         primaryStage.setScene(intro.getAssociatedScene());
+        Intro.playMusic();
         primaryStage.show();
 
     }

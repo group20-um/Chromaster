@@ -31,10 +31,23 @@ public class ChromaticNumber {
         EXACT_EXPERIMENTAL
     }
 
+    /**
+     * Computes the requested data in a async-fashion, and supplies it back via a callback.
+     * @param type The type of information that gets requested.
+     * @param graph The graph we want to perform the computations on.
+     * @param consumer The consumers gets called when a result is ready.
+     */
     public static void computeAsync(Type type, Graph graph, Consumer<Result> consumer) {
         CompletableFuture.supplyAsync(() -> compute(type, graph, false), schedule).thenAccept(consumer);
     }
 
+    /**
+     * Computes the requested data.
+     * @param type The type of information that gets requested.
+     * @param graph The graph we want to perform the computations on.
+     * @param runTimeBound Terminates the algorithm after a time limit.
+     * @return Never null, always a result.
+     */
     public static Result compute(Type type, Graph graph, boolean runTimeBound) {
         graph.reset();
 
@@ -50,6 +63,12 @@ public class ChromaticNumber {
     }
 
     //---
+
+    /**
+     * Runs the  
+     * @param graph
+     * @return
+     */
     private static Result limitedTimeExactTest(Graph graph) {
         return timeBoundMethodExecution(new MethodRunnable() {
             @Override
@@ -392,6 +411,9 @@ public class ChromaticNumber {
 
     }
 
+    /**
+     * Used to run the methods in a time-bound fashion.
+     */
     private static abstract class MethodRunnable implements Runnable {
 
         private Result result = new Result(null, -1, -1, -1, false);
@@ -409,6 +431,9 @@ public class ChromaticNumber {
 
     }
 
+    /**
+     * Contains the result of the computations.
+     */
     public static class Result {
 
         private Graph solution;

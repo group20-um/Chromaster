@@ -13,7 +13,6 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.util.Arrays;
 
-
 public class ReadGraphScene {
 
     private static Graph graph;
